@@ -9,6 +9,8 @@ contract Voting is Ownable {
 
     error Voting__ActionNotAvailableInThisPhase();
     error Voting__ContractOwnerCannotBeRegistered();
+    error Voting__AddressAlreadyRegistered();
+    error Voting__NoProposalToVoteYet();
     error Voting__NotRegisteredVoter();
     error Voting__ProposalExistsAlready();
     error Voting__DescriptionMissing();
@@ -16,6 +18,7 @@ contract Voting is Ownable {
     error Voting__IncorrectProposalId();
     error Voting__YouAlreadyVoted();
     error Voting__NotRegisteredVoterOrOwner();
+    error Voting__NoVote();
 
     // struct used to manage Voters
     struct Voter {
@@ -112,6 +115,10 @@ contract Voting is Ownable {
         onlyOwner
         onlyRightPhase(WorkflowStatus(1))
     {
+        // The phase can end when at least 1 proposal has been made
+        if (proposals.length == 0) {
+            revert Voting__NoProposalToVoteYet();
+        }
         changeWorkflowStatus(
             CurrentStatus,
             WorkflowStatus.ProposalsRegistrationEnded
@@ -162,9 +169,14 @@ contract Voting is Ownable {
         onlyOwner
         onlyRightPhase(WorkflowStatus(0))
     {
-        // Check _voterAddress
+        // Check _voterAddress is correct
         if (_voterAddress == address(0)) {
             revert Voting__IncorrectAddress();
+        }
+
+        //Check if _voterAddress is already registered
+        if (whitelist[_voterAddress].isRegistered) {
+            revert Voting__AddressAlreadyRegistered();
         }
 
         // Contract owner cannot register its address
@@ -249,6 +261,7 @@ contract Voting is Ownable {
     }
 
     // Owner can set the winningProposalId so the Voters can easely check which proposal won but only during VotingSessionEnded
+    // In case of equality the 1st proposal getting the max win
     function setWinningProposalId()
         external
         onlyOwner
@@ -289,6 +302,11 @@ contract Voting is Ownable {
         // Check if address is registered
         if (!whitelist[_voter].isRegistered) {
             revert Voting__NotRegisteredVoter();
+        }
+
+        // Check if address has voted
+        if (!whitelist[_voter].hasVoted) {
+            revert Voting__NoVote();
         }
         return proposals[whitelist[_voter].votedProposalId];
     }

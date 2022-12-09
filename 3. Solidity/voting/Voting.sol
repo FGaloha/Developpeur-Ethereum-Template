@@ -280,12 +280,11 @@ contract Voting is Ownable {
         setVotesTallied();
     }
 
-    // Voters & owner use it to get the description & number of votes obtained by the winning proposal
+    // Everybody can use it to get the description & number of votes obtained by the winning proposal
     function getDetailsWinningProposal()
         external
         view
         onlyRightPhase(WorkflowStatus(5))
-        onlyOwnerOrVoter
         returns (Proposal memory)
     {
         return proposals[winningProposalId];

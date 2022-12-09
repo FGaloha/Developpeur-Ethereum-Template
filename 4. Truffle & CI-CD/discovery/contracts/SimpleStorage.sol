@@ -2,7 +2,9 @@
 
 pragma solidity 0.8.17;
 
-contract SimpleStorage {
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract SimpleStorage is Ownable {
     uint256 data;
 
     function set(uint256 x) public {

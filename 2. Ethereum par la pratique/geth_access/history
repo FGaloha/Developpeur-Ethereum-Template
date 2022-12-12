@@ -1,0 +1,4 @@
+admin.nodeInfo.enode
+admin.addPeer("enode://d66e65f37a1b1b4226d450f2b6bd6865af6f339d3b6256afef6d9af3f0a199bb1b9da86556347d5d91b94b56aa7f3ed63f6e61d3dcd8334c81f4cccdfaa2382f@213.245.179.35:30303?discport=0")
+clique.propose("0x36263Cd49b50f1F0bb3D1f5519830Cf804FF5897", true)
+clique.getSigners()

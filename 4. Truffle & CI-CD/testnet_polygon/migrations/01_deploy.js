@@ -1,8 +1,13 @@
 const SimpleStorage = artifacts.require("SimpleStorage");
 
-module.exports = async (deployer) => {
+module.exports = async (deployer, network, accounts) => {
   const _money = "1";
   const _number = 7;
-  const _address = "0x8921B3238C306DF326c8d7cD67F2202d4b34dc0A"
-  await deployer.deploy(SimpleStorage, _number, { from: _address, value: _money });
+  await deployer.deploy(SimpleStorage, _number, { from: account[0], value: _money });
+  let instance = await SimpleStorage.deployed();
+  let value = await instance.get();
+  console.log(value.toString())
+  await instance.set(444);
+  value = await instance.get();
+  console.log(value.toString());
 }

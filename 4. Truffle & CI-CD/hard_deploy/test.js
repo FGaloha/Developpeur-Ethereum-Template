@@ -1,25 +1,20 @@
-require("@nomicfoundation/hardhat-toolbox");
-require("dotenv").config();
-require("@nomiclabs/hardhat-etherscan");
+require("@nomicfoundation/hardhat-toolbox")
+require("dotenv").config()
+require("@nomiclabs/hardhat-etherscan")
+require("hardhat-deploy");
 
 const PK = process.env.PK || "";
-const INFURA = process.env.INFURA || "";
-const ETHERSCAN = process.env.ETHERSCAN || "";
 const ALCHEMY = process.env.ALCHEMY || "";
-const POLYGONSCAN = process.env.POLYGONSCAN || "";
+const ETHERSCAN = process.env.ETHERSCAN || "";
 
 module.exports = {
   defaultNetwork: "hardhat",
   networks: {
     goerli: {
-      url: INFURA,
-      accounts: [`0x${PK}`],
-      chainId: 5
-    },
-    polygonMumbai: {
       url: ALCHEMY,
       accounts: [`0x${PK}`],
-      chainId: 80001
+      chainId: 5,
+      blockConfirmations: 6
     },
     localhost: {
       url: "http://127.0.0.1:8545",
@@ -38,9 +33,10 @@ module.exports = {
       goerli: ETHERSCAN
     }
   },
-  polygonscan: {
-    apiKey: {
-      polygonMumbai: POLYGONSCAN
+  namedAccounts: {
+    deployer: {
+      default: 0,
+      1: 0,
     }
   }
 };

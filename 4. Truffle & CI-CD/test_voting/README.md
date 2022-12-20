@@ -1,13 +1,14 @@
-# Sample Hardhat Project
+# Testing Hardhat Project
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+This project illustrate the testing functionalities available in hardhat.
 
-Try running some of the following tasks:
+The config is only set up to be deployed locally (no other network available).
+Once cloned from the gitHub repo by running : yarn hardhat test
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
-```
+You should get this
+
+By running : yarn hardhat coverage
+
+You should get this
+
+Here is a summary of the tests covered for each part of the Voting.sol contract.

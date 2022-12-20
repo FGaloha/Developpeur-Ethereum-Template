@@ -1,6 +1,32 @@
-require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-toolbox")
+require("dotenv").config()
+require("@nomiclabs/hardhat-etherscan")
+require("hardhat-deploy");
+require("hardhat-gas-reporter")
+require("solidity-coverage")
 
-/** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.17",
+  defaultNetwork: "hardhat",
+  networks: {
+    localhost: {
+      url: "http://127.0.0.1:8545",
+      chainId: 31337
+    }
+  },
+  solidity: {
+    compilers: [
+      {
+        version: "0.8.13"
+      }
+    ]
+  },
+  namedAccounts: {
+    deployer: {
+      default: 0,
+      1: 0,
+    }
+  },
+  gasReporter: {
+    enabled: true
+  }
 };

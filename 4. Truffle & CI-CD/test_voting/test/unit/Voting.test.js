@@ -208,9 +208,27 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
     })
 
-    // describe("getOneProposal", function () {
+    describe("getOneProposal", function () {
+      beforeEach(async () => {
+        await deployments.fixture(["voting"]);
+        voting = await ethers.getContract("Voting");
+      })
 
-    // })
+      it("should not be possible for a simple user to get the proposal's info", async function () {
+        await expect(voting.connect(simple_user).getOneProposal(0)).to.be.revertedWith("You're not a voter");
+      })
+
+      it("should be possible for a voter to get proposal's info", async function () {
+        // voter1 is registered by the owner
+        await voting.addVoter(voter1.getAddress());
+        // Start (1)-ProposalsRegistrationStarted to have GENESIS proposal for the test
+        await voting.startProposalsRegistering();
+        // Check a voter can access the proposal's info
+        myProposal = await voting.connect(voter1).getOneProposal(0);
+        assert.equal(myProposal.description, "GENESIS");
+        assert.equal(myProposal.voteCount, 0);
+      })
+    })
 
     // describe("Testing the full voting process", function () {
 

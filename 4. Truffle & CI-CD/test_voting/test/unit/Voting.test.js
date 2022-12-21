@@ -1,17 +1,12 @@
 const { assert, expect } = require("chai")
 const { network, deployments, ethers } = require("hardhat")
 const { developmentChains } = require("../../helper-hardhat-config")
-const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
-const { _nameprepTableC } = require("@ethersproject/strings/lib/idna");
 
 !developmentChains.includes(network.name)
   ? describe.skip
-  : describe("Units tests of Voting smart contract", function () {
+  : describe("Voting Smart Contract Unit Testing", function () {
     let accounts;
     let voting;
-    // const _name = "FlavCoin";
-    // const _symbol = "FLAV";
-    // const _startAmount = 1000000 * 1e18;
 
     before(async () => {
       accounts = await ethers.getSigners()
@@ -22,7 +17,9 @@ const { _nameprepTableC } = require("@ethersproject/strings/lib/idna");
     })
 
     // DEFINITIONS
-    // A simple user is a person who is not a voter
+    // Owner is the address who deployed the contract
+    // A voter is a person who has been registered by the owner & is able to vote & access voter's features
+    // A simple user is a person who is a non registered voter, cannot vote but can check the winning proposal
 
     // Test contract can be deployed
     describe("Deployment", async function () {
@@ -32,12 +29,13 @@ const { _nameprepTableC } = require("@ethersproject/strings/lib/idna");
       })
     })
 
-    beforeEach(async () => {
-      await deployments.fixture(["voting"]);
-      voting = await ethers.getContract("Voting");
-    })
+    describe("addVoter", function () {
 
-    describe("addVoter", async function () {
+      beforeEach(async () => {
+        await deployments.fixture(["voting"]);
+        voting = await ethers.getContract("Voting");
+      })
+
       it("should not be possible for a simple user to add a voter", async function () {
         await expect(
           voting.connect(simple_user).addVoter(simple_user.getAddress())
@@ -52,26 +50,25 @@ const { _nameprepTableC } = require("@ethersproject/strings/lib/idna");
 
       it("should be possible for the owner to register as a voter", async function () {
         const ownerAddress = await owner.getAddress();
-        let addVoter = await voting.addVoter(ownerAddress);
+        const addVoter = await voting.addVoter(ownerAddress);
         // check owner registration worked
-        let myVoter = await voting.getVoter(ownerAddress);
-        assert.equal(myVoter.isRegistered.toString(), "true");
+        const myVoter = await voting.getVoter(ownerAddress);
+        assert.equal(myVoter.isRegistered, true);
         // check it emit the expected event
         await expect(addVoter)
           .to.emit(voting, 'VoterRegistered')
           .withArgs(ownerAddress);
       })
 
-      it("should be possible for the owner to register a voter", async function () {
+      it("should be possible for the owner to register another address as a voter", async function () {
         // starting by registering the owner to get access to getVoter who is limited to voters
-        const ownerAddress = await owner.getAddress();
-        let addVoter = await voting.addVoter(ownerAddress);
+        let addVoter = await voting.addVoter(owner.getAddress());
         // adding another voter
         const voter1Address = await voter1.getAddress();
         addVoter = await voting.addVoter(voter1Address);
         // check voter1 registration worked
         myVoter = await voting.getVoter(voter1Address);
-        assert.equal(myVoter.isRegistered.toString(), "true");
+        assert.equal(myVoter.isRegistered, true);
         // check it emit the expected event
         await expect(addVoter)
           .to.emit(voting, 'VoterRegistered')
@@ -87,11 +84,11 @@ const { _nameprepTableC } = require("@ethersproject/strings/lib/idna");
         ).to.be.revertedWith("Already registered");
       })
 
-      it("Should not be possible for the owner to register a voter outside the RegisteringVoters phase", async function () {
+      it("Should not be possible for the owner to register a voter outside the (0)-RegisteringVoters phase", async function () {
         // changing the workflowStatus to status (1)-ProposalsRegistrationStarted
-        addVoter = await voting.startProposalsRegistering();
+        await voting.startProposalsRegistering();
         // check the status is different than (0)-RegisteringVoters
-        let myStatus = await voting.workflowStatus();
+        const myStatus = await voting.workflowStatus();
         expect(myStatus).above(0);
         // check the addVoter attempt in ProposalsRegistrationStarted trigger the expected revert
         await expect(
@@ -101,7 +98,13 @@ const { _nameprepTableC } = require("@ethersproject/strings/lib/idna");
 
     })
 
-    describe("getVoter", async function () {
+    describe("getVoter", function () {
+
+      beforeEach(async () => {
+        await deployments.fixture(["voting"]);
+        voting = await ethers.getContract("Voting");
+      })
+
       it("should not be possible for a simple user to get info/vote of a voter", async function () {
         await expect(voting.connect(simple_user).getVoter(voter1.getAddress())).to.be.revertedWith("You're not a voter");
       })
@@ -109,7 +112,7 @@ const { _nameprepTableC } = require("@ethersproject/strings/lib/idna");
       it("should be possible for a voter to get info/vote of a voter", async function () {
         // the owner first register himself as a voter to be able to use getVoter
         await voting.addVoter(owner.getAddress());
-        // test getVoter return the owner Voter & we can access the data that should be given the test [true, false, 0]
+        // the owner get the data that should be live after the addVoter action [true, false, 0]
         const result = await voting.getVoter(owner.getAddress());
         assert(result.isRegistered.toString(), "true");
         assert(result.hasVoted.toString(), "false");
@@ -117,7 +120,12 @@ const { _nameprepTableC } = require("@ethersproject/strings/lib/idna");
       })
     })
 
-    describe("startProposalsRegistering", async function () {
+    describe("startProposalsRegistering", function () {
+
+      beforeEach(async () => {
+        await deployments.fixture(["voting"]);
+        voting = await ethers.getContract("Voting");
+      })
 
       it("should not be possible for a simple user to startProposalsRegistering", async function () {
         await expect(voting.connect(simple_user).startProposalsRegistering()).to.be.revertedWith("Ownable: caller is not the owner");
@@ -130,11 +138,16 @@ const { _nameprepTableC } = require("@ethersproject/strings/lib/idna");
       it("should be possible for the owner to startProposalsRegistering", async function () {
         // the owner first register himself as a voter to be able to use getOneProposal
         await voting.addVoter(owner.getAddress());
-        let myAction = await voting.startProposalsRegistering();
+        // check we are in phase (0)-RegisteringVoters
+        let myStatus = await voting.workflowStatus();
+        assert.isTrue(myStatus == 0);
+        // Action
+        const myAction = await voting.startProposalsRegistering();
         // check we are now in (1)-ProposalsRegistrationStarted
-        assert(voting.workflowStatus(), 1);
+        myStatus = await voting.workflowStatus();
+        assert.isTrue(myStatus == 1);
         // check 1st proposal Genesis has been created
-        myProposal = await voting.getOneProposal(0);
+        const myProposal = await voting.getOneProposal(0);
         assert(myProposal.description, "GENESIS")
         assert(myProposal.voteCount, 0)
         // check it emit the expected event
@@ -151,30 +164,35 @@ const { _nameprepTableC } = require("@ethersproject/strings/lib/idna");
       })
     })
 
-    describe("addProposal", async function () {
+    describe("addProposal", function () {
+
+      beforeEach(async () => {
+        await deployments.fixture(["voting"]);
+        voting = await ethers.getContract("Voting");
+        // voter1 is registered by the owner
+        await voting.addVoter(voter1.getAddress());
+      })
+
       it("should not be possible for a simple user to add a proposal", async function () {
         await expect(voting.connect(simple_user).addProposal("Change the voting process")).to.be.revertedWith("You're not a voter");
       })
 
       it("should not be possible for a voter to add a proposal outside the (1)-ProposalsRegistrationStarted phase", async function () {
-        // voter1 is registered by the owner
-        await voting.addVoter(voter1.getAddress());
-        // check
+        // check we are not in phase (1)-ProposalsRegistrationStarted
+        const myStatus = await voting.workflowStatus();
+        assert.isFalse(myStatus == 1);
+        // check not respecting workflow triggered revert
         await expect(voting.connect(voter1).addProposal("Increase holidays")).to.be.revertedWith("Proposals are not allowed yet");
       })
 
       it("should not be possible for a voter to add an empty proposal during (1)-ProposalsRegistrationStarted", async function () {
-        // voter1 is registered by the owner
-        await voting.addVoter(voter1.getAddress());
         // owner start ProposalsRegistrationStarted
         await voting.startProposalsRegistering();
-        // check
+        // check empty description triggered revert
         await expect(voting.connect(voter1).addProposal("")).to.be.revertedWith("Vous ne pouvez pas ne rien proposer");
       })
 
       it("should be possible for a voter to add a proposal with a description during (1)-ProposalsRegistrationStarted", async function () {
-        // voter1 is registered by the owner
-        await voting.addVoter(voter1.getAddress());
         // owner start ProposalsRegistrationStarted
         await voting.startProposalsRegistering();
         // voter1 adds a proposal
@@ -190,7 +208,11 @@ const { _nameprepTableC } = require("@ethersproject/strings/lib/idna");
       })
     })
 
-    // describe("getOneProposal", async function () {
+    // describe("getOneProposal", function () {
+
+    // })
+
+    // describe("Testing the full voting process", function () {
 
     // })
 

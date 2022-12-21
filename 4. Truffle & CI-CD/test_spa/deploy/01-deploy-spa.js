@@ -11,7 +11,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
   log("--------------------------------------")
   arguments = []
-  const Voting = await deploy("Voting", {
+  const Spa = await deploy("Spa", {
     from: deployer,
     args: arguments,
     log: true,
@@ -21,8 +21,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   //Verify the smart contract
   if (!developmentChains.includes(network.name)) {
     log("Verifying...")
-    await verify(Voting.address, arguments)
+    await verify(Spa.address, arguments)
   }
 }
 
-module.exports.tags = ["all", "voting", "main"]
+module.exports.tags = ["all", "spa", "main"]

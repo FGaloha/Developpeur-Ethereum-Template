@@ -190,9 +190,9 @@ const { _nameprepTableC } = require("@ethersproject/strings/lib/idna");
       })
     })
 
-    describe("getOneProposal", async function () {
+    // describe("getOneProposal", async function () {
 
-    })
+    // })
 
 
   })

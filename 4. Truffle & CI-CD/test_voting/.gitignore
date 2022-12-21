@@ -6,7 +6,6 @@ typechain
 typechain-types
 .vscode
 .DS_Store
-../../DS_Store
 
 # Hardhat files
 cache

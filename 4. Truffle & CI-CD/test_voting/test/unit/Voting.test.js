@@ -230,6 +230,43 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
     })
 
+    describe("endProposalsRegistering", function () {
+
+      beforeEach(async () => {
+        await deployments.fixture(["voting"]);
+        voting = await ethers.getContract("Voting");
+        await voting.addVoter(voter1.getAddress());
+      })
+
+      it("should not be possible for a simple user to endProposalsRegistering", async function () {
+        await expect(voting.connect(simple_user).endProposalsRegistering()).to.be.revertedWith("Ownable: caller is not the owner");
+      })
+
+      it("should not be possible for a voter to endProposalsRegistering", async function () {
+        await expect(voting.connect(voter1).endProposalsRegistering()).to.be.revertedWith("Ownable: caller is not the owner");
+      })
+
+      it("should not be possible for the owner to endProposalsRegistering if the current Workflow is not 1-ProposalsRegistrationStarted", async function () {
+        await expect(voting.endProposalsRegistering()).to.be.revertedWith("Registering proposals havent started yet");
+      })
+
+      it("should be possible for the owner to endProposalsRegistering", async function () {
+        await voting.startProposalsRegistering();
+        // check we are in phase (1)-ProposalsRegistrationStarted
+        let myStatus = await voting.workflowStatus();
+        assert.isTrue(myStatus == 1);
+        // Action
+        const myAction = await voting.endProposalsRegistering();
+        // check we are now in (2)-ProposalsRegistrationEnded
+        myStatus = await voting.workflowStatus();
+        assert.isTrue(myStatus == 2);
+        // check it emit the expected event
+        await expect(myAction)
+          .to.emit(voting, 'WorkflowStatusChange')
+          .withArgs(1, 2);
+      })
+    })
+
     // describe("Testing the full voting process", function () {
 
     // })

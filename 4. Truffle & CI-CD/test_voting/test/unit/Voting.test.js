@@ -247,7 +247,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
         await expect(voting.endProposalsRegistering()).to.be.revertedWith("Registering proposals havent started yet");
       })
 
-      it("should be possible for the owner to endProposalsRegistering", async function () {
+      it("should be possible for the owner to endProposalsRegistering when current phase is (1)-ProposalsRegistrationStarted", async function () {
         await voting.startProposalsRegistering();
         // check we are in phase (1)-ProposalsRegistrationStarted
         assert.equal(await voting.workflowStatus(), 1);
@@ -284,7 +284,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
         await expect(voting.startVotingSession()).to.be.revertedWith("Registering proposals phase is not finished");
       })
 
-      it("should be possible for the owner to startVotingSession", async function () {
+      it("should be possible for the owner to startVotingSessionwhen current phase is (2)-ProposalsRegistrationEnded", async function () {
         await voting.endProposalsRegistering();
         // check we are in phase (2)-ProposalsRegistrationEnded
         assert.equal(await voting.workflowStatus(), 2);
@@ -292,7 +292,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
         await expect(await voting.startVotingSession())
           .to.emit(voting, 'WorkflowStatusChange')
           .withArgs(2, 3);
-        // check we are now in (2)-ProposalsRegistrationEnded
+        // check we are now in (3)-VotingSessionStarted
         assert.equal(await voting.workflowStatus(), 3);
       })
     })
@@ -369,6 +369,113 @@ const { developmentChains } = require("../../helper-hardhat-config")
         assert(voteCount.voteCount, 1);
       })
 
+    })
+
+    describe("endVotingSession", function () {
+
+      beforeEach(async () => {
+        await deployments.fixture(["voting"]);
+        voting = await ethers.getContract("Voting");
+        await voting.addVoter(voter1.address);
+        await voting.startProposalsRegistering();
+        await voting.connect(voter1).addProposal("Increase holidays");
+        await voting.endProposalsRegistering();
+      })
+
+      it("should not be possible for a simple user to endVotingSession", async function () {
+        await expect(voting.connect(simple_user).endVotingSession()).to.be.revertedWith("Ownable: caller is not the owner");
+      })
+
+      it("should not be possible for a voter to endVotingSession", async function () {
+        await expect(voting.connect(voter1).endVotingSession()).to.be.revertedWith("Ownable: caller is not the owner");
+      })
+
+      it("should not be possible for the owner to endVotingSession if the current Workflow is not (3)-VotingSessionStarted", async function () {
+        // check we are not in phase (3)-VotingSessionStarted
+        assert.isFalse(voting.workflowStatus() == 3);
+        await expect(voting.endVotingSession()).to.be.revertedWith("Voting session havent started yet");
+      })
+
+      it("should be possible for the owner to endVotingSession when current phase is (3)-VotingSessionStarted", async function () {
+        await voting.startVotingSession();
+        // check we are in phase (3)-VotingSessionStarted
+        assert.equal(await voting.workflowStatus(), 3);
+        // check it emit the expected event
+        await expect(await voting.endVotingSession())
+          .to.emit(voting, 'WorkflowStatusChange')
+          .withArgs(3, 4);
+        // check we are now in (4)-VotingSessionEnded
+        assert.equal(await voting.workflowStatus(), 4);
+      })
+    })
+
+    describe("tallyVotes", function () {
+
+      beforeEach(async () => {
+        await deployments.fixture(["voting"]);
+        voting = await ethers.getContract("Voting");
+        await voting.addVoter(voter1.address);
+        await voting.startProposalsRegistering();
+        await voting.connect(voter1).addProposal("Increase holidays");
+        await voting.endProposalsRegistering();
+        await voting.startVotingSession();
+        await voting.connect(voter1).setVote(1);
+      })
+
+      it("should not be possible for a simple user to tallyVotes", async function () {
+        await expect(voting.connect(simple_user).tallyVotes()).to.be.revertedWith("Ownable: caller is not the owner");
+      })
+
+      it("should not be possible for a voter to tallyVotes", async function () {
+        await expect(voting.connect(voter1).tallyVotes()).to.be.revertedWith("Ownable: caller is not the owner");
+      })
+
+      it("should not be possible for the owner to tallyVotes if the current Workflow is not (4)-VotingSessionEnded", async function () {
+        // check we are not in phase (4)-VotingSessionEnded
+        assert.isFalse(voting.workflowStatus() == 4);
+        await expect(voting.tallyVotes()).to.be.revertedWith("Current status is not voting session ended");
+      })
+
+      it("should be possible for the owner to tallyVotes when current phase is (4)-VotingSessionEnded", async function () {
+        await voting.endVotingSession();
+        // check we are in phase (4)-VotingSessionEnded
+        assert.equal(await voting.workflowStatus(), 4);
+        // check the initial winningProposalID is O
+        assert.equal(await voting.winningProposalID(), 0);
+        // check it emit the expected event
+        await expect(await voting.tallyVotes())
+          .to.emit(voting, 'WorkflowStatusChange')
+          .withArgs(4, 5);
+        // check we are now in (5)-VotesTallied
+        assert.equal(await voting.workflowStatus(), 5);
+        // check winningProposalID is now 1
+        assert.equal(await voting.winningProposalID(), 1);
+      })
+    })
+
+    describe("winningProposalID", function () {
+      beforeEach(async () => {
+        await deployments.fixture(["voting"]);
+        voting = await ethers.getContract("Voting");
+        await voting.addVoter(voter1.address);
+        await voting.startProposalsRegistering();
+        await voting.connect(voter1).addProposal("Increase holidays");
+        await voting.endProposalsRegistering();
+        await voting.startVotingSession();
+        await voting.connect(voter1).setVote(1);
+        await voting.endVotingSession();
+        await voting.tallyVotes();
+      })
+
+      it("should be possible for a simple user to get the winning proposal", async function () {
+        const winningProposalId = await voting.connect(simple_user).winningProposalID();
+        assert.equal(winningProposalId, 1);
+      })
+
+      it("should be possible for a voter to get the winning proposal", async function () {
+        const winningProposalId = await voting.connect(voter1).winningProposalID();
+        assert.equal(winningProposalId, 1);
+      })
     })
 
     // describe("Testing the full voting process", function () {

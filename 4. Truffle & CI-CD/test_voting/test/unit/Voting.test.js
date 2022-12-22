@@ -21,8 +21,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
     // A voter is a person who has been registered by the owner & is able to vote & access voter's features
     // A simple user is a person who is a non registered voter, cannot vote but can check the winning proposal
 
-    // Test contract can be deployed
-    describe("Deployment", async function () {
+    describe("Deployment", function () {
       it("should deploy the smart contract", async function () {
         await deployments.fixture(["voting"]);
         voting = await ethers.getContract("Voting");
@@ -38,61 +37,59 @@ const { developmentChains } = require("../../helper-hardhat-config")
 
       it("should not be possible for a simple user to add a voter", async function () {
         await expect(
-          voting.connect(simple_user).addVoter(simple_user.getAddress())
+          voting.connect(simple_user).addVoter(simple_user.address)
         ).to.be.revertedWith("Ownable: caller is not the owner");
       })
 
       it("should not be possible for a voter to add a voter", async function () {
         await expect(
-          voting.connect(voter1).addVoter(voter2.getAddress())
+          voting.connect(voter1).addVoter(voter2.address)
         ).to.be.revertedWith("Ownable: caller is not the owner");
       })
 
       it("should be possible for the owner to register as a voter", async function () {
-        const ownerAddress = await owner.getAddress();
-        const addVoter = await voting.addVoter(ownerAddress);
+        const addVoter = await voting.addVoter(owner.address);
         // check owner registration worked
-        const myVoter = await voting.getVoter(ownerAddress);
+        const myVoter = await voting.getVoter(owner.address);
         assert.equal(myVoter.isRegistered, true);
         // check it emit the expected event
         await expect(addVoter)
           .to.emit(voting, 'VoterRegistered')
-          .withArgs(ownerAddress);
+          .withArgs(owner.address);
       })
 
       it("should be possible for the owner to register another address as a voter", async function () {
         // starting by registering the owner to get access to getVoter who is limited to voters
-        let addVoter = await voting.addVoter(owner.getAddress());
-        // adding another voter
-        const voter1Address = await voter1.getAddress();
-        addVoter = await voting.addVoter(voter1Address);
-        // check voter1 registration worked
-        myVoter = await voting.getVoter(voter1Address);
-        assert.equal(myVoter.isRegistered, true);
-        // check it emit the expected event
-        await expect(addVoter)
+        await voting.addVoter(owner.address);
+        // adding another voter check it emit the expected event
+        await expect(voting.addVoter(voter1.address))
           .to.emit(voting, 'VoterRegistered')
-          .withArgs(voter1Address);
+          .withArgs(voter1.address);
+        // check voter1 registration worked
+        myVoter = await voting.getVoter(voter1.address);
+        assert.equal(myVoter.isRegistered, true);
+
       })
 
       it("should not be possible for the owner to register a voter twice", async function () {
         // the owner register voter1 once
-        await voting.addVoter(voter1.getAddress());
+        await voting.addVoter(voter1.address);
         // the owner try to register again the voter1
         await expect(
-          voting.addVoter(voter1.getAddress())
+          voting.addVoter(voter1.address)
         ).to.be.revertedWith("Already registered");
       })
 
       it("Should not be possible for the owner to register a voter outside the (0)-RegisteringVoters phase", async function () {
-        // changing the workflowStatus to status (1)-ProposalsRegistrationStarted
+        // check the status is (0)-RegisteringVoters
+        assert.equal(await voting.workflowStatus(), 0);
+        // changing the workflowStatus (0) to status (1)-ProposalsRegistrationStarted
         await voting.startProposalsRegistering();
-        // check the status is different than (0)-RegisteringVoters
-        const myStatus = await voting.workflowStatus();
-        expect(myStatus).above(0);
+        // check the status is now (1)-ProposalsRegistrationStarted
+        assert.equal(await voting.workflowStatus(), 1);
         // check the addVoter attempt in ProposalsRegistrationStarted trigger the expected revert
         await expect(
-          voting.addVoter(voter1.getAddress())
+          voting.addVoter(voter1.address)
         ).to.be.revertedWith("Voters registration is not open yet");
       })
 
@@ -106,14 +103,14 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should not be possible for a simple user to get info/vote of a voter", async function () {
-        await expect(voting.connect(simple_user).getVoter(voter1.getAddress())).to.be.revertedWith("You're not a voter");
+        await expect(voting.connect(simple_user).getVoter(voter1.address)).to.be.revertedWith("You're not a voter");
       })
 
       it("should be possible for a voter to get info/vote of a voter", async function () {
         // the owner first register himself as a voter to be able to use getVoter
-        await voting.addVoter(owner.getAddress());
+        await voting.addVoter(owner.address);
         // the owner get the data that should be live after the addVoter action [true, false, 0]
-        const result = await voting.getVoter(owner.getAddress());
+        const result = await voting.getVoter(owner.address);
         assert(result.isRegistered.toString(), "true");
         assert(result.hasVoted.toString(), "false");
         assert(result.votedProposalId.toString(), "0");
@@ -135,31 +132,27 @@ const { developmentChains } = require("../../helper-hardhat-config")
         await expect(voting.connect(voter1).startProposalsRegistering()).to.be.revertedWith("Ownable: caller is not the owner");
       })
 
-      it("should be possible for the owner to startProposalsRegistering", async function () {
+      it("should be possible for the owner to startProposalsRegistering if the current Workflow is 0-RegisteringVoters", async function () {
         // the owner first register himself as a voter to be able to use getOneProposal
-        await voting.addVoter(owner.getAddress());
+        await voting.addVoter(owner.address);
         // check we are in phase (0)-RegisteringVoters
-        let myStatus = await voting.workflowStatus();
-        assert.isTrue(myStatus == 0);
-        // Action
-        const myAction = await voting.startProposalsRegistering();
+        assert.equal(await voting.workflowStatus(), 0);
+        // check it emit the expected event
+        await expect(await voting.startProposalsRegistering())
+          .to.emit(voting, 'WorkflowStatusChange')
+          .withArgs(0, 1);
         // check we are now in (1)-ProposalsRegistrationStarted
-        myStatus = await voting.workflowStatus();
-        assert.isTrue(myStatus == 1);
+        assert.equal(await voting.workflowStatus(), 1);
         // check 1st proposal Genesis has been created
         const myProposal = await voting.getOneProposal(0);
         assert(myProposal.description, "GENESIS")
         assert(myProposal.voteCount, 0)
-        // check it emit the expected event
-        await expect(myAction)
-          .to.emit(voting, 'WorkflowStatusChange')
-          .withArgs(0, 1);
       })
 
-      it("should not be possible for the owner to startProposalsRegistering if the current Workflow is not 0-RegisteringVoters", async function () {
+      it("should not be possible for the owner to startProposalsRegistering if the current Workflow is not (0)-RegisteringVoters", async function () {
         await voting.startProposalsRegistering();
-        // check we are now in (1)-ProposalsRegistrationStarted
-        assert(voting.workflowStatus(), 1);
+        // check we are not in phase (0)-RegisteringVoters
+        assert.isFalse(voting.workflowStatus() == 0);
         await expect(voting.startProposalsRegistering()).to.be.revertedWith("Registering proposals cant be started now");
       })
     })
@@ -170,7 +163,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
         await deployments.fixture(["voting"]);
         voting = await ethers.getContract("Voting");
         // voter1 is registered by the owner
-        await voting.addVoter(voter1.getAddress());
+        await voting.addVoter(voter1.address);
       })
 
       it("should not be possible for a simple user to add a proposal", async function () {
@@ -179,8 +172,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
 
       it("should not be possible for a voter to add a proposal outside the (1)-ProposalsRegistrationStarted phase", async function () {
         // check we are not in phase (1)-ProposalsRegistrationStarted
-        const myStatus = await voting.workflowStatus();
-        assert.isFalse(myStatus == 1);
+        assert.isFalse(await voting.workflowStatus() == 1);
         // check not respecting workflow triggered revert
         await expect(voting.connect(voter1).addProposal("Increase holidays")).to.be.revertedWith("Proposals are not allowed yet");
       })
@@ -188,6 +180,8 @@ const { developmentChains } = require("../../helper-hardhat-config")
       it("should not be possible for a voter to add an empty proposal during (1)-ProposalsRegistrationStarted", async function () {
         // owner start ProposalsRegistrationStarted
         await voting.startProposalsRegistering();
+        // check we are in phase (1)-ProposalsRegistrationStarted
+        assert.equal(await voting.workflowStatus(), 1);
         // check empty description triggered revert
         await expect(voting.connect(voter1).addProposal("")).to.be.revertedWith("Vous ne pouvez pas ne rien proposer");
       })
@@ -195,16 +189,17 @@ const { developmentChains } = require("../../helper-hardhat-config")
       it("should be possible for a voter to add a proposal with a description during (1)-ProposalsRegistrationStarted", async function () {
         // owner start ProposalsRegistrationStarted
         await voting.startProposalsRegistering();
-        // voter1 adds a proposal
-        let myAction = await voting.connect(voter1).addProposal("Increase holidays");
+        // check we are in phase (1)-ProposalsRegistrationStarted
+        assert.equal(await voting.workflowStatus(), 1);
+        // check adding a 1st proposal emit the expected event
+        await expect(voting.connect(voter1).addProposal("Increase holidays"))
+          .to.emit(voting, 'ProposalRegistered')
+          .withArgs(1);
         // voter1 checks the proposal has been created in position 1 (0 is GENESIS) with correct data
         const myProposal = await voting.connect(voter1).getOneProposal(1);
         assert(myProposal.description, "Increase holidays");
         assert(myProposal.voteCount, 0);
-        // check it emit the expected event
-        await expect(myAction)
-          .to.emit(voting, 'ProposalRegistered')
-          .withArgs(1);
+
       })
     })
 
@@ -220,7 +215,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
 
       it("should be possible for a voter to get proposal's info", async function () {
         // voter1 is registered by the owner
-        await voting.addVoter(voter1.getAddress());
+        await voting.addVoter(voter1.address);
         // Start (1)-ProposalsRegistrationStarted to have GENESIS proposal for the test
         await voting.startProposalsRegistering();
         // Check a voter can access the proposal's info
@@ -235,7 +230,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
       beforeEach(async () => {
         await deployments.fixture(["voting"]);
         voting = await ethers.getContract("Voting");
-        await voting.addVoter(voter1.getAddress());
+        await voting.addVoter(voter1.address);
       })
 
       it("should not be possible for a simple user to endProposalsRegistering", async function () {
@@ -246,25 +241,134 @@ const { developmentChains } = require("../../helper-hardhat-config")
         await expect(voting.connect(voter1).endProposalsRegistering()).to.be.revertedWith("Ownable: caller is not the owner");
       })
 
-      it("should not be possible for the owner to endProposalsRegistering if the current Workflow is not 1-ProposalsRegistrationStarted", async function () {
+      it("should not be possible for the owner to endProposalsRegistering if the current Workflow is not (1)-ProposalsRegistrationStarted", async function () {
+        // check we are not in phase (1)-ProposalsRegistrationStarted
+        assert.isFalse(voting.workflowStatus() == 0);
         await expect(voting.endProposalsRegistering()).to.be.revertedWith("Registering proposals havent started yet");
       })
 
       it("should be possible for the owner to endProposalsRegistering", async function () {
         await voting.startProposalsRegistering();
         // check we are in phase (1)-ProposalsRegistrationStarted
-        let myStatus = await voting.workflowStatus();
-        assert.isTrue(myStatus == 1);
-        // Action
-        const myAction = await voting.endProposalsRegistering();
-        // check we are now in (2)-ProposalsRegistrationEnded
-        myStatus = await voting.workflowStatus();
-        assert.isTrue(myStatus == 2);
+        assert.equal(await voting.workflowStatus(), 1);
         // check it emit the expected event
-        await expect(myAction)
+        await expect(await voting.endProposalsRegistering())
           .to.emit(voting, 'WorkflowStatusChange')
           .withArgs(1, 2);
+        // check we are now in (2)-ProposalsRegistrationEnded
+        assert.equal(await voting.workflowStatus(), 2);
       })
+    })
+
+    describe("startVotingSession", function () {
+
+      beforeEach(async () => {
+        await deployments.fixture(["voting"]);
+        voting = await ethers.getContract("Voting");
+        await voting.addVoter(voter1.address);
+        await voting.startProposalsRegistering();
+        await voting.connect(voter1).addProposal("Increase holidays");
+      })
+
+      it("should not be possible for a simple user to startVotingSession", async function () {
+        await expect(voting.connect(simple_user).startVotingSession()).to.be.revertedWith("Ownable: caller is not the owner");
+      })
+
+      it("should not be possible for a voter to startVotingSession", async function () {
+        await expect(voting.connect(voter1).startVotingSession()).to.be.revertedWith("Ownable: caller is not the owner");
+      })
+
+      it("should not be possible for the owner to startVotingSession if the current Workflow is not (2)-ProposalsRegistrationEnded", async function () {
+        // check we are not in phase (2)-ProposalsRegistrationEnded
+        assert.isFalse(voting.workflowStatus() == 2);
+        await expect(voting.startVotingSession()).to.be.revertedWith("Registering proposals phase is not finished");
+      })
+
+      it("should be possible for the owner to startVotingSession", async function () {
+        await voting.endProposalsRegistering();
+        // check we are in phase (2)-ProposalsRegistrationEnded
+        assert.equal(await voting.workflowStatus(), 2);
+        // check it emit the expected event
+        await expect(await voting.startVotingSession())
+          .to.emit(voting, 'WorkflowStatusChange')
+          .withArgs(2, 3);
+        // check we are now in (2)-ProposalsRegistrationEnded
+        assert.equal(await voting.workflowStatus(), 3);
+      })
+    })
+
+    describe("setVote", function () {
+
+      beforeEach(async () => {
+        await deployments.fixture(["voting"]);
+        voting = await ethers.getContract("Voting");
+        await voting.addVoter(voter1.address);
+        await voting.startProposalsRegistering();
+        voting.connect(voter1).addProposal("Increase holidays")
+        await voting.endProposalsRegistering();
+      })
+
+      it("should not be possible for a simple user to vote", async function () {
+        await expect(voting.connect(simple_user).setVote(1)).to.be.revertedWith("You're not a voter");
+      })
+
+      it("should not be possible for a voter to set a vote outside the (3)-VotingSessionStarted phase", async function () {
+        // check we are not in phase (3)-VotingSessionStarted
+        assert.isFalse(await voting.workflowStatus() == 3);
+        // check not respecting workflow triggered revert
+        await expect(voting.connect(voter1).setVote(0)).to.be.revertedWith("Voting session havent started yet");
+      })
+
+      it("should not be possible for a voter to set a vote for a proposal which does not exist", async function () {
+        await voting.startVotingSession();
+        // check we are now in phase (3)-VotingSessionStarted
+        assert.equal(await voting.workflowStatus(), 3);
+        // check sending a wrong proposal triggers a revert
+        await expect(voting.connect(voter1).setVote(9)).to.be.revertedWith("Proposal not found");
+      })
+
+      it("should be possible for a voter to set a vote for an existing proposal during (3)-VotingSessionStarted", async function () {
+        // owner start VotingSessionStarted
+        await voting.startVotingSession();
+        // check we are in phase (3)-VotingSessionStarted
+        assert.equal(await voting.workflowStatus(), 3);
+        // check the voteCount is 0 at the beginning
+        let voteCount = await voting.connect(voter1).getOneProposal(1);
+        assert(voteCount.voteCount, 0);
+        // check setting the vote emit the expected event
+        await expect(voting.connect(voter1).setVote(1))
+          .to.emit(voting, 'Voted')
+          .withArgs(voter1.address, 1);
+        // check the vote has updated voters & proposalsArray
+        const voter1Info = await voting.connect(voter1).getVoter(voter1.address);
+        assert(voter1Info.votedProposalId, 1);
+        assert(voter1Info.hasVoted, true);
+        voteCount = await voting.connect(voter1).getOneProposal(1);
+        assert(voteCount.voteCount, 1);
+      })
+
+      it("should not be possible for a voter to vote twice", async function () {
+        // owner start VotingSessionStarted
+        await voting.startVotingSession();
+        // check we are in phase (3)-VotingSessionStarted
+        assert.equal(await voting.workflowStatus(), 3);
+        // check the voteCount is 0 at the beginning
+        let voteCount = await voting.connect(voter1).getOneProposal(1);
+        // Setting the 1st vote
+        voting.connect(voter1).setVote(1)
+        // Checking it has been taken into account
+        const voter1Info = await voting.connect(voter1).getVoter(voter1.address);
+        assert(voter1Info.votedProposalId, 1);
+        assert(voter1Info.hasVoted, true);
+        voteCount = await voting.connect(voter1).getOneProposal(1);
+        assert(voteCount.voteCount, 1);
+        // check second attemp triggers a revert
+        await expect(voting.connect(voter1).setVote(1)).to.be.rejectedWith("You have already voted");
+        // check the 2nd vote did not update proposalsArray
+        voteCount = await voting.connect(voter1).getOneProposal(1);
+        assert(voteCount.voteCount, 1);
+      })
+
     })
 
     // describe("Testing the full voting process", function () {

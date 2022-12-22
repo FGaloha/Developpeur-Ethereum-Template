@@ -1,5 +1,4 @@
 const { assert, expect } = require("chai");
-const { splitSignature } = require("ethers/lib/utils");
 const { network, deployments, ethers } = require("hardhat");
 const { developmentChains } = require("../../helper-hardhat-config")
 
@@ -21,16 +20,14 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should be possible to add an animal", async function () {
-        const animalAdded = await spa.add("doberman", 50, 5);
+        await expect(spa.add("doberman", 50, 5))
+          .to.emit(spa, ' animalAdded')
+          .withArgs(0);
         // check it has been added & info correct
         const myAnimalAdded = await spa.get(0);
         assert.equal(myAnimalAdded.race, "doberman");
         assert.equal(myAnimalAdded.size, 50);
         assert.equal(myAnimalAdded.age, 5);
-        // check it emit the event
-        await expect(animalAdded)
-          .to.emit(spa, ' animalAdded')
-          .withArgs(0);
       })
 
     })
@@ -91,8 +88,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
         await deployments.fixture(["spa"])
         spa = await ethers.getContract("Spa")
         const animalAdded1 = await spa.add("doberman", 70, 5);
-        const animalAdded2 = await spa.add("Cocker", 30, 2);
-        const animalAdded3 = await spa.add("Terrier", 50, 7);
       })
 
       it("Should be possible to remove an existing animal", async function () {
@@ -122,13 +117,13 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("Should be possible to adopt an existing animal", async function () {
-        const adoption = await spa.adopt(2);
+        await expect(spa.adopt(2))
+          .to.emit(spa, 'animalAdopted')
+          .withArgs(2, deployer.address);
         const myAnimalAdopted = await spa.get(2);
         assert.equal(myAnimalAdopted.isAdopted.toString(), "true");
-        const myAdopter = await deployer.getAddress()
-        await expect(adoption)
-          .to.emit(spa, ' animalAdopted')
-          .withArgs(2, myAdopter);
+        const addrAdoption = await spa.adoption(deployer.address);
+        assert(addrAdoption.toString() == "2");
       })
     })
 
@@ -141,8 +136,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("Should be possible to get the animal adopted by an address", async function () {
-        const myAdopter = await deployer.getAddress();
-        const myAnimalAdopted = await spa.getAdoption(myAdopter);
+        const myAnimalAdopted = await spa.getAdoption(deployer.address);
         assert.equal(myAnimalAdopted.race, "doberman");
         assert.equal(myAnimalAdopted.size, 70);
         assert.equal(myAnimalAdopted.age, 5);
@@ -159,11 +153,18 @@ const { developmentChains } = require("../../helper-hardhat-config")
       it("Should NOT be possible to adopt an existing animal if it does not feet the max criteria", async function () {
         const adoption = await spa.callStatic.adoptIfMax("doberman", 30, 6);
         assert.equal(adoption, false);
+        const animal = await spa.get(0);
+        assert(animal.isAdopted === false);
       })
 
       it("Should be possible to adopt an existing animal if it feets the max criteria", async function () {
         const adoption = await spa.callStatic.adoptIfMax("doberman", 80, 6);
         assert.equal(adoption, true);
+        await expect(spa.adoptIfMax("doberman", 80, 6))
+          .to.emit(spa, ' animalAdopted')
+          .withArgs(0, deployer.address);
+        const animal = await spa.get(0);
+        assert(animal.isAdopted === true);
       })
     })
 
@@ -174,29 +175,25 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should be possible to add an animal", async function () {
-        const animalAdded = await spa.add("doberman", 50, 5);
+        await expect(spa.add("doberman", 50, 5))
+          .to.emit(spa, 'animalAdded')
+          .withArgs(0);
         // check it has been added & info correct
         const myAnimalAdded = await spa.get(0);
         assert.equal(myAnimalAdded.race, "doberman");
         assert.equal(myAnimalAdded.size, 50);
         assert.equal(myAnimalAdded.age, 5);
-        // check it emit the event
-        await expect(animalAdded)
-          .to.emit(spa, ' animalAdded')
-          .withArgs(0);
       })
 
       it("should be possible to add another animal", async function () {
-        const animalAdded = await spa.add("terrier", 40, 2);
+        await expect(spa.add("terrier", 40, 2))
+          .to.emit(spa, ' animalAdded')
+          .withArgs(1);
         // check it has been added & info correct
         const myAnimalAdded = await spa.get(1);
         assert.equal(myAnimalAdded.race, "terrier");
         assert.equal(myAnimalAdded.size, 40);
         assert.equal(myAnimalAdded.age, 2);
-        // check it emit the event
-        await expect(animalAdded)
-          .to.emit(spa, ' animalAdded')
-          .withArgs(1);
       })
 
       it("should be possible to get the animal info", async function () {
@@ -218,18 +215,27 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("Should be possible to adopt an existing animal without criteria", async function () {
-        const adoption = await spa.adopt(0);
+        await expect(spa.adopt(0))
+          .to.emit(spa, 'animalAdopted')
+          .withArgs(0, deployer.address);
         const myAnimalAdopted = await spa.get(0);
         assert.equal(myAnimalAdopted.isAdopted.toString(), "true");
-        const myAdopter = await deployer.getAddress()
-        await expect(adoption)
-          .to.emit(spa, ' animalAdopted')
-          .withArgs(0, myAdopter);
+      })
+
+      it("Should be possible to get the animal adopted by an address", async function () {
+        const myAnimalAdopted = await spa.getAdoption(deployer.address);
+        assert.equal(myAnimalAdopted.race, "doberman");
+        assert.equal(myAnimalAdopted.size, 80);
+        assert.equal(myAnimalAdopted.age, 5);
       })
 
       it("Should be possible to adopt an existing animal with criteria", async function () {
-        const adoption = await spa.callStatic.adoptIfMax("terrier", 80, 2);
-        assert.equal(adoption, true);
+        await expect(spa.adoptIfMax("terrier", 80, 2)).to.emit(
+          spa,
+          "animalAdopted"
+        )
+        let animal = await spa.get(1)
+        assert(animal.isAdopted === true)
       })
 
       it("Should be possible to remove an existing animal", async function () {

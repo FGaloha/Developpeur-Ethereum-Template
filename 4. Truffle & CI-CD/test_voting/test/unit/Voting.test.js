@@ -478,9 +478,43 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
     })
 
-    // describe("Testing the full voting process", function () {
+    describe("Complete workflow: test of the entire voting process", function () {
+      before(async () => {
+        await deployments.fixture(["voting"]);
+        voting = await ethers.getContract("Voting");
+      })
 
-    // })
+      it("should be possible for the owner to register as a voter", async function () {
+        const addVoter = await voting.addVoter(owner.address);
+        // check owner registration worked
+        const myVoter = await voting.getVoter(owner.address);
+        assert.equal(myVoter.isRegistered, true);
+        // check it emit the expected event
+        await expect(addVoter)
+          .to.emit(voting, 'VoterRegistered')
+          .withArgs(owner.address);
+      })
+
+      it("should be possible for the owner to register another address as a voter1", async function () {
+        // adding another voter check it emit the expected event
+        await expect(voting.addVoter(voter1.address))
+          .to.emit(voting, 'VoterRegistered')
+          .withArgs(voter1.address);
+        // check voter1 registration worked
+        myVoter = await voting.getVoter(voter1.address);
+        assert.equal(myVoter.isRegistered, true);
+      })
+
+      it("should be possible for the owner to register another address as a voter2", async function () {
+        // adding another voter check it emit the expected event
+        await expect(voting.addVoter(voter2.address))
+          .to.emit(voting, 'VoterRegistered')
+          .withArgs(voter2.address);
+        // check voter2 registration worked
+        myVoter = await voting.getVoter(voter2.address);
+        assert.equal(myVoter.isRegistered, true);
+      })
+    })
 
 
   })

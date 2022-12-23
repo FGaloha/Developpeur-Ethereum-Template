@@ -22,12 +22,10 @@ Once cloned from the gitHub repo, form the terminal, you can run :
 
 - yarn hardhat coverage: it should show a 100% coverage as followed:
 
-
     File         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
     -------------|----------|----------|----------|----------|----------------|
     contracts    |      100 |      100 |      100 |      100 |                |
     All files    |      100 |      100 |      100 |      100 |                |
-
 
 ## Definitions
 
@@ -40,6 +38,7 @@ Once cloned from the gitHub repo, form the terminal, you can run :
 ### Scenario
 ***
 All functions are tested one after the other.
+***
 
 ### List of tests
 ***
@@ -95,6 +94,7 @@ All functions are tested one after the other.
 * winningProposalID
   - it should be possible for a simple user to get the winning proposal
   - it should be possible for a voter to get the winning proposal
+***
 
 ## Voting.workflow.js
 

@@ -3,7 +3,6 @@
 **********************
       Objectives
 **********************
-
 This project illustrates the testing functionalities available in hardhat using javascript.
 The objective is to cover the tests of a simple voting process built in the smart contract Voting.sol.
 

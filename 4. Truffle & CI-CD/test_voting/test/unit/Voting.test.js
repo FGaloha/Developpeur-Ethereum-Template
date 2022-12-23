@@ -21,13 +21,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
     // A voter is a person who has been registered by the owner & is able to vote & access voter's features
     // A simple user is a person who is a non registered voter, cannot vote but can check the winning proposal
 
-    describe("Deployment", function () {
-      it("should deploy the smart contract", async function () {
-        await deployments.fixture(["voting"]);
-        voting = await ethers.getContract("Voting");
-      })
-    })
-
     describe("addVoter", function () {
 
       beforeEach(async () => {

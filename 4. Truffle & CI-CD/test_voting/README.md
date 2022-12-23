@@ -142,3 +142,5 @@ All functions are tested one after the other.
 - it should be possible for a voter to get info/vote of a voter
 - it should be possible for a voter to get info/vote of a voter
 ***
+
+![MerryXmas](https://unsplash.com/fr/photos/SY4j517mYYA)

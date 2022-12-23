@@ -2,7 +2,6 @@
 
 **********************
       Objectives
---------------------------------------------------------------
 **********************
 
 This project illustrates the testing functionalities available in hardhat using javascript.
@@ -10,7 +9,6 @@ The objective is to cover the tests of a simple voting process built in the smar
 
 **********************
         Config
---------------------------------------------------------------
 **********************
 
 The config is only set up to be deployed localy (no other network available).
@@ -26,7 +24,6 @@ Once cloned from the gitHub repo, form the terminal, you can run :
 
 **********************
        Coverage
---------------------------------------------------------------
 **********************
 
 - yarn hardhat coverage: it should show a 100% coverage as followed:
@@ -39,7 +36,6 @@ Once cloned from the gitHub repo, form the terminal, you can run :
 
 ***********************
       Definitions
---------------------------------------------------------------
 ***********************
 
 - Owner is the address who deployed the contract
@@ -49,7 +45,6 @@ Once cloned from the gitHub repo, form the terminal, you can run :
 
 **********************
     Voting.test.js
---------------------------------------------------------------
 **********************
 
 Scenario
@@ -113,7 +108,6 @@ List of tests
 
 **************************
     Voting.workflow.js
---------------------------------------------------------------
 **************************
 
 

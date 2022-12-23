@@ -45,9 +45,11 @@ Once cloned from the gitHub repo, form the terminal, you can run :
 - A voter is a person who has been registered by the owner & is able to vote & access voter's features
 - A simple user is a person who is a non registered voter, cannot vote but can check the winning proposal
 
+--------------------------------------------------------------
 **********************
 **  Voting.test.js  **
 **********************
+--------------------------------------------------------------
 
 --------------------------------------------------------------
 Scenario
@@ -55,9 +57,6 @@ Scenario
 All functions are tested one after the other.
 --------------------------------------------------------------
 
-
-
---------------------------------------------------------------
 List of tests
 --------------------------------------------------------------
 * addVoter
@@ -140,9 +139,6 @@ Scenario
 - Voter2 checks the vote of the owner who did not vote
 --------------------------------------------------------------
 
-
-
---------------------------------------------------------------
 List of tests
 --------------------------------------------------------------
 - it should be possible for the owner to register as a voter in phase (0)-RegisteringVoters

@@ -47,7 +47,10 @@ const { developmentChains } = require("../../helper-hardhat-config")
         ).to.be.revertedWith("Ownable: caller is not the owner");
       })
 
-      it("should be possible for the owner to register as a voter", async function () {
+      it("should be possible for the owner to register as a voter in phase (0)-RegisteringVoters", async function () {
+        // check we are in phase (0)-RegisteringVoters
+        assert.equal(await voting.workflowStatus(), 0);
+        // Action addVoter
         const addVoter = await voting.addVoter(owner.address);
         // check owner registration worked
         const myVoter = await voting.getVoter(owner.address);
@@ -58,20 +61,23 @@ const { developmentChains } = require("../../helper-hardhat-config")
           .withArgs(owner.address);
       })
 
-      it("should be possible for the owner to register another address as a voter", async function () {
+      it("should be possible for the owner to register another address as a voter in phase (0)-RegisteringVoters", async function () {
         // starting by registering the owner to get access to getVoter who is limited to voters
         await voting.addVoter(owner.address);
+        // check we are in phase (0)-RegisteringVoters
+        assert.equal(await voting.workflowStatus(), 0);
         // adding another voter check it emit the expected event
         await expect(voting.addVoter(voter1.address))
           .to.emit(voting, 'VoterRegistered')
           .withArgs(voter1.address);
         // check voter1 registration worked
-        myVoter = await voting.getVoter(voter1.address);
+        const myVoter = await voting.getVoter(voter1.address);
         assert.equal(myVoter.isRegistered, true);
-
       })
 
       it("should not be possible for the owner to register a voter twice", async function () {
+        // check we are in phase (0)-RegisteringVoters
+        assert.equal(await voting.workflowStatus(), 0);
         // the owner register voter1 once
         await voting.addVoter(voter1.address);
         // the owner try to register again the voter1
@@ -199,7 +205,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
         const myProposal = await voting.connect(voter1).getOneProposal(1);
         assert(myProposal.description, "Increase holidays");
         assert(myProposal.voteCount, 0);
-
       })
     })
 
@@ -284,7 +289,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
         await expect(voting.startVotingSession()).to.be.revertedWith("Registering proposals phase is not finished");
       })
 
-      it("should be possible for the owner to startVotingSessionwhen current phase is (2)-ProposalsRegistrationEnded", async function () {
+      it("should be possible for the owner to startVotingSession when current phase is (2)-ProposalsRegistrationEnded", async function () {
         await voting.endProposalsRegistering();
         // check we are in phase (2)-ProposalsRegistrationEnded
         assert.equal(await voting.workflowStatus(), 2);
@@ -368,7 +373,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
         voteCount = await voting.connect(voter1).getOneProposal(1);
         assert(voteCount.voteCount, 1);
       })
-
     })
 
     describe("endVotingSession", function () {
@@ -477,44 +481,5 @@ const { developmentChains } = require("../../helper-hardhat-config")
         assert.equal(winningProposalId, 1);
       })
     })
-
-    describe("Complete workflow: test of the entire voting process", function () {
-      before(async () => {
-        await deployments.fixture(["voting"]);
-        voting = await ethers.getContract("Voting");
-      })
-
-      it("should be possible for the owner to register as a voter", async function () {
-        const addVoter = await voting.addVoter(owner.address);
-        // check owner registration worked
-        const myVoter = await voting.getVoter(owner.address);
-        assert.equal(myVoter.isRegistered, true);
-        // check it emit the expected event
-        await expect(addVoter)
-          .to.emit(voting, 'VoterRegistered')
-          .withArgs(owner.address);
-      })
-
-      it("should be possible for the owner to register another address as a voter1", async function () {
-        // adding another voter check it emit the expected event
-        await expect(voting.addVoter(voter1.address))
-          .to.emit(voting, 'VoterRegistered')
-          .withArgs(voter1.address);
-        // check voter1 registration worked
-        myVoter = await voting.getVoter(voter1.address);
-        assert.equal(myVoter.isRegistered, true);
-      })
-
-      it("should be possible for the owner to register another address as a voter2", async function () {
-        // adding another voter check it emit the expected event
-        await expect(voting.addVoter(voter2.address))
-          .to.emit(voting, 'VoterRegistered')
-          .withArgs(voter2.address);
-        // check voter2 registration worked
-        myVoter = await voting.getVoter(voter2.address);
-        assert.equal(myVoter.isRegistered, true);
-      })
-    })
-
 
   })

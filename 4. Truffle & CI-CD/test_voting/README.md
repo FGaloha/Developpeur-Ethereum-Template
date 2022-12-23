@@ -1,11 +1,11 @@
 # Voting Smart Contract: Testing Hardhat Project
 
-      # Objectives
+## Objectives
 
 This project illustrates the testing functionalities available in hardhat using javascript.
 The objective is to cover the tests of a simple voting process built in the smart contract Voting.sol.
 
-      # Config
+## Config
 
 The config is only set up to be deployed localy (no other network available).
 
@@ -18,7 +18,7 @@ Once cloned from the gitHub repo, form the terminal, you can run :
 - yarn hardhat test test/unit/Voting.test.js : it will run the Voting.test.js only
 - yarn hardhat test test/unit/Voting.workflow.test.js : it will run the Voting.workflow.test.js only
 
-      # Coverage
+## Coverage
 
 - yarn hardhat coverage: it should show a 100% coverage as followed:
 
@@ -29,20 +29,20 @@ Once cloned from the gitHub repo, form the terminal, you can run :
     All files    |      100 |      100 |      100 |      100 |                |
 
 
-      # Definitions
+## Definitions
 
 - Owner is the address who deployed the contract
 - A voter is a person who has been registered by the owner & is able to vote & access voter's features
 - A simple user is a person who is a non registered voter, cannot vote but can check the winning proposal
 
-    # Voting.test.js
+## Voting.test.js
 
-## Scenario
---------------------------------------------------------------
+### Scenario
+***
 All functions are tested one after the other.
 
-## List of tests
---------------------------------------------------------------
+### List of tests
+***
 * addVoter
   - it should not be possible for a simple user to add a voter
   - it should not be possible for a voter to add a voter
@@ -96,10 +96,10 @@ All functions are tested one after the other.
   - it should be possible for a simple user to get the winning proposal
   - it should be possible for a voter to get the winning proposal
 
-    # Voting.workflow.js
+## Voting.workflow.js
 
-## Scenario
---------------------------------------------------------------
+### Scenario
+***
 - The owner registers : himself, voter1, voter2, voter3
 - The owner starts the ProposalsRegistering phase
 - Voter1 adds the proposal 'Increase holidays'
@@ -117,10 +117,10 @@ All functions are tested one after the other.
 - Voter1 checks the vote of voter2
 - Voter2 checks the vote of voter1
 - Voter2 checks the vote of the owner who did not vote
---------------------------------------------------------------
+***
 
-## List of tests
---------------------------------------------------------------
+### List of tests
+***
 - it should be possible for the owner to register as a voter in phase (0)-RegisteringVoters
 - it should be possible for the owner to register another address as a voter1 in phase (0 -RegisteringVoters
 - it should be possible for the owner to register another address as a voter2 in phase (0)-RegisteringVoters
@@ -141,4 +141,4 @@ All functions are tested one after the other.
 - it should be possible for a voter to get info/vote of a voter
 - it should be possible for a voter to get info/vote of a voter
 - it should be possible for a voter to get info/vote of a voter
---------------------------------------------------------------
+***

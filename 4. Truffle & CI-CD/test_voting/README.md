@@ -35,7 +35,7 @@ Once cloned from the gitHub repo, form the terminal, you can run :
     All files    |      100 |      100 |      100 |      100 |                |
 
 ***********************
-**    DEFINITIONS    **
+**    Definitions    **
 ***********************
 
 - Owner is the address who deployed the contract
@@ -51,7 +51,6 @@ Once cloned from the gitHub repo, form the terminal, you can run :
 Scenario
 --------------------------------------------------------------
 All functions are tested one after the other.
---------------------------------------------------------------
 
 List of tests
 --------------------------------------------------------------

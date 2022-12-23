@@ -29,15 +29,13 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should not be possible for a simple user to add a voter", async function () {
-        await expect(
-          voting.connect(simple_user).addVoter(simple_user.address)
-        ).to.be.revertedWith("Ownable: caller is not the owner");
+        await expect(voting.connect(simple_user).addVoter(simple_user.address))
+          .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
       it("should not be possible for a voter to add a voter", async function () {
-        await expect(
-          voting.connect(voter1).addVoter(voter2.address)
-        ).to.be.revertedWith("Ownable: caller is not the owner");
+        await expect(voting.connect(voter1).addVoter(voter2.address))
+          .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
       it("should be possible for the owner to register as a voter in phase (0)-RegisteringVoters", async function () {
@@ -71,9 +69,8 @@ const { developmentChains } = require("../../helper-hardhat-config")
         // the owner register voter1 once
         await voting.addVoter(voter1.address);
         // the owner try to register again the voter1
-        await expect(
-          voting.addVoter(voter1.address)
-        ).to.be.revertedWith("Already registered");
+        await expect(voting.addVoter(voter1.address))
+          .to.be.revertedWith("Already registered");
       })
 
       it("Should not be possible for the owner to register a voter outside the (0)-RegisteringVoters phase", async function () {
@@ -84,9 +81,8 @@ const { developmentChains } = require("../../helper-hardhat-config")
         // check the status is now (1)-ProposalsRegistrationStarted
         assert.equal(await voting.workflowStatus(), 1);
         // check the addVoter attempt in ProposalsRegistrationStarted trigger the expected revert
-        await expect(
-          voting.addVoter(voter1.address)
-        ).to.be.revertedWith("Voters registration is not open yet");
+        await expect(voting.addVoter(voter1.address))
+          .to.be.revertedWith("Voters registration is not open yet");
       })
 
     })
@@ -99,7 +95,8 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should not be possible for a simple user to get info/vote of a voter", async function () {
-        await expect(voting.connect(simple_user).getVoter(voter1.address)).to.be.revertedWith("You're not a voter");
+        await expect(voting.connect(simple_user).getVoter(voter1.address))
+          .to.be.revertedWith("You're not a voter");
       })
 
       it("should be possible for a voter to get info/vote of a voter", async function () {
@@ -107,9 +104,9 @@ const { developmentChains } = require("../../helper-hardhat-config")
         await voting.addVoter(owner.address);
         // the owner get the data that should be live after the addVoter action [true, false, 0]
         const result = await voting.getVoter(owner.address);
-        assert(result.isRegistered.toString(), "true");
-        assert(result.hasVoted.toString(), "false");
-        assert(result.votedProposalId.toString(), "0");
+        assert.equal(result.isRegistered, true);
+        assert.equal(result.hasVoted, false);
+        assert.equal(result.votedProposalId, 0);
       })
     })
 
@@ -121,11 +118,13 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should not be possible for a simple user to startProposalsRegistering", async function () {
-        await expect(voting.connect(simple_user).startProposalsRegistering()).to.be.revertedWith("Ownable: caller is not the owner");
+        await expect(voting.connect(simple_user).startProposalsRegistering())
+          .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
       it("should not be possible for a voter to startProposalsRegistering", async function () {
-        await expect(voting.connect(voter1).startProposalsRegistering()).to.be.revertedWith("Ownable: caller is not the owner");
+        await expect(voting.connect(voter1).startProposalsRegistering())
+          .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
       it("should be possible for the owner to startProposalsRegistering if the current Workflow is 0-RegisteringVoters", async function () {
@@ -134,22 +133,23 @@ const { developmentChains } = require("../../helper-hardhat-config")
         // check we are in phase (0)-RegisteringVoters
         assert.equal(await voting.workflowStatus(), 0);
         // check action emit the expected event
-        await expect(await voting.startProposalsRegistering())
+        await expect(voting.startProposalsRegistering())
           .to.emit(voting, 'WorkflowStatusChange')
           .withArgs(0, 1);
         // check we are now in (1)-ProposalsRegistrationStarted
         assert.equal(await voting.workflowStatus(), 1);
         // check 1st proposal Genesis has been created
         const myProposal = await voting.getOneProposal(0);
-        assert(myProposal.description, "GENESIS")
-        assert(myProposal.voteCount, 0)
+        assert.equal(myProposal.description, "GENESIS");
+        assert.equal(myProposal.voteCount, 0);
       })
 
       it("should not be possible for the owner to startProposalsRegistering if the current Workflow is not (0)-RegisteringVoters", async function () {
         await voting.startProposalsRegistering();
         // check we are not in phase (0)-RegisteringVoters
         assert.isFalse(await voting.workflowStatus() == 0);
-        await expect(voting.startProposalsRegistering()).to.be.revertedWith("Registering proposals cant be started now");
+        await expect(voting.startProposalsRegistering())
+          .to.be.revertedWith("Registering proposals cant be started now");
       })
     })
 
@@ -163,14 +163,16 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should not be possible for a simple user to add a proposal", async function () {
-        await expect(voting.connect(simple_user).addProposal("Change the voting process")).to.be.revertedWith("You're not a voter");
+        await expect(voting.connect(simple_user).addProposal("Change the voting process"))
+          .to.be.revertedWith("You're not a voter");
       })
 
       it("should not be possible for a voter to add a proposal outside the (1)-ProposalsRegistrationStarted phase", async function () {
         // check we are not in phase (1)-ProposalsRegistrationStarted
         assert.isFalse(await voting.workflowStatus() == 1);
         // check not respecting workflow triggered revert
-        await expect(voting.connect(voter1).addProposal("Increase holidays")).to.be.revertedWith("Proposals are not allowed yet");
+        await expect(voting.connect(voter1).addProposal("Increase holidays"))
+          .to.be.revertedWith("Proposals are not allowed yet");
       })
 
       it("should not be possible for a voter to add an empty proposal during (1)-ProposalsRegistrationStarted", async function () {
@@ -179,7 +181,8 @@ const { developmentChains } = require("../../helper-hardhat-config")
         // check we are in phase (1)-ProposalsRegistrationStarted
         assert.equal(await voting.workflowStatus(), 1);
         // check empty description triggered revert
-        await expect(voting.connect(voter1).addProposal("")).to.be.revertedWith("Vous ne pouvez pas ne rien proposer");
+        await expect(voting.connect(voter1).addProposal(""))
+          .to.be.revertedWith("Vous ne pouvez pas ne rien proposer");
       })
 
       it("should be possible for a voter to add a proposal with a description during (1)-ProposalsRegistrationStarted", async function () {
@@ -193,8 +196,8 @@ const { developmentChains } = require("../../helper-hardhat-config")
           .withArgs(1);
         // voter1 checks the proposal has been created in position 1 (0 is GENESIS) with correct data
         const myProposal = await voting.connect(voter1).getOneProposal(1);
-        assert(myProposal.description, "Increase holidays");
-        assert(myProposal.voteCount, 0);
+        assert.equal(myProposal.description, "Increase holidays");
+        assert.equal(myProposal.voteCount, 0);
       })
     })
 
@@ -206,7 +209,8 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should not be possible for a simple user to get the proposal's info", async function () {
-        await expect(voting.connect(simple_user).getOneProposal(0)).to.be.revertedWith("You're not a voter");
+        await expect(voting.connect(simple_user).getOneProposal(0))
+          .to.be.revertedWith("You're not a voter");
       })
 
       it("should be possible for a voter to get proposal's info", async function () {
@@ -230,17 +234,20 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should not be possible for a simple user to endProposalsRegistering", async function () {
-        await expect(voting.connect(simple_user).endProposalsRegistering()).to.be.revertedWith("Ownable: caller is not the owner");
+        await expect(voting.connect(simple_user).endProposalsRegistering())
+          .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
       it("should not be possible for a voter to endProposalsRegistering", async function () {
-        await expect(voting.connect(voter1).endProposalsRegistering()).to.be.revertedWith("Ownable: caller is not the owner");
+        await expect(voting.connect(voter1).endProposalsRegistering())
+          .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
       it("should not be possible for the owner to endProposalsRegistering if the current Workflow is not (1)-ProposalsRegistrationStarted", async function () {
         // check we are not in phase (1)-ProposalsRegistrationStarted
         assert.isFalse(await voting.workflowStatus() == 1);
-        await expect(voting.endProposalsRegistering()).to.be.revertedWith("Registering proposals havent started yet");
+        await expect(voting.endProposalsRegistering())
+          .to.be.revertedWith("Registering proposals havent started yet");
       })
 
       it("should be possible for the owner to endProposalsRegistering when current phase is (1)-ProposalsRegistrationStarted", async function () {
@@ -248,7 +255,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
         // check we are in phase (1)-ProposalsRegistrationStarted
         assert.equal(await voting.workflowStatus(), 1);
         // check it emit the expected event
-        await expect(await voting.endProposalsRegistering())
+        await expect(voting.endProposalsRegistering())
           .to.emit(voting, 'WorkflowStatusChange')
           .withArgs(1, 2);
         // check we are now in (2)-ProposalsRegistrationEnded
@@ -267,17 +274,20 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should not be possible for a simple user to startVotingSession", async function () {
-        await expect(voting.connect(simple_user).startVotingSession()).to.be.revertedWith("Ownable: caller is not the owner");
+        await expect(voting.connect(simple_user).startVotingSession())
+          .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
       it("should not be possible for a voter to startVotingSession", async function () {
-        await expect(voting.connect(voter1).startVotingSession()).to.be.revertedWith("Ownable: caller is not the owner");
+        await expect(voting.connect(voter1).startVotingSession())
+          .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
       it("should not be possible for the owner to startVotingSession if the current Workflow is not (2)-ProposalsRegistrationEnded", async function () {
         // check we are not in phase (2)-ProposalsRegistrationEnded
         assert.isFalse(await voting.workflowStatus() == 2);
-        await expect(voting.startVotingSession()).to.be.revertedWith("Registering proposals phase is not finished");
+        await expect(voting.startVotingSession())
+          .to.be.revertedWith("Registering proposals phase is not finished");
       })
 
       it("should be possible for the owner to startVotingSession when current phase is (2)-ProposalsRegistrationEnded", async function () {
@@ -285,7 +295,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
         // check we are in phase (2)-ProposalsRegistrationEnded
         assert.equal(await voting.workflowStatus(), 2);
         // check it emit the expected event
-        await expect(await voting.startVotingSession())
+        await expect(voting.startVotingSession())
           .to.emit(voting, 'WorkflowStatusChange')
           .withArgs(2, 3);
         // check we are now in (3)-VotingSessionStarted
@@ -300,19 +310,21 @@ const { developmentChains } = require("../../helper-hardhat-config")
         voting = await ethers.getContract("Voting");
         await voting.addVoter(voter1.address);
         await voting.startProposalsRegistering();
-        voting.connect(voter1).addProposal("Increase holidays")
+        await voting.connect(voter1).addProposal("Increase holidays")
         await voting.endProposalsRegistering();
       })
 
       it("should not be possible for a simple user to vote", async function () {
-        await expect(voting.connect(simple_user).setVote(1)).to.be.revertedWith("You're not a voter");
+        await expect(voting.connect(simple_user).setVote(1))
+          .to.be.revertedWith("You're not a voter");
       })
 
       it("should not be possible for a voter to set a vote outside the (3)-VotingSessionStarted phase", async function () {
         // check we are not in phase (3)-VotingSessionStarted
         assert.isFalse(await voting.workflowStatus() == 3);
         // check not respecting workflow triggered revert
-        await expect(voting.connect(voter1).setVote(0)).to.be.revertedWith("Voting session havent started yet");
+        await expect(voting.connect(voter1).setVote(0))
+          .to.be.revertedWith("Voting session havent started yet");
       })
 
       it("should not be possible for a voter to set a vote for a proposal which does not exist", async function () {
@@ -320,7 +332,8 @@ const { developmentChains } = require("../../helper-hardhat-config")
         // check we are now in phase (3)-VotingSessionStarted
         assert.equal(await voting.workflowStatus(), 3);
         // check sending a wrong proposal triggers a revert
-        await expect(voting.connect(voter1).setVote(9)).to.be.revertedWith("Proposal not found");
+        await expect(voting.connect(voter1).setVote(9))
+          .to.be.revertedWith("Proposal not found");
       })
 
       it("should be possible for a voter to set a vote for an existing proposal during (3)-VotingSessionStarted", async function () {
@@ -337,8 +350,8 @@ const { developmentChains } = require("../../helper-hardhat-config")
           .withArgs(voter1.address, 1);
         // check the vote has updated voters & proposalsArray
         const voterInfo = await voting.connect(voter1).getVoter(voter1.address);
-        assert(voterInfo.votedProposalId, 1);
-        assert(voterInfo.hasVoted, true);
+        assert.equal(voterInfo.votedProposalId, 1);
+        assert.equal(voterInfo.hasVoted, true);
         voteCount = await voting.connect(voter1).getOneProposal(1);
         assert.equal(voteCount.voteCount, 1);
       })
@@ -355,12 +368,13 @@ const { developmentChains } = require("../../helper-hardhat-config")
         await voting.connect(voter1).setVote(1);
         // Checking it has been taken into account
         const voterInfo = await voting.connect(voter1).getVoter(voter1.address);
-        assert(voterInfo.votedProposalId, 1);
-        assert(voterInfo.hasVoted, true);
+        assert.equal(voterInfo.votedProposalId, 1);
+        assert.equal(voterInfo.hasVoted, true);
         voteCount = await voting.connect(voter1).getOneProposal(1);
         assert.equal(voteCount.voteCount, 1);
         // check second attemp triggers a revert
-        await expect(voting.connect(voter1).setVote(1)).to.be.rejectedWith("You have already voted");
+        await expect(voting.connect(voter1).setVote(1))
+          .to.be.rejectedWith("You have already voted");
         // check the 2nd vote did not update proposalsArray
         voteCount = await voting.connect(voter1).getOneProposal(1);
         assert.equal(voteCount.voteCount, 1);
@@ -379,17 +393,20 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should not be possible for a simple user to endVotingSession", async function () {
-        await expect(voting.connect(simple_user).endVotingSession()).to.be.revertedWith("Ownable: caller is not the owner");
+        await expect(voting.connect(simple_user).endVotingSession())
+          .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
       it("should not be possible for a voter to endVotingSession", async function () {
-        await expect(voting.connect(voter1).endVotingSession()).to.be.revertedWith("Ownable: caller is not the owner");
+        await expect(voting.connect(voter1).endVotingSession())
+          .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
       it("should not be possible for the owner to endVotingSession if the current Workflow is not (3)-VotingSessionStarted", async function () {
         // check we are not in phase (3)-VotingSessionStarted
         assert.isFalse(await voting.workflowStatus() == 3);
-        await expect(voting.endVotingSession()).to.be.revertedWith("Voting session havent started yet");
+        await expect(voting.endVotingSession())
+          .to.be.revertedWith("Voting session havent started yet");
       })
 
       it("should be possible for the owner to endVotingSession when current phase is (3)-VotingSessionStarted", async function () {
@@ -397,7 +414,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
         // check we are in phase (3)-VotingSessionStarted
         assert.equal(await voting.workflowStatus(), 3);
         // check it emit the expected event
-        await expect(await voting.endVotingSession())
+        await expect(voting.endVotingSession())
           .to.emit(voting, 'WorkflowStatusChange')
           .withArgs(3, 4);
         // check we are now in (4)-VotingSessionEnded
@@ -419,17 +436,20 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should not be possible for a simple user to tallyVotes", async function () {
-        await expect(voting.connect(simple_user).tallyVotes()).to.be.revertedWith("Ownable: caller is not the owner");
+        await expect(voting.connect(simple_user).tallyVotes())
+          .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
       it("should not be possible for a voter to tallyVotes", async function () {
-        await expect(voting.connect(voter1).tallyVotes()).to.be.revertedWith("Ownable: caller is not the owner");
+        await expect(voting.connect(voter1).tallyVotes())
+          .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
       it("should not be possible for the owner to tallyVotes if the current Workflow is not (4)-VotingSessionEnded", async function () {
         // check we are not in phase (4)-VotingSessionEnded
         assert.isFalse(await voting.workflowStatus() == 4);
-        await expect(voting.tallyVotes()).to.be.revertedWith("Current status is not voting session ended");
+        await expect(voting.tallyVotes())
+          .to.be.revertedWith("Current status is not voting session ended");
       })
 
       it("should be possible for the owner to tallyVotes when current phase is (4)-VotingSessionEnded", async function () {
@@ -439,7 +459,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
         // check the initial winningProposalID is O
         assert.equal(await voting.winningProposalID(), 0);
         // check it emit the expected event
-        await expect(await voting.tallyVotes())
+        await expect(voting.tallyVotes())
           .to.emit(voting, 'WorkflowStatusChange')
           .withArgs(4, 5);
         // check we are now in (5)-VotesTallied

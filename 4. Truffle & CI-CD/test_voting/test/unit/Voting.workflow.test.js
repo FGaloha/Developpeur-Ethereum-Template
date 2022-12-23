@@ -87,7 +87,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should be possible for the owner to startVotingSessionwhen current phase is (2)-ProposalsRegistrationEnded", async function () {
-        await expect(await voting.startVotingSession())
+        await expect(voting.startVotingSession())
           .to.emit(voting, 'WorkflowStatusChange')
           .withArgs(2, 3);
       })
@@ -111,13 +111,13 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should be possible for the owner to endVotingSession when current phase is (3)-VotingSessionStarted", async function () {
-        await expect(await voting.endVotingSession())
+        await expect(voting.endVotingSession())
           .to.emit(voting, 'WorkflowStatusChange')
           .withArgs(3, 4);
       })
 
       it("should be possible for the owner to tallyVotes when current phase is (4)-VotingSessionEnded", async function () {
-        await expect(await voting.tallyVotes())
+        await expect(voting.tallyVotes())
           .to.emit(voting, 'WorkflowStatusChange')
           .withArgs(4, 5);
       })
@@ -135,25 +135,25 @@ const { developmentChains } = require("../../helper-hardhat-config")
       it("should be possible for a voter to get info/vote of a voter", async function () {
         // voter1 get the data that should be live after the vote for voter2 [true, true, 2]
         const result = await voting.connect(voter1).getVoter(voter2.address);
-        assert(result.isRegistered.toString(), "true");
-        assert(result.hasVoted.toString(), "true");
-        assert(result.votedProposalId.toString(), "2");
+        assert.equal(result.isRegistered, true);
+        assert.equal(result.hasVoted, true);
+        assert.equal(result.votedProposalId, 2);
       })
 
       it("should be possible for a voter to get info/vote of a voter", async function () {
         // voter2 get the data that should be live after the vote for voter1 [true, true, 1]
         const result = await voting.connect(voter2).getVoter(voter1.address);
-        assert(result.isRegistered.toString(), "true");
-        assert(result.hasVoted.toString(), "true");
-        assert(result.votedProposalId.toString(), "1");
+        assert.equal(result.isRegistered, true);
+        assert.equal(result.hasVoted, true);
+        assert.equal(result.votedProposalId, 1);
       })
 
       it("should be possible for a voter to get info/vote of a voter", async function () {
         // voter2 get the data that should be live after the vote for owner [true, false, 0]
         const result = await voting.connect(voter2).getVoter(owner.address);
-        assert(result.isRegistered.toString(), "true");
-        assert(result.hasVoted.toString(), "false");
-        assert(result.votedProposalId.toString(), "0");
+        assert.equal(result.isRegistered, true);
+        assert.equal(result.hasVoted, false);
+        assert.equal(result.votedProposalId, 0);
       })
 
     })

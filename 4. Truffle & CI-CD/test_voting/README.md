@@ -13,7 +13,7 @@ The Test folder has 2 files:
 - Voting.test.js is to test functions one after the other
 - Voting.workflow.test.js is a workflow test set
 
-Once cloned from the gitHub repo, form the terminal, you can run :
+Once cloned from the gitHub repo, from the terminal, you can run :
 - yarn hardhat test: it will run the 2 test files
 - yarn hardhat test test/unit/Voting.test.js : it will run the Voting.test.js only
 - yarn hardhat test test/unit/Voting.workflow.test.js : it will run the Voting.workflow.test.js only
@@ -24,8 +24,8 @@ Once cloned from the gitHub repo, form the terminal, you can run :
 
     File         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
     -------------|----------|----------|----------|----------|----------------|
-    contracts    |      100 |      100 |      100 |      100 |                |
-    All files    |      100 |      100 |      100 |      100 |                |
+    contracts    |      100 |      100 |      100 |      100 |        -       |
+    All files    |      100 |      100 |      100 |      100 |        -       |
 
 ## Definitions
 
@@ -111,7 +111,7 @@ All functions are tested one after the other.
 - Voter2 votes for proposal index 2
 - Voter3 votes for proposal index 2
 - The owner ends the VotingSession phase
-- The owner triggers the tallyVotes phase
+- The owner triggers the tallyVotes phase and propodal with 2 wins
 - The simple user checks the winning proposal
 - Voter1 checks the winning proposal
 - Voter1 checks the vote of voter2

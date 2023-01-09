@@ -3,6 +3,9 @@
 pragma solidity 0.8.13;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+/// @title A simple voting contract
+/// @author F. Gallois
+/// @notice You can use this contract to organize a vote to elect a proposal selected in majority by registered voters
 contract Voting is Ownable {
     uint256 public winningProposalID;
 

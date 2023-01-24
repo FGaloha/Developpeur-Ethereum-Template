@@ -1532,10 +1532,10 @@
   resolved "https://registry.yarnpkg.com/@next/env/-/env-13.1.3.tgz#1c29b0dab10ed02b741cb0bb07636eeb41ad5a69"
   integrity sha512-ye0yvGmlzQQJnzNC7tC/ZhgRMd0s54msgrDOft1SjEG1Fbb+RBxGsalPqG3tUGuchA25z3npAtkFoAP8d2wPnw==
 
-"@next/font@13.1.3":
-  version "13.1.3"
-  resolved "https://registry.yarnpkg.com/@next/font/-/font-13.1.3.tgz#b8da6898537f341d7e1b35ec8ed686244503c076"
-  integrity sha512-Zh7lU8KlUoeidHPuXt9Xdvu+DFg74JXGaBczBgNwZAqvwT4HquQ1zJVfavXIQhDRPbQlKYI6Z25BFC2PhVHvtA==
+"@next/font@^13.1.5":
+  version "13.1.5"
+  resolved "https://registry.yarnpkg.com/@next/font/-/font-13.1.5.tgz#9e47e5986173ffab2c3300ac1c63bc39887dfe64"
+  integrity sha512-6M5R6yC3JkdJiqo/YJxDp6+0vDn0smXOAzl8uHt4qmDS2u53ji/19K0HM51d+5kg8xntDi+N2hw7YjaU9inkNA==
 
 "@next/swc-android-arm-eabi@13.1.3":
   version "13.1.3"

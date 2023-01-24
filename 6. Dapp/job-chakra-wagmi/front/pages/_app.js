@@ -1,5 +1,5 @@
-import '@/styles/globals.css'
-import { ChakraProvider } from '@chakra-ui/react'
+import { customTheme } from '../styles/theme'
+import { ChakraProvider, ColorModeProvider, useColorMode } from '@chakra-ui/react'
 import '@rainbow-me/rainbowkit/styles.css';
 import {
   getDefaultWallets,
@@ -37,10 +37,10 @@ export default function App({ Component, pageProps }) {
           darkTheme({
             ...darkTheme.accentColors.orange,
           })}>
-        <ChakraProvider>
+        <ChakraProvider resetCSS theme={customTheme}>
           <Component {...pageProps} />
         </ChakraProvider>
       </RainbowKitProvider>
-    </WagmiConfig>
+    </WagmiConfig >
   )
 }

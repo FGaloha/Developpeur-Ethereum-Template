@@ -3,7 +3,7 @@ import styles from '@/styles/Home.module.css'
 import { ethers } from 'ethers';
 import Contract from '../../back/artifacts/contracts/Bank.sol/Bank'
 import { useState, useEffect } from 'react';
-import { useAccount, useProvider, useSigner, useContractEvent } from 'wagmi'
+import { useAccount, useProvider, useSigner, useBalance, useContractEvent } from 'wagmi'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import {
   Text, Input, Button, useToast, Box, Spacer, Flex, Heading, Table,
@@ -23,11 +23,15 @@ export default function Home() {
   const contractAddress = (env == 'production') ? process.env.NEXT_PUBLIC_NETWORK_GOERLI : process.env.NEXT_PUBLIC_NETWORK_HARDHAT
   // const contractAddress = process.env.NEXT_PUBLIC_NETWORK_GOERLI
   const { address, isConnected } = useAccount()
+  const { data } = useBalance({
+    address: address,
+    watch: true
+  })
   const provider = useProvider()
   const { data: signer } = useSigner()
   const toast = useToast()
 
-  const [getBalance, setGetBalance] = useState(null)
+  const [balance, setBalance] = useState(null)
   const [amountDeposit, setAmountDeposit] = useState(null)
   const [amountWithdraw, setAmountWithdraw] = useState(null)
   const [isLoadingDeposit, setIsLoadingDeposit] = useState(false);
@@ -41,25 +45,30 @@ export default function Home() {
     if (isConnected) {
       getDatas()
     }
-  }, [isConnected])
+  }, [isConnected, address])
 
   useEffect(() => {
-    setGetDepositEvent()
+    const contract = new ethers.Contract(contractAddress, Contract.abi, provider);
+    eventListener(contract)
+    return () => {
+      contract.removeAllListeners();
+    }
   }, []) // only run once
 
-  async function setGetDepositEvent() {
-    const contract = new ethers.Contract(contractAddress, Contract.abi, provider);
-    contract.on("Deposit", (from, to, value, event) => {
-      let depositEvent = {
-        from: from,
-        to: to,
-        value: value,
-        // timestamp: timestamp,
-        eventData: event,
-      }
-      console.log('Deposit made on block ' + depositEvent.eventData.blockNumber)
+  const eventListener = async (contract) => {
+    const startBlockNumber = await provider.getBlockNumber();
+    contract.on('Deposit', (...args) => {
+      const event = args[args.length - 1];
+      //console.log(event)
+      if (event.blockNumber <= startBlockNumber) return; // do not react to this event
+      toast({
+        title: 'Deposit Event Listening',
+        description: "A new deposit went through from Account : " + event.args[0] + " - amount " + ethers.utils.formatEther(event.args.depositAmount),
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      })
     })
-    console.log('I set up the Deposit listening')
   }
 
   // useContractEvent({
@@ -67,16 +76,23 @@ export default function Home() {
   //   abi: Contract.abi,
   //   eventName: "Deposit",
   //   listener(node, label, owner) {
-  //     console.log("Dans le use contract event de wagmi")
-  //     //document.getElementById('test').innerText = node
-  //   },
+  //     // console.log("Dans le use contract event de wagmi")
+  //     // document.getElementById('test').innerText = node
+  //     toast({
+  //       title: 'Deposit Event Listening',
+  //       description: "A new deposit went through from Account : " + node + " - amount " + ethers.utils.formatEther(label) + " ETH",
+  //       status: 'success',
+  //       duration: 5000,
+  //       isClosable: true,
+  //     })
+  //   }
   // })
 
   const getDatas = async () => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
     // user balance displayed after connection
-    const balance = await contract.getBalance(address)
-    setGetBalance(ethers.utils.formatEther(balance).toString())
+    const myBalance = await contract.getBalance(address)
+    setBalance(ethers.utils.formatEther(myBalance).toString())
     // all smart contract events
     //setEvents(await contract.queryFilter('*'))
     // last 10 smart contract events
@@ -173,7 +189,7 @@ export default function Home() {
             isConnected ? (
               <>
                 <Text pb='4' color='green'>Hello {address}</Text>
-                <Text pb='4'>Your current balance is : {getBalance}</Text>
+                <Text pb='4'>Your current balance is : {balance}</Text>
 
                 <Heading pb='2'>Deposit</Heading>
                 <Flex pb='4'>
@@ -186,29 +202,34 @@ export default function Home() {
                   <Button isLoading={isLoadingWithdraw ? 'isLoading' : ''} loadingText='Loading' colorScheme='green' border='1px' onClick={() => withdraw()}>Withdraw</Button>
                 </Flex>
                 <Heading pb='2'>Last transactions</Heading>
-                <TableContainer pb='4'>
-                  <Table variant='simple'>
-                    <Thead>
-                      <Tr>
-                        <Th>Type</Th>
-                        <Th>Account</Th>
-                        <Th>Amount (ETH)</Th>
-                        <Th>Date</Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
-                      {smartEvents.slice(0).reverse().map(smartEvent => (
-                        <Tr key={smartEvents.indexOf(smartEvent)}>
-                          <Td>{smartEvent.event}</Td>
-                          <Td>{smartEvent.address}</Td>
-                          <Td isNumeric>{ethers.utils.formatEther(smartEvent.args[1].toString())}</Td>
-                          <Td >{new Intl.DateTimeFormat('fr-FR').format(smartEvent.args[2] * 1000)}</Td>
+                {smartEvents.length > 0 ? (
+                  <TableContainer pb='4'>
+                    <Table variant='simple'>
+                      <Thead>
+                        <Tr>
+                          <Th>Type</Th>
+                          <Th>Account</Th>
+                          <Th>Amount (ETH)</Th>
+                          <Th>Date</Th>
                         </Tr>
-                      ))}
-                    </Tbody>
-                  </Table>
-                </TableContainer>
-
+                      </Thead>
+                      <Tbody>
+                        {smartEvents.slice(0).reverse().map(smartEvent => (
+                          <Tr key={smartEvents.indexOf(smartEvent)}>
+                            <Td>{smartEvent.event}</Td>
+                            <Td>{smartEvent.args[0]}</Td>
+                            <Td isNumeric>{ethers.utils.formatEther(smartEvent.args[1].toString())}</Td>
+                            <Td >{new Intl.DateTimeFormat('fr-FR').format(smartEvent.args[2] * 1000)}</Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                  </TableContainer>
+                ) : (
+                  <Text>
+                    No transactions.
+                  </Text>
+                )}
               </>
             ) : (
               <Heading as='h4' size='md' color='red'>Connect your wallet to start the service.</Heading>

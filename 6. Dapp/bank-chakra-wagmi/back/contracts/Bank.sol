@@ -12,8 +12,16 @@ error Bank__WithdrawFailed();
 contract Bank {
     mapping(address => uint256) balances;
 
-    event Deposit(address wallet, uint256 depositAmount, uint256 timeStamp);
-    event Withdraw(address wallet, uint256 withdrawAmount, uint256 timeStamp);
+    event Deposit(
+        address indexed wallet,
+        uint256 depositAmount,
+        uint256 timeStamp
+    );
+    event Withdraw(
+        address indexed wallet,
+        uint256 withdrawAmount,
+        uint256 timeStamp
+    );
 
     /// @notice Allows to send Ethers to the smart contract
     function sendEthers() external payable {

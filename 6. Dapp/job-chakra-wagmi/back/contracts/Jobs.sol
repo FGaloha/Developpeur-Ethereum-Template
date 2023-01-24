@@ -48,7 +48,7 @@ contract Jobs {
     function takeJob(uint256 _id) external {
         require(jobs[_id].worker == address(0), "The job is already booked");
         require(
-            msg.sender != jobs[_id].worker,
+            msg.sender != jobs[_id].author,
             "The author cannot be the worker"
         );
         jobs[_id].worker = msg.sender;

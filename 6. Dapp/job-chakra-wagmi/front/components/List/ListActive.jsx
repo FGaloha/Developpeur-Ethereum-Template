@@ -33,7 +33,7 @@ export const ListActive = ({ address, contractAddress }) => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider);
     const filter = {
       address: contractAddress,
-      fromBlock: 0
+      fromBlock: 8373513
     }
     const fullEventJobs = await contract.queryFilter(filter)
     let EventsJobAddedActive = []

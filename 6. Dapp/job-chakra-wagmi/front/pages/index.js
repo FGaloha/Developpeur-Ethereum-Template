@@ -25,6 +25,8 @@ export default function Home() {
       setListActive(true)
       setAdd(false)
       setListClosed(false)
+      alert(env)
+      alert(contractAddress)
     }
   }, [isConnected, address])
 

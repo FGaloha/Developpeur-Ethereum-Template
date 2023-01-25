@@ -31,11 +31,11 @@ export const ListActive = ({ address, contractAddress }) => {
 
   const getJobs = async () => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider);
-    const filter = {
-      address: contractAddress,
-      fromBlock: 8373513
-    }
-    const fullEventJobs = await contract.queryFilter(filter)
+    // const filter = {
+    //   address: contractAddress,
+    //   fromBlock: 8373513
+    // }
+    const fullEventJobs = await contract.queryFilter("*", -100, 'latest')
     let EventsJobAddedActive = []
     let EventsJobTakenActive = []
     let EventsJobFinished = []

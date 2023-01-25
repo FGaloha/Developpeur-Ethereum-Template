@@ -25,11 +25,12 @@ export const ListClosed = ({ contractAddress }) => {
 
   const getClosedJobs = async () => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider);
-    const filter = {
-      address: contractAddress,
-      fromBlock: 0
-    }
-    const fullEventJobs = await contract.queryFilter(filter)
+    // const filter = {
+    //   address: contractAddress,
+    //   fromBlock: 0
+    // }
+    // const fullEventJobs = await contract.queryFilter(filter)
+    const fullEventJobs = await contract.queryFilter("*", -100, 'latest')
     let EventsJobAdded = []
     let EventsJobFinished = []
     for await (const fullEventJob of fullEventJobs) {

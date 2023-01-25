@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Contract from '../../../back/artifacts/contracts/Jobs.sol/Jobs'
+import Contract from '../../Contract/Jobs'
 import { useProvider } from 'wagmi'
 import { ethers } from 'ethers';
 import {

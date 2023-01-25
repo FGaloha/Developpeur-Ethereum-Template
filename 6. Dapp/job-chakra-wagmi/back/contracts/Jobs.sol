@@ -39,8 +39,6 @@ contract Jobs {
             jobs.length - 1,
             false
         );
-        //(bool success, ) = address(this).call{value: msg.value}("");
-        //require(success, "The ETH payment storing failed");
     }
 
     ///@notice Allows to take a job
@@ -66,6 +64,7 @@ contract Jobs {
             jobs[_id].worker != address(0) && jobs[_id].isFinished == false,
             "The job is already closed"
         );
+        require(jobs[_id].worker != address(0), "The job is not taken yet");
         emit jobIsFinishedAndPaid(
             msg.sender,
             jobs[_id].worker,

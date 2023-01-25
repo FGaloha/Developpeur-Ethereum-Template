@@ -1,5 +1,5 @@
 import { customTheme } from '../styles/theme'
-import { ChakraProvider, ColorModeProvider, useColorMode } from '@chakra-ui/react'
+import { ChakraProvider } from '@chakra-ui/react'
 import '@rainbow-me/rainbowkit/styles.css';
 import {
   getDefaultWallets,
@@ -13,7 +13,7 @@ import { publicProvider } from 'wagmi/providers/public';
 const { chains, provider } = configureChains(
   [hardhat, goerli, mainnet],
   [
-    // alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
+    // alchemyProvider({ apiKey: process.env.ALCHEMY_GOERLI }),
     publicProvider()
   ]
 );

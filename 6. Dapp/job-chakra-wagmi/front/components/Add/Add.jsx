@@ -1,4 +1,4 @@
-import Contract from '../../../back/artifacts/contracts/Jobs.sol/Jobs'
+import Contract from '../../Contract/Jobs'
 import { useProvider, useSigner, useBalance } from 'wagmi'
 import { useState } from 'react'
 import { ethers } from 'ethers'
@@ -36,7 +36,7 @@ export const Add = ({ address, contractAddress }) => {
 
       toast({
         title: 'New job added',
-        description: `You successfully sent ${authorPrice} ethers`,
+        description: `You successfully sent ${authorPrice} ethers`, //error.message
         status: 'success',
         duration: 5000,
         isClosable: true,

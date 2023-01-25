@@ -71,7 +71,7 @@ export const Add = ({ address, contractAddress }) => {
         <Textarea id="descriptionText" placeholder='Please describe here your job offer' onChange={(e) => { setDescription(e.target.value) }} />
       </Box>
       <Box m="4" pb='4'>
-        <Text pb='2'>Price :</Text>
+        <Text pb='2'>Price : {address}</Text>
         <Input id="priceInput" placeholder="Price in ETH you offer for the job previously describe" onChange={(e) => { setPrice(e.target.value) }} />
       </Box>
       <Box textAlign="center" pb="4">

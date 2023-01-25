@@ -35,7 +35,7 @@ export const ListActive = ({ address, contractAddress }) => {
     //   address: contractAddress,
     //   fromBlock: 8373513
     // }
-    const fullEventJobs = await contract.queryFilter("*", -100, 'latest')
+    const fullEventJobs = await contract.queryFilter("*", -4999, 'latest')
     let EventsJobAddedActive = []
     let EventsJobTakenActive = []
     let EventsJobFinished = []

@@ -12,7 +12,7 @@ contract Voting is Ownable {
 
     struct Voter {
         // uint256 votedProposalId; Optimisation en gas par la packing 65535 propositions possibles
-        uint16 votedProposalId;
+        uint256 votedProposalId;
         bool isRegistered;
         bool hasVoted;
     }
@@ -35,8 +35,8 @@ contract Voting is Ownable {
 
     //Optimisation gas
     //Proposal[] proposalsArray;
-    Proposal[65535] internal proposalsArray;
-    uint16 internal proposalsLength;
+    Proposal[255] internal proposalsArray;
+    uint256 internal proposalsLength;
 
     mapping(address => Voter) internal voters;
 
@@ -50,8 +50,8 @@ contract Voting is Ownable {
     // event ProposalRegistered(uint256 proposalId);
     // event Voted(address voter, uint256 proposalId);
 
-    event ProposalRegistered(uint16 proposalId);
-    event Voted(address voter, uint16 proposalId);
+    event ProposalRegistered(uint256 proposalId);
+    event Voted(address voter, uint8 proposalId);
 
     modifier onlyVoters() {
         require(voters[msg.sender].isRegistered, "You're not a voter");
@@ -78,7 +78,7 @@ contract Voting is Ownable {
     /// @param _id The identifier of a specific proposal
     /// @return Proposal which contains the description of the proposal and the number of votes it got so far
     //function getOneProposal(uint256 _id)
-    function getOneProposal(uint16 _id)
+    function getOneProposal(uint8 _id)
         external
         view
         onlyVoters
@@ -134,7 +134,7 @@ contract Voting is Ownable {
     /// @dev Only the registered voters can use this method
     /// @param _id The identifier of the chosen proposal
     // function setVote(uint256 _id) external onlyVoters {
-    function setVote(uint16 _id) external onlyVoters {
+    function setVote(uint8 _id) external onlyVoters {
         require(
             workflowStatus == WorkflowStatus.VotingSessionStarted,
             "Voting session havent started yet"

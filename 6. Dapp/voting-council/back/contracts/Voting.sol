@@ -4,8 +4,8 @@ pragma solidity 0.8.13;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title A simple voting contract
-/// @author F. Gallois
-/// @notice You can use this contract to organize a vote to choose a proposal among several proposals made by registered voters
+/// @author Flavia Gallois
+/// @notice You can use this contract to organize a vote, for a small organization, in order to choose a proposal among several proposals (limited number) made by registered voters
 contract Voting is Ownable {
     //comme il est tout seul ne change rien de le reduire
     uint256 public winningProposalID;
@@ -58,10 +58,12 @@ contract Voting is Ownable {
         _;
     }
 
-    // on peut faire un modifier pour les états
-
     // ::::::::::::: GETTERS ::::::::::::: //
 
+    /// @notice Get the information of a voter identified by his address.
+    /// @dev Only the registered voters can use this method
+    /// @param _addr Address of the voter we look the information for
+    /// @return Voter which contains the vote, registration status & voting status of a voter
     function getVoter(address _addr)
         external
         view
@@ -71,6 +73,10 @@ contract Voting is Ownable {
         return voters[_addr];
     }
 
+    /// @notice Get the information of a proposal
+    /// @dev Only the registered voters can use this method
+    /// @param _id The identifier of a specific proposal
+    /// @return Proposal which contains the description of the proposal and the number of votes it got so far
     //function getOneProposal(uint256 _id)
     function getOneProposal(uint16 _id)
         external
@@ -83,6 +89,9 @@ contract Voting is Ownable {
 
     // ::::::::::::: REGISTRATION ::::::::::::: //
 
+    /// @notice Add an address in the list of voters
+    /// @dev Only the owner of the contract can use this method
+    /// @param _addr The address of the voter to register
     function addVoter(address _addr) external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.RegisteringVoters,
@@ -96,6 +105,9 @@ contract Voting is Ownable {
 
     // ::::::::::::: PROPOSAL ::::::::::::: //
 
+    /// @notice Add a proposal to the list of proposals voted
+    /// @dev Only the registered voters can use this method
+    /// @param _desc The description of the proposal made by the voter
     function addProposal(string calldata _desc) external onlyVoters {
         require(
             workflowStatus == WorkflowStatus.ProposalsRegistrationStarted,
@@ -118,6 +130,9 @@ contract Voting is Ownable {
 
     // ::::::::::::: VOTE ::::::::::::: //
 
+    /// @notice Vote for a proposal
+    /// @dev Only the registered voters can use this method
+    /// @param _id The identifier of the chosen proposal
     // function setVote(uint256 _id) external onlyVoters {
     function setVote(uint16 _id) external onlyVoters {
         require(
@@ -136,6 +151,8 @@ contract Voting is Ownable {
 
     // ::::::::::::: STATE ::::::::::::: //
 
+    /// @notice Start the proposals registration phase
+    /// @dev Only the owner of the contract can use this method
     function startProposalsRegistering() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.RegisteringVoters,
@@ -154,6 +171,8 @@ contract Voting is Ownable {
         );
     }
 
+    /// @notice End the proposals registration phase
+    /// @dev Only the owner of the contract can use this method
     function endProposalsRegistering() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.ProposalsRegistrationStarted,
@@ -166,6 +185,8 @@ contract Voting is Ownable {
         );
     }
 
+    /// @notice Start the voting session phase after the proposal registration ended
+    /// @dev Only the owner of the contract can use this method
     function startVotingSession() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.ProposalsRegistrationEnded,
@@ -178,6 +199,8 @@ contract Voting is Ownable {
         );
     }
 
+    /// @notice End the voting session phase
+    /// @dev Only the owner of the contract can use this method
     function endVotingSession() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.VotingSessionStarted,
@@ -190,6 +213,8 @@ contract Voting is Ownable {
         );
     }
 
+    /// @notice Calculate the winning proposal after the vote phase ended
+    /// @dev Only the owner of the contract can use this method. Size limit of proposalsArray avoid DOS risk.
     function tallyVotes() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.VotingSessionEnded,

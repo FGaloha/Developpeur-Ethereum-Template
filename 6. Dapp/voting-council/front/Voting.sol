@@ -3,18 +3,13 @@
 pragma solidity 0.8.13;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-/// @title A simple voting contract
-/// @author F. Gallois
-/// @notice You can use this contract to organize a vote to elect a proposal selected in majority by registered voters
 contract Voting is Ownable {
-    //comme il est tout seul ne change rien de le reduire
     uint256 public winningProposalID;
 
     struct Voter {
-        // uint256 votedProposalId; Optimisation en gas par la packing 65535 propositions possibles
-        uint16 votedProposalId;
         bool isRegistered;
         bool hasVoted;
+        uint256 votedProposalId;
     }
 
     struct Proposal {
@@ -32,12 +27,7 @@ contract Voting is Ownable {
     }
 
     WorkflowStatus public workflowStatus;
-
-    //Optimisation gas
-    //Proposal[] proposalsArray;
-    Proposal[65535] proposalsArray;
-    uint16 proposalsLength;
-
+    Proposal[] proposalsArray;
     mapping(address => Voter) voters;
 
     event VoterRegistered(address voterAddress);
@@ -45,13 +35,8 @@ contract Voting is Ownable {
         WorkflowStatus previousStatus,
         WorkflowStatus newStatus
     );
-
-    // optimisation gas
-    // event ProposalRegistered(uint256 proposalId);
-    // event Voted(address voter, uint256 proposalId);
-
-    event ProposalRegistered(uint16 proposalId);
-    event Voted(address voter, uint16 proposalId);
+    event ProposalRegistered(uint256 proposalId);
+    event Voted(address voter, uint256 proposalId);
 
     modifier onlyVoters() {
         require(voters[msg.sender].isRegistered, "You're not a voter");
@@ -71,8 +56,7 @@ contract Voting is Ownable {
         return voters[_addr];
     }
 
-    //function getOneProposal(uint256 _id)
-    function getOneProposal(uint16 _id)
+    function getOneProposal(uint256 _id)
         external
         view
         onlyVoters
@@ -109,21 +93,19 @@ contract Voting is Ownable {
 
         Proposal memory proposal;
         proposal.description = _desc;
-        proposalsArray[proposalsLength] = proposal;
-        ++proposalsLength;
-        emit ProposalRegistered(proposalsLength - 1);
+        proposalsArray.push(proposal);
+        emit ProposalRegistered(proposalsArray.length - 1);
     }
 
     // ::::::::::::: VOTE ::::::::::::: //
 
-    // function setVote(uint256 _id) external onlyVoters {
-    function setVote(uint16 _id) external onlyVoters {
+    function setVote(uint256 _id) external onlyVoters {
         require(
             workflowStatus == WorkflowStatus.VotingSessionStarted,
             "Voting session havent started yet"
         );
         require(voters[msg.sender].hasVoted != true, "You have already voted");
-        require(_id < proposalsLength, "Proposal not found"); // pas obligé, et pas besoin du >0 car uint
+        require(_id < proposalsArray.length, "Proposal not found"); // pas obligé, et pas besoin du >0 car uint
 
         voters[msg.sender].votedProposalId = _id;
         voters[msg.sender].hasVoted = true;
@@ -143,8 +125,7 @@ contract Voting is Ownable {
 
         Proposal memory proposal;
         proposal.description = "GENESIS";
-        proposalsArray[proposalsLength];
-        ++proposalsLength;
+        proposalsArray.push(proposal);
 
         emit WorkflowStatusChange(
             WorkflowStatus.RegisteringVoters,
@@ -194,7 +175,7 @@ contract Voting is Ownable {
             "Current status is not voting session ended"
         );
         uint256 _winningProposalId;
-        for (uint256 p = 0; p < proposalsLength; p++) {
+        for (uint256 p = 0; p < proposalsArray.length; p++) {
             if (
                 proposalsArray[p].voteCount >
                 proposalsArray[_winningProposalId].voteCount

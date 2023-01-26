@@ -7,14 +7,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 /// @author Flavia Gallois
 /// @notice You can use this contract to organize a vote, for a small organization, in order to choose a proposal among several proposals (limited number) made by registered voters
 contract Voting is Ownable {
-    //comme il est tout seul ne change rien de le reduire
     uint256 public winningProposalID;
 
     struct Voter {
-        // uint256 votedProposalId; Optimisation en gas par la packing 65535 propositions possibles
-        uint256 votedProposalId;
         bool isRegistered;
         bool hasVoted;
+        uint256 votedProposalId;
     }
 
     struct Proposal {
@@ -33,8 +31,6 @@ contract Voting is Ownable {
 
     WorkflowStatus public workflowStatus;
 
-    //Optimisation gas
-    //Proposal[] proposalsArray;
     Proposal[255] internal proposalsArray;
     uint256 internal proposalsLength;
 
@@ -45,10 +41,6 @@ contract Voting is Ownable {
         WorkflowStatus previousStatus,
         WorkflowStatus newStatus
     );
-
-    // optimisation gas
-    // event ProposalRegistered(uint256 proposalId);
-    // event Voted(address voter, uint256 proposalId);
 
     event ProposalRegistered(uint256 proposalId);
     event Voted(address voter, uint8 proposalId);
@@ -77,7 +69,6 @@ contract Voting is Ownable {
     /// @dev Only the registered voters can use this method
     /// @param _id The identifier of a specific proposal
     /// @return Proposal which contains the description of the proposal and the number of votes it got so far
-    //function getOneProposal(uint256 _id)
     function getOneProposal(uint8 _id)
         external
         view
@@ -114,12 +105,6 @@ contract Voting is Ownable {
             "Proposals are not allowed yet"
         );
         require(bytes(_desc).length > 0, "Description cannot be empty");
-        // require(
-        //     keccak256(abi.encode(_desc)) != keccak256(abi.encode("")),
-        //     "Vous ne pouvez pas ne rien proposer"
-        // );
-        // facultatif
-        // voir que desc est different des autres
 
         Proposal memory proposal;
         proposal.description = _desc;
@@ -133,7 +118,6 @@ contract Voting is Ownable {
     /// @notice Vote for a proposal
     /// @dev Only the registered voters can use this method
     /// @param _id The identifier of the chosen proposal
-    // function setVote(uint256 _id) external onlyVoters {
     function setVote(uint8 _id) external onlyVoters {
         require(
             workflowStatus == WorkflowStatus.VotingSessionStarted,

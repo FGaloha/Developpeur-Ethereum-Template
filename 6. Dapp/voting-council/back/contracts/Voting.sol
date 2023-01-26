@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title A simple voting contract
 /// @author F. Gallois
-/// @notice You can use this contract to organize a vote to elect a proposal selected in majority by registered voters
+/// @notice You can use this contract to organize a vote to choose a proposal among several proposals made by registered voters
 contract Voting is Ownable {
     //comme il est tout seul ne change rien de le reduire
     uint256 public winningProposalID;
@@ -35,10 +35,10 @@ contract Voting is Ownable {
 
     //Optimisation gas
     //Proposal[] proposalsArray;
-    Proposal[65535] proposalsArray;
-    uint16 proposalsLength;
+    Proposal[65535] internal proposalsArray;
+    uint16 internal proposalsLength;
 
-    mapping(address => Voter) voters;
+    mapping(address => Voter) internal voters;
 
     event VoterRegistered(address voterAddress);
     event WorkflowStatusChange(
@@ -101,10 +101,12 @@ contract Voting is Ownable {
             workflowStatus == WorkflowStatus.ProposalsRegistrationStarted,
             "Proposals are not allowed yet"
         );
-        require(
-            keccak256(abi.encode(_desc)) != keccak256(abi.encode("")),
-            "Vous ne pouvez pas ne rien proposer"
-        ); // facultatif
+        require(bytes(_desc).length > 0, "Description cannot be empty");
+        // require(
+        //     keccak256(abi.encode(_desc)) != keccak256(abi.encode("")),
+        //     "Vous ne pouvez pas ne rien proposer"
+        // );
+        // facultatif
         // voir que desc est different des autres
 
         Proposal memory proposal;

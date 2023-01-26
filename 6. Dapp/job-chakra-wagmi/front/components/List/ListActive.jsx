@@ -36,6 +36,22 @@ export const ListActive = ({ address, contractAddress }) => {
     //   fromBlock: 8373513
     // }
     const fullEventJobs = await contract.queryFilter("*", -3000, 'latest')
+    // si je veux récupérer que les jobTaken
+    // const fullEventJobsTaken = await contract.queryFilter("jobTaken", -3000, 'latest')
+    // console.log(fullEventJobsAdd)
+
+    // code pour récupérer les events par block de 5000
+    // const startBlock = 8373573; //Block number where the contract was deployed
+    // const endBlock = latest;
+    // let logs = [];
+
+    // for (let i = startBlock; i < endBlock; i += 5000) {
+    //   console.log("i", i)
+    //   const _startBlock = i;
+    //   const _endBlock = Math.min(endBlock, i + 4999);
+    //   const data = await contract.queryFilter(filter, _startBlock, _endBlock);
+    //   logs = [...logs, ...data]
+    // }
     let EventsJobAddedActive = []
     let EventsJobTakenActive = []
     let EventsJobFinished = []

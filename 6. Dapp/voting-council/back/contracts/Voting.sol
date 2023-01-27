@@ -121,10 +121,10 @@ contract Voting is Ownable {
     function setVote(uint8 _id) external onlyVoters {
         require(
             workflowStatus == WorkflowStatus.VotingSessionStarted,
-            "Voting session not open"
+            "Voting not open"
         );
         require(voters[msg.sender].hasVoted != true, "Already voted");
-        require(_id < proposalsLength, "Proposal not found"); // pas obligé, et pas besoin du >0 car uint
+        require(_id < proposalsLength, "Missing proposal");
 
         voters[msg.sender].votedProposalId = _id;
         voters[msg.sender].hasVoted = true;
@@ -174,7 +174,7 @@ contract Voting is Ownable {
     function startVotingSession() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.ProposalsRegistrationEnded,
-            "Voting session cant be now"
+            "Voting cant be now"
         );
         workflowStatus = WorkflowStatus.VotingSessionStarted;
         emit WorkflowStatusChange(

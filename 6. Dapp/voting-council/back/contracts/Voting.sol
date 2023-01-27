@@ -46,7 +46,7 @@ contract Voting is Ownable {
     event Voted(address voter, uint8 proposalId);
 
     modifier onlyVoters() {
-        require(voters[msg.sender].isRegistered, "You're not a voter");
+        require(voters[msg.sender].isRegistered, "Not a voter");
         _;
     }
 
@@ -86,7 +86,7 @@ contract Voting is Ownable {
     function addVoter(address _addr) external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.RegisteringVoters,
-            "Voters registration is not open yet"
+            "Voters registration not open"
         );
         require(voters[_addr].isRegistered != true, "Already registered");
 
@@ -102,9 +102,9 @@ contract Voting is Ownable {
     function addProposal(string calldata _desc) external onlyVoters {
         require(
             workflowStatus == WorkflowStatus.ProposalsRegistrationStarted,
-            "Proposals are not allowed yet"
+            "Proposals session not open"
         );
-        require(bytes(_desc).length > 0, "Description cannot be empty");
+        require(bytes(_desc).length > 0, "Missing description");
 
         Proposal memory proposal;
         proposal.description = _desc;
@@ -121,14 +121,14 @@ contract Voting is Ownable {
     function setVote(uint8 _id) external onlyVoters {
         require(
             workflowStatus == WorkflowStatus.VotingSessionStarted,
-            "Voting session havent started yet"
+            "Voting session not open"
         );
-        require(voters[msg.sender].hasVoted != true, "You have already voted");
+        require(voters[msg.sender].hasVoted != true, "Already voted");
         require(_id < proposalsLength, "Proposal not found"); // pas obligé, et pas besoin du >0 car uint
 
         voters[msg.sender].votedProposalId = _id;
         voters[msg.sender].hasVoted = true;
-        proposalsArray[_id].voteCount++;
+        ++proposalsArray[_id].voteCount;
 
         emit Voted(msg.sender, _id);
     }
@@ -140,7 +140,7 @@ contract Voting is Ownable {
     function startProposalsRegistering() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.RegisteringVoters,
-            "Registering proposals cant be started now"
+            "Registering proposals cant be now"
         );
         workflowStatus = WorkflowStatus.ProposalsRegistrationStarted;
 
@@ -160,7 +160,7 @@ contract Voting is Ownable {
     function endProposalsRegistering() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.ProposalsRegistrationStarted,
-            "Registering proposals havent started yet"
+            "End registering proposals cant be now"
         );
         workflowStatus = WorkflowStatus.ProposalsRegistrationEnded;
         emit WorkflowStatusChange(
@@ -174,7 +174,7 @@ contract Voting is Ownable {
     function startVotingSession() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.ProposalsRegistrationEnded,
-            "Registering proposals phase is not finished"
+            "Voting session cant be now"
         );
         workflowStatus = WorkflowStatus.VotingSessionStarted;
         emit WorkflowStatusChange(
@@ -188,7 +188,7 @@ contract Voting is Ownable {
     function endVotingSession() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.VotingSessionStarted,
-            "Voting session havent started yet"
+            "End voting cant be now"
         );
         workflowStatus = WorkflowStatus.VotingSessionEnded;
         emit WorkflowStatusChange(
@@ -202,10 +202,10 @@ contract Voting is Ownable {
     function tallyVotes() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.VotingSessionEnded,
-            "Current status is not voting session ended"
+            "Tally votes cant be now"
         );
         uint256 _winningProposalId;
-        for (uint256 p = 0; p < proposalsLength; p++) {
+        for (uint256 p = 0; p < proposalsLength; ++p) {
             if (
                 proposalsArray[p].voteCount >
                 proposalsArray[_winningProposalId].voteCount

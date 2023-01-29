@@ -1,4 +1,4 @@
-import { Input, Button, Text, Flex } from '@chakra-ui/react'
+import { Input, Button, Text, Flex, Spinner, useToast } from '@chakra-ui/react'
 import { useAccount, useSigner } from 'wagmi'
 import { useState } from "react";
 import { ethers } from 'ethers'
@@ -10,21 +10,45 @@ export const Workflow = ({ workflow, contractAddress, launchNextPhase, getData }
   const { data: signer } = useSigner()
 
   const { setRegistered } = useMembersProvider()
+  const toast = useToast()
 
   // STATE
+  const [isLoading, setIsLoading] = useState(false)
   const [voterAddress, setVoterAddress] = useState(null)
 
   const registerVoter = async () => {
-    const contract = new ethers.Contract(contractAddress, Contract.abi, signer)
-    const voterRegistration = contract.addVoter(voterAddress)
-    console.log(voterAddress)
-    const registeredEvents = await contract.queryFilter('VoterRegistered', 0, 'latest')
-    let registeredList = []
-    registeredEvents.forEach(registeredEvent => {
-      registeredList.push(registeredEvent.args[0])
-    })
-    setRegistered(registeredList)
-    getData()
+    setIsLoading(true);
+    try {
+      const contract = new ethers.Contract(contractAddress, Contract.abi, signer)
+      console.log(voterAddress)
+      const voterRegistration = await contract.addVoter(voterAddress)
+      await voterRegistration.wait()
+      // console.log(voterAddress)
+      const registeredEvents = await contract.queryFilter('VoterRegistered', 0, 'latest')
+      let registeredList = []
+      registeredEvents.forEach(registeredEvent => {
+        registeredList.push(registeredEvent.args[0])
+      })
+      setRegistered(registeredList)
+      //getData()
+      toast({
+        title: 'New address added',
+        description: `You successfully added ${voterAddress}`, //error.message
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+    catch {
+      toast({
+        title: 'Error',
+        description: "The registration did not succeed, please try again...",
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+    setIsLoading(false);
   }
 
   return (
@@ -71,14 +95,27 @@ export const Workflow = ({ workflow, contractAddress, launchNextPhase, getData }
                         <Input placeholder='Address of the voter to register' onChange={e => setVoterAddress(e.target.value)} />
                         <Button colorScheme='whatsapp' onClick={() => registerVoter()}>Register</Button>
                       </Flex>
-                      <Flex justifyContent="start" width="100%">
-                        <RegisteredList />
-                      </Flex>
+                      {!isLoading && (
+                        <Flex justifyContent="start" width="100%">
+                          <RegisteredList />
+                        </Flex>
+                      )}
                     </Flex>
-                    <Flex width="100%" alignItems="center" justifyContent="start">
-                      <Text>Start registering proposal</Text>
-                      <Button colorScheme='whatsapp' onClick={() => launchNextPhase()}>Validate</Button>
-                    </Flex>
+                    {isLoading && (
+                      <Spinner
+                        thickness='4px'
+                        speed='0.65s'
+                        emptyColor='gray.200'
+                        color='blue.500'
+                        size='xl'
+                      />
+                    )}
+                    {!isLoading && (
+                      <Flex width="100%" alignItems="center" justifyContent="start">
+                        <Text>Start registering proposal</Text>
+                        <Button colorScheme='whatsapp' onClick={() => launchNextPhase()}>Validate</Button>
+                      </Flex>)
+                    }
                   </Flex>
                 </>)
           }

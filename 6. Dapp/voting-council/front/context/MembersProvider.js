@@ -23,9 +23,9 @@ export const MembersProvider = ({ children }) => {
   const [workflow, setWorkflow] = useState(null)
 
   useEffect(() => {
-    //if (isConnected) {
-    loadData()
-    //}
+    if (isConnected) {
+      loadData()
+    }
   }, [isConnected, address])
 
   const loadData = async () => {
@@ -33,8 +33,8 @@ export const MembersProvider = ({ children }) => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
     const owner = await contract.owner()
     setOwner(owner)
-    console.log(owner)
-    console.log(contractAddress)
+    //console.log(owner)
+    //console.log(contractAddress)
     const registeredEvents = await contract.queryFilter('VoterRegistered', 0, 'latest')
     let registeredList = []
     registeredEvents.forEach(registeredEvent => {

@@ -40,14 +40,11 @@ export default function Home() {
   }, [isConnected, address])
 
   const getData = async () => {
-    console.log("dans get data index")
+    console.log("dans get data index suit le workflow")
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
-    // const owner = await contract.owner()
-    // setOwner(owner)
     const worflowStatus = await contract.workflowStatus()
     setWorkflow(worflowStatus)
-
-
+    console.log(workflow)
   }
 
   const launchNextPhase = async () => {
@@ -70,6 +67,7 @@ export default function Home() {
         nextPhase = await contract.startProposalsRegistering()
         break;
     }
+    await nextPhase()
     getData()
     //console.log(workflow)
   }

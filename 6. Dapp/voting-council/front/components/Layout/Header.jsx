@@ -3,9 +3,11 @@ import { useAccount } from 'wagmi'
 import { Box, Flex, Heading } from '@chakra-ui/react'
 import Head from 'next/head'
 import Link from 'next/link'
+import useMembersProvider from '@/hooks/useMembersProvider'
 
 export const Header = () => {
   const { isConnected } = useAccount()
+  const { isMember, workflow } = useMembersProvider()
 
   return (
     <>
@@ -22,15 +24,15 @@ export const Header = () => {
 
         {isConnected &&
           <Flex>
-            <Flex me="2"><Link href="/">Home</Link></Flex>
-            <Flex me="2"><Link href="/registered">Registered</Link></Flex>
-            <Flex><Link href="/voters">Voters</Link></Flex>
+            <Flex me="4"><Link href="/">Home</Link></Flex>
+            <Flex me="4"><Link href="/registered">Registered</Link></Flex>
+            {workflow >= 3 && (<Flex me="4"><Link href="/voters">Voters</Link></Flex>)}
+            {isMember && (<Flex><Link href="/detailedResults">Detailed results</Link></Flex>)}
           </Flex>
         }
 
-
         <Box>
-          <ConnectButton label='Log in' accountStatus='avatar' />
+          <ConnectButton label='Log in' accountStatus='avatar' chainStatus="none" />
         </Box>
       </Flex >
     </>

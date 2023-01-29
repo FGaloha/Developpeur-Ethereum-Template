@@ -4,34 +4,36 @@ import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.css'
 import { Box, Heading, Flex, Text, Textarea, Input, Button, useToast, Alert, AlertIcon } from '@chakra-ui/react';
 import { useState, useEffect } from 'react'
-import { useAccount, useProvider, useSigner } from 'wagmi'
+import { useAccount, useProvider, useSigner, useBalance } from 'wagmi'
 import Contract from "../contract/Voting"
 import { ethers } from 'ethers'
 import Link from 'next/link'
 import { Workflow } from '@/components/Forms/Workflow';
+import { AddProposals } from '@/components/Forms/AddProposals';
+import { SetVote } from '@/components/Forms/SetVote';
+import { Results } from '@/components/Results/Results';
+import { ResultsDetailed } from '@/components/Results/ResultsDetailed';
 import useMembersProvider from '@/hooks/useMembersProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
 
-  // Smart Contract address
-  //const env = process.env.NODE_ENV
-  //const contractAddress = (env == 'production') ? process.env.NEXT_PUBLIC_NETWORK_GOERLI : process.env.NEXT_PUBLIC_NETWORK_HARDHAT
-  // const contractAddress = process.env.NEXT_PUBLIC_NETWORK_GOERLI
-
   // WAGMI
   const { address, isConnected } = useAccount()
   const provider = useProvider()
   const { data: signer } = useSigner()
+  const { data } = useBalance({
+    address: address,
+    watch: true
+  })
 
   // CHAKRA-UI
   const toast = useToast()
 
   // CONTEXT
-  const { owner, workflow, setWorkflow, contractAddress, registered, setRegistered, isMember, setIsMember } = useMembersProvider()
-  //const [owner, setOwner] = useState(null)
-  //const [workflow, setWorkflow] = useState(null)
+  const { owner, workflow, setWorkflow, contractAddress, setHasVotedList } = useMembersProvider()
+  const { registered, setRegistered, isMember, setIsMember, setAddHasVoted } = useMembersProvider()
 
   useEffect(() => {
     if (isConnected) {
@@ -40,36 +42,47 @@ export default function Home() {
   }, [isConnected, address])
 
   const getData = async () => {
-    console.log("dans get data index suit le workflow")
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
     const worflowStatus = await contract.workflowStatus()
     setWorkflow(worflowStatus)
-    console.log(workflow)
+    // List of registered address
+    const registeredEvents = await contract.queryFilter('VoterRegistered', 0, 'latest')
+    let registeredList = []
+    registeredEvents.forEach(registeredEvent => {
+      registeredList.push(registeredEvent.args[0])
+    })
+    setRegistered(registeredList)
+
+    // Boolean true if address is registered
+    setIsMember(registered.includes(address))
+
+    // List of address who have voted
+    const hasVotedEvents = await contract.queryFilter('Voted', 0, 'latest')
+    let hasVoted = []
+    hasVotedEvents.forEach(hasVotedEvent => {
+      hasVoted.push(hasVotedEvent.args.voter)
+    })
+    setHasVotedList(hasVoted)
+
+    // Boolean true if address has voted
+    setAddHasVoted(hasVoted.includes(address))
   }
 
-  const launchNextPhase = async () => {
-    const contract = new ethers.Contract(contractAddress, Contract.abi, signer)
-    let nextPhase
+  const CurrentPhase = () => {
     switch (workflow) {
       case 1:
-        nextPhase = await contract.endProposalsRegistering()
-        break;
+        return (<Heading ms="2" mt="1" mb="4">Current phase:  adding proposals</Heading>)
       case 2:
-        nextPhase = await contract.startVotingSession()
-        break;
+        return (<Heading ms="2" mt="1" mb="4">Current phase:  proposals registration ended</Heading>)
       case 3:
-        nextPhase = await contract.endVotingSession()
-        break;
+        return (<Heading ms="2" mt="1" mb="4">Current phase:  voting started</Heading>)
       case 4:
-        nextPhase = await contract.tallyVotes()
-        break;
+        return (<Heading ms="2" mt="1" mb="4">Current phase:  voting ended</Heading>)
+      case 5:
+        return (<Heading ms="2" mt="1" mb="4">Current phase:  results available</Heading>)
       default:
-        nextPhase = await contract.startProposalsRegistering()
-        break;
+        return (<Heading ms="2" mt="1" mb="4">Current phase: registration</Heading>)
     }
-    await nextPhase()
-    getData()
-    //console.log(workflow)
   }
 
   return (
@@ -81,17 +94,38 @@ export default function Home() {
       border="2px"
     >
       {isConnected ? (
-        <Flex height="100%" w="100%" alignItems="start" justifyContent="start" border="2px">
-          {address == owner ? (
-            <Flex direction="column">
-              <Workflow w="100%" workflow={workflow} contractAddress={contractAddress} launchNextPhase={launchNextPhase} getData={getData} />
-            </Flex>
-          ) :
+        <Flex direction="column">
 
-            (isMember ? (<Text> Un membre</Text>) : (<Text>Un visiteur</Text>))
-          }
+          {address == owner && (<Flex ms="2"><Text>Status: Admin</Text></Flex>)}
 
-        </Flex>
+          {isMember ? (<Flex ms="2"><Text>Member: voting rights & full data access.</Text></Flex>)
+            : (<Flex ms="2"><Text>Visitor: no voting rights, data limited.</Text></Flex>)}
+
+          <Flex direction="column" height="100%" w="100%" alignItems="start" justifyContent="start" border="2px">
+            <CurrentPhase />
+            {address == owner ? (
+              <Flex direction="column">
+                <Workflow w="100%" getData={getData} />
+              </Flex>
+            ) :
+
+              (isMember && (
+                <Flex>
+                  {workflow == 1 &&
+                    < AddProposals />
+                  }
+                  {workflow == 3 &&
+                    < SetVote />
+                  }
+                </Flex>
+              ))
+
+            }
+            {workflow == 5 &&
+              <Flex ms="2">< Results /></Flex>
+            }
+          </Flex>
+        </Flex >
       )
         : (
           <Flex height="100%" width="100%" alignItems="center" justifyContent="center">

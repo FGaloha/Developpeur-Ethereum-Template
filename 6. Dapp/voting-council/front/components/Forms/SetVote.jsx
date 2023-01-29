@@ -1,0 +1,84 @@
+import { Input, Button, Text, Flex, useToast, Select } from '@chakra-ui/react'
+import { useSigner, useAccount } from 'wagmi'
+import { useState, useEffect } from "react";
+import { ethers } from 'ethers'
+import Contract from '../../contract/Voting'
+import { RegisteredProposals } from "../../components/Lists/RegisteredProposals";
+import useMembersProvider from '@/hooks/useMembersProvider'
+
+export const SetVote = () => {
+  const { address, isConnected } = useAccount()
+  const { data: signer } = useSigner()
+  const toast = useToast()
+
+  const { contractAddress, proposals, setProposals, addHasVoted } = useMembersProvider()
+
+  // STATE
+  const [isLoading, setIsLoading] = useState(false)
+  const [vote, setVote] = useState(null)
+
+  useEffect(() => {
+    getProposals()
+  }, [isConnected, address])
+
+  const getProposals = async () => {
+    const contract = new ethers.Contract(contractAddress, Contract.abi, signer)
+    const registeredProposalsEvents = await contract.queryFilter('ProposalRegistered', 0, 'latest')
+    let registeredList = []
+    for await (const registeredProposalsEvent of registeredProposalsEvents) {
+      const registeredProposal = await contract.getOneProposal(registeredProposalsEvent.args.proposalId)
+      registeredList.push([registeredProposalsEvent.args.proposalId.toString(), registeredProposal.voteCount.toString(), registeredProposal.description])
+    }
+    setProposals(registeredList)
+    //console.log(registeredList)
+  }
+
+  const registerVote = async () => {
+    setIsLoading(true);
+    try {
+      const contract = new ethers.Contract(contractAddress, Contract.abi, signer)
+      const voteRecording = await contract.setVote(vote)
+      await voteRecording.wait()
+      toast({
+        title: 'Vote stored',
+        description: `You successfully vote for proposal ${vote}`,
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+    catch {
+      toast({
+        title: 'Error',
+        description: "The vote registration failed, please try again...",
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+    setIsLoading(false);
+  }
+
+  return (
+    <Flex>
+      <Flex>
+        <Text>Set vote</Text>
+        {proposals.length > 0 ? (
+          <Flex>
+            {!addHasVoted ? (
+              <Flex>
+                <Select placeholder='Select your proposal' size='md' onChange={e => setVote(e.target.value)} >
+                  {proposals.slice(0).map(proposal => (
+                    <option key={proposal[0]} value={proposal[0]}>{proposal[0]}-{proposal[2]}</option>))}
+                </Select>
+                <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' mt="1rem" colorScheme='whatsapp' onClick={() => registerVote()}>Vote</Button>
+              </Flex>
+            ) : (<Text>Thank you to have voted ! </Text>)}
+          </Flex>
+        ) : (<Text>No proposals to vote</Text>)}
+      </Flex>
+      {!addHasVoted && (
+        <Flex><RegisteredProposals /></Flex>)}
+    </Flex>
+  )
+}

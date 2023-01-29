@@ -17,10 +17,14 @@ export const MembersProvider = ({ children }) => {
 
   // STATES
   const [owner, setOwner] = useState(null)
-  const [isMember, setIsMember] = useState(null)
+  const [isMember, setIsMember] = useState(false)
   const [registered, setRegistered] = useState([])
   const [voters, setVoters] = useState([])
   const [workflow, setWorkflow] = useState(null)
+  const [proposals, setProposals] = useState([])
+  const [hasVotedList, setHasVotedList] = useState([])
+  const [addHasVoted, setAddHasVoted] = useState(false)
+  const [winningProposal, setWinningProposal] = useState([])
 
   useEffect(() => {
     if (isConnected) {
@@ -29,22 +33,34 @@ export const MembersProvider = ({ children }) => {
   }, [isConnected, address])
 
   const loadData = async () => {
-    console.log("dans loadData context")
+
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
+
+    // Contract owner
     const owner = await contract.owner()
     setOwner(owner)
-    //console.log(owner)
-    //console.log(contractAddress)
-    const registeredEvents = await contract.queryFilter('VoterRegistered', 0, 'latest')
-    let registeredList = []
-    registeredEvents.forEach(registeredEvent => {
-      registeredList.push(registeredEvent.args[0])
-    })
-    setRegistered(registeredList)
-    setIsMember(registered.includes(address))
-    console.log(isMember)
-    console.log(workflow)
-    console.log(registered)
+
+    // // List of registered address
+    // const registeredEvents = await contract.queryFilter('VoterRegistered', 0, 'latest')
+    // let registeredList = []
+    // registeredEvents.forEach(registeredEvent => {
+    //   registeredList.push(registeredEvent.args[0])
+    // })
+    // setRegistered(registeredList)
+
+    // // Boolean true if address is registered
+    // setIsMember(registered.includes(address))
+
+    // // List of address who have voted
+    // const hasVotedEvents = await contract.queryFilter('Voted', 0, 'latest')
+    // let hasVoted = []
+    // hasVotedEvents.forEach(hasVotedEvent => {
+    //   hasVoted.push(hasVotedEvent.args.voter)
+    // })
+    // setHasVotedList(hasVoted)
+
+    // // Boolean true if address has voted
+    // setAddHasVoted(hasVoted.includes(address))
   }
 
   return (
@@ -60,6 +76,14 @@ export const MembersProvider = ({ children }) => {
         setVoters,
         isMember,
         setIsMember,
+        proposals,
+        setProposals,
+        hasVotedList,
+        setHasVotedList,
+        addHasVoted,
+        setAddHasVoted,
+        winningProposal,
+        setWinningProposal,
         contractAddress
       }}
     >

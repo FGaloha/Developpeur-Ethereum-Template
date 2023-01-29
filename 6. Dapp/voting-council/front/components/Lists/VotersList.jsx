@@ -42,7 +42,7 @@ export const VotersList = () => {
     const votingEvents = await contract.queryFilter('Voted', 0, 'latest')
     let votingList = []
     votingEvents.forEach(votingEvent => {
-      votingList.push(votingEvent.args)
+      votingList.push([votingEvent.args.proposalId.toString(), votingEvent.args.voter])
     })
     setVoters(votingList)
     console.log(votingList)
@@ -55,17 +55,19 @@ export const VotersList = () => {
           <Table variant='simple'>
             <Thead>
               <Tr>
-                <Th>Index</Th>
-                <Th>Registered address</Th>
-                <Th>Vote for proposal (index)</Th>
+                <Th>Vote order</Th>
+                <Th>Voter address</Th>
+                <Th>Vote for proposal</Th>
               </Tr>
             </Thead>
             <Tbody>
               {voters.slice(0).reverse().map(voter => (
                 <Tr key={voters.indexOf(voter)}>
                   <Td>{voters.indexOf(voter) + 1}</Td>
-                  <Td>{voter[0].substring(0, 5)}...{voter[0].substring(voter[0].length - 4)}</Td>
-                  <Td>voter[1]</Td>
+                  <Td>{voter[1].substring(0, 5)}...{voter[1].substring(voter[1].length - 4)}</Td>
+                  <Td>{voter[0]}</Td>
+                  {/* <Td>{voter.voter.substring(0, 5)}...{voter.voter.substring(voter.voter.length - 4)}</Td>
+                  <Td>{voter.proposalId}</Td> */}
                 </Tr>
               ))}
             </Tbody>

@@ -9,6 +9,8 @@ import { configureChains, createClient, WagmiConfig } from 'wagmi';
 import { hardhat, goerli, mainnet } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
+import { Layout } from '@/components/Layout/Layout';
+import { MembersProvider } from '@/context/MembersProvider'
 
 const { chains, provider } = configureChains(
   [hardhat, goerli, mainnet],
@@ -38,7 +40,11 @@ export default function App({ Component, pageProps }) {
             ...darkTheme.accentColors.orange,
           })}>
         <ChakraProvider>
-          <Component {...pageProps} />
+          <MembersProvider>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </MembersProvider>
         </ChakraProvider>
       </RainbowKitProvider>
     </WagmiConfig >

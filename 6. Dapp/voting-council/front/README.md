@@ -12,7 +12,7 @@ This project is the last phase of the Voting dapp. Here are the steps followed:
 
 Conclusion : with the new contract we avoid a DOS gas limit, we save 64440 gas compare to Alyra version & the tests remains at 100% coverage.
 
-The smart contract is here :  [Etherscan](https://goerli.etherscan.io/address/0x3c5C0AD32375e8973e35E0eF2CDaD9490F0B4330#code){:target="_blank" rel="noopener"}
+The smart contract is here :  [Etherscan](https://goerli.etherscan.io/address/0x3c5C0AD32375e8973e35E0eF2CDaD9490F0B4330#code)
 The platform is here : [High Jedi Council Voting Dapp](https://jedi-council.vercel.app/)
 
 The following video show how the platform has been used by the High Jedi Council: [DEMO](https://jedi-council.vercel.app/)

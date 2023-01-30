@@ -1,17 +1,13 @@
-import Head from 'next/head'
 import { Inter } from '@next/font/google'
-import styles from '@/styles/Home.module.css'
-import { Box, Heading, Flex, Text, Textarea, Input, Button, useToast, Alert, AlertIcon, Image, flexbox } from '@chakra-ui/react';
-import { useState, useEffect } from 'react'
-import { useAccount, useProvider, useSigner, useBalance } from 'wagmi'
+import { Heading, Flex, Text, useToast, Image } from '@chakra-ui/react';
+import { useEffect } from 'react'
+import { useAccount, useProvider } from 'wagmi'
 import Contract from "../contract/Voting"
 import { ethers } from 'ethers'
-import Link from 'next/link'
 import { Workflow } from '@/components/Forms/Workflow';
 import { AddProposals } from '@/components/Forms/AddProposals';
 import { SetVote } from '@/components/Forms/SetVote';
 import { Results } from '@/components/Results/Results';
-import { ResultsDetailed } from '@/components/Results/ResultsDetailed';
 import useMembersProvider from '@/hooks/useMembersProvider'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -21,11 +17,6 @@ export default function Home() {
   // WAGMI
   const { address, isConnected } = useAccount()
   const provider = useProvider()
-  const { data: signer } = useSigner()
-  const { data } = useBalance({
-    address: address,
-    watch: true
-  })
 
   // CHAKRA-UI
   const toast = useToast()
@@ -142,6 +133,6 @@ export default function Home() {
         )
       }
 
-    </Flex >
+    </Flex>
   )
 }

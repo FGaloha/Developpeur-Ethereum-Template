@@ -1,5 +1,5 @@
 import { VotersList } from "../components/Lists/VotersList";
-import { Box, Heading, Flex, Text, Textarea, Input, Button, useToast, Alert, AlertIcon } from '@chakra-ui/react';
+import { Box, Heading, Flex } from '@chakra-ui/react';
 import { useAccount } from 'wagmi'
 
 export default function Voters() {

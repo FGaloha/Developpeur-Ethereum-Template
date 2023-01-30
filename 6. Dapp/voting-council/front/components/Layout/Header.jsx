@@ -1,6 +1,6 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi'
-import { Box, Flex, Heading, Alert, AlertIcon, Text } from '@chakra-ui/react'
+import { Box, Flex, Heading } from '@chakra-ui/react'
 import Head from 'next/head'
 import Link from 'next/link'
 import useMembersProvider from '@/hooks/useMembersProvider'

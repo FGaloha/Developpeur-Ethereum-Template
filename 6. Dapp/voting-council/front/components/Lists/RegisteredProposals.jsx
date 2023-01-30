@@ -1,11 +1,4 @@
-import {
-  Heading, Flex, Text, Textarea, Input, Button, useToast, Thead, Table,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer
-} from '@chakra-ui/react'
+import { Text, Thead, Table, Tbody, Tr, Th, Td, TableContainer } from '@chakra-ui/react'
 import useMembersProvider from '@/hooks/useMembersProvider'
 
 export const RegisteredProposals = () => {

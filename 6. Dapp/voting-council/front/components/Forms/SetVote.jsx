@@ -1,4 +1,4 @@
-import { Input, Button, Text, Flex, useToast, Select } from '@chakra-ui/react'
+import { Button, Text, Flex, useToast, Select } from '@chakra-ui/react'
 import { useSigner, useAccount, useProvider } from 'wagmi'
 import { useState, useEffect } from "react";
 import { ethers } from 'ethers'

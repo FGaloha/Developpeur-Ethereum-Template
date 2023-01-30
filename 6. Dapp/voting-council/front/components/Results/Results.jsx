@@ -1,23 +1,11 @@
-import {
-  Heading, Flex, Text, Textarea, Input, Button, useToast, Thead, Table,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer
-} from '@chakra-ui/react'
-import { useState, useEffect } from 'react'
+import { Heading, Flex, useToast } from '@chakra-ui/react'
+import { useEffect } from 'react'
 import { useAccount, useProvider } from 'wagmi'
 import Contract from '../../contract/Voting';
 import { ethers } from 'ethers'
 import useMembersProvider from '@/hooks/useMembersProvider'
 
 export const Results = () => {
-
-  // Smart Contract address
-  // const env = process.env.NODE_ENV
-  // const contractAddress = (env == 'production') ? process.env.NEXT_PUBLIC_NETWORK_GOERLI : process.env.NEXT_PUBLIC_NETWORK_HARDHAT
-  // const contractAddress = process.env.NEXT_PUBLIC_NETWORK_GOERLI
 
   //WAGMI
   const { isConnected, address } = useAccount()
@@ -27,13 +15,11 @@ export const Results = () => {
   const toast = useToast()
 
   // STATES
-  const { proposals, contractAddress, isMember, winningProposal, setWinningProposal } = useMembersProvider()
+  const { contractAddress, winningProposal, setWinningProposal } = useMembersProvider()
 
 
   useEffect(() => {
-    // if (isMember) {
     getResults()
-    // }
   }, [isConnected, address])
 
   // List of people who have already voted

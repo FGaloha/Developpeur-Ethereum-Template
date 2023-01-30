@@ -1,5 +1,5 @@
 import { Input, Button, Text, Flex, Spinner, useToast } from '@chakra-ui/react'
-import { useAccount, useSigner, useBalance } from 'wagmi'
+import { useSigner } from 'wagmi'
 import { useState } from "react";
 import { ethers } from 'ethers'
 import Contract from '../../contract/Voting'

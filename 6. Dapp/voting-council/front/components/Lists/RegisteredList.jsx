@@ -1,36 +1,10 @@
-import {
-  Heading, Flex, Text, Textarea, Input, Button, useToast, Thead, Table,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer
-} from '@chakra-ui/react'
-import { useState, useEffect } from 'react'
-import { useAccount, useProvider } from 'wagmi'
-import Contract from '../../contract/Voting';
-import { ethers } from 'ethers'
+import { Flex, Text, Thead, Table, Tbody, Tr, Th, Td, TableContainer } from '@chakra-ui/react'
 import useMembersProvider from '@/hooks/useMembersProvider'
 
 export const RegisteredList = () => {
 
-  // Smart Contract address
-  // const env = process.env.NODE_ENV
-  // const contractAddress = (env == 'production') ? process.env.NEXT_PUBLIC_NETWORK_GOERLI : process.env.NEXT_PUBLIC_NETWORK_HARDHAT
-  // const contractAddress = process.env.NEXT_PUBLIC_NETWORK_GOERLI
-
-  //WAGMI
-  const { isConnected } = useAccount()
-  const provider = useProvider()
-
-  //CHAKRA-UI
-  const toast = useToast()
-
   //STATES
-  // const [registered, setRegistered] = useState([])
-  const { registered, setRegistered, contractAddress } = useMembersProvider()
-
-
+  const { registered } = useMembersProvider()
 
   return (
     <Flex bg="black">

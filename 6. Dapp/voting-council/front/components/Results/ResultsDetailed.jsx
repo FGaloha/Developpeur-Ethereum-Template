@@ -1,44 +1,33 @@
 import {
-  Heading, Flex, Text, Textarea, Input, Button, useToast, Thead, Table,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer
+  Heading, Flex, useToast, Thead, Table,
+  Tbody, Tr, Th, Td, TableContainer
 } from '@chakra-ui/react'
-import { useState, useEffect } from 'react'
-import { useAccount, useProvider, useSigner } from 'wagmi'
+import { useEffect } from 'react'
+import { useAccount, useProvider } from 'wagmi'
 import Contract from '../../contract/Voting';
 import { ethers } from 'ethers'
 import useMembersProvider from '@/hooks/useMembersProvider'
 
 export const ResultsDetailed = () => {
 
-  // Smart Contract address
-  // const env = process.env.NODE_ENV
-  // const contractAddress = (env == 'production') ? process.env.NEXT_PUBLIC_NETWORK_GOERLI : process.env.NEXT_PUBLIC_NETWORK_HARDHAT
-  // const contractAddress = process.env.NEXT_PUBLIC_NETWORK_GOERLI
-
   //WAGMI
   const { isConnected, address } = useAccount()
   const provider = useProvider()
-  const { data: signer } = useSigner()
 
   //CHAKRA-UI
   const toast = useToast()
 
   // STATES
-  const { proposals, setProposals, contractAddress, isMember, winningProposal, setWinningProposal } = useMembersProvider()
+  const { proposals, setProposals, contractAddress, winningProposal, setWinningProposal, isMember } = useMembersProvider()
 
   useEffect(() => {
-    // if (isMember) {
-    getResults()
-    // }
+    if (isMember) {
+      getResults()
+    }
   }, [isConnected, address])
 
   // Results for each proposal
   const getResults = async () => {
-
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
     const registeredProposalsEvents = await contract.queryFilter('ProposalRegistered', 0, 'latest')
     let registeredList = []

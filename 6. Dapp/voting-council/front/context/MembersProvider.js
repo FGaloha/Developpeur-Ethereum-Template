@@ -39,28 +39,6 @@ export const MembersProvider = ({ children }) => {
     // Contract owner
     const owner = await contract.owner()
     setOwner(owner)
-
-    // // List of registered address
-    // const registeredEvents = await contract.queryFilter('VoterRegistered', 0, 'latest')
-    // let registeredList = []
-    // registeredEvents.forEach(registeredEvent => {
-    //   registeredList.push(registeredEvent.args[0])
-    // })
-    // setRegistered(registeredList)
-
-    // // Boolean true if address is registered
-    // setIsMember(registered.includes(address))
-
-    // // List of address who have voted
-    // const hasVotedEvents = await contract.queryFilter('Voted', 0, 'latest')
-    // let hasVoted = []
-    // hasVotedEvents.forEach(hasVotedEvent => {
-    //   hasVoted.push(hasVotedEvent.args.voter)
-    // })
-    // setHasVotedList(hasVoted)
-
-    // // Boolean true if address has voted
-    // setAddHasVoted(hasVoted.includes(address))
   }
 
   return (

@@ -1,5 +1,5 @@
-import { Input, Button, Text, Flex, Spinner, useToast } from '@chakra-ui/react'
-import { useAccount, useSigner, useBalance, useProvider } from 'wagmi'
+import { Input, Button, Text, Flex, useToast } from '@chakra-ui/react'
+import { useAccount, useSigner, useProvider } from 'wagmi'
 import { useState, useEffect } from "react";
 import { ethers } from 'ethers'
 import Contract from '../../contract/Voting'
@@ -12,7 +12,7 @@ export const AddProposals = () => {
   const { data: signer } = useSigner()
   const provider = useProvider()
   const toast = useToast()
-  const { contractAddress, proposals, setProposals } = useMembersProvider()
+  const { contractAddress, setProposals } = useMembersProvider()
   const [isLoading, setIsLoading] = useState(false)
   const [proposal, setProposal] = useState("")
 
@@ -23,15 +23,12 @@ export const AddProposals = () => {
   const getProposals = async () => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
     const registeredProposalsEvents = await contract.queryFilter('ProposalRegistered', 0, 'latest')
-
-    //if (registeredProposalsEvents.length > 0) {
     let registeredList = []
     for await (const registeredProposalsEvent of registeredProposalsEvents) {
       const registeredProposal = await contract.getOneProposal(registeredProposalsEvent.args.proposalId)
       registeredList.push([registeredProposalsEvent.args.proposalId.toString(), registeredProposal.voteCount.toString(), registeredProposal.description])
     }
     setProposals(registeredList)
-    //}
   }
 
   const registerProposal = async () => {

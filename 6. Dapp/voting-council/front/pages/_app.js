@@ -1,13 +1,9 @@
-import '@/styles/globals.css'
 import { ChakraProvider } from '@chakra-ui/react'
 import '@rainbow-me/rainbowkit/styles.css';
-import {
-  getDefaultWallets,
-  RainbowKitProvider, darkTheme, lightTheme
-} from '@rainbow-me/rainbowkit';
+import { getDefaultWallets, RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit';
 import { configureChains, createClient, WagmiConfig } from 'wagmi';
 import { hardhat, goerli, mainnet } from 'wagmi/chains';
-import { alchemyProvider } from 'wagmi/providers/alchemy';
+// import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 import { Layout } from '@/components/Layout/Layout';
 import { MembersProvider } from '@/context/MembersProvider'

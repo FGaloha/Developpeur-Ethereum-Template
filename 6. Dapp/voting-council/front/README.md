@@ -1,38 +1,55 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Voting Smart Contract: Security & Dapp phase
 
-## Getting Started
+## Summary
 
-First, run the development server:
+This project is the last phase of the Voting dapp. Here are the steps followed:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+- improve security Smart contract
+- update tests files to take into account modifications
+- gaz optimization
+- create a front dapp
+- deployment of smart contract on Goerli & fron on Vercel
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Conclusion : with the new contract we avoid a DOS gas limit, we save 64440 gas compare to Alyra version & the tests remains at 100% coverage.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+The smart contract is here :  [Etherscan](https://goerli.etherscan.io/address/0x3c5C0AD32375e8973e35E0eF2CDaD9490F0B4330#code)
+The platform is here : [High Jedi Council Voting Dapp](https://jedi-council.vercel.app/)
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+The following video show how the platform has been used by the High Jedi Council: [demo](https://jedi-council.vercel.app/)
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+Happy discovery !
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Security actions
 
-## Learn More
+There is a risk in the TallyVotes function of the smart contract due to the loop on the proposal array. A malicious person could try to create enough proposal to block the funcion. It would mean that the contract would not been able to manage its final step: the winning proposal evaluation.
 
-To learn more about Next.js, take a look at the following resources:
+To avoid this situation & save gas:
+ - the proposals array has been changed from dynamic to static (255 slots).
+ - An index proposalsLength has been added.
+ - A require has been added in the addProposal function to properly manage a revert if more than 255 proposals (including "Genesis") were tried to be added.
+Given the fact that the statement of the exercice precises it is for a small organization and the contract workflow runs only for one vote, it makes sense.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Gas & other optimized actions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- all strings has been reduce
+- all p++ has been changed in ++p
+- Solidity Compiler Optimizer has been activated
+- proposals array limited to 255 to be aligned with a proposalId uint8
+- uint8 for proposalId when it was saving gas. It stayed at uint256 when the modification was costing more but all cases has been tested (example winningProposalId).
+- For lisibility & gas bytes(_desc).length > 0 replaces keccak256(abi.encode(_desc)) != keccak256(abi.encode(""))
+- packing possibilities has been tested: it showed increase in the gas costs so it has been remained without
+- Linting code: visibility has been added were it was mising to improve lisibility (internal variables)
 
-## Deploy on Vercel
+## Test & coverage
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+A test has been added to check the revert "Max proposals reached" is propoerly triggered when a voter attemps to create proposal number 256.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- yarn hardhat coverage: it should show a 100% coverage as followed:
+
+    File         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+    -------------|----------|----------|----------|----------|----------------|
+    contracts    |      100 |      100 |      100 |      100 |        -       |
+    All files    |      100 |      100 |      100 |      100 |        -       |
+
+
+![High Jedi Council Dapp](https://bafybeigyn7sh7ugc2ourpe5ivhascvnxz3nzkw7aia3apfbjrh4omx26f4.ipfs.nftstorage.link/)

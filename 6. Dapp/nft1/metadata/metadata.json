@@ -1,0 +1,35 @@
+{
+  "name": "History #1",
+  "description": "Power of history",
+  "image": "https://bafkreighg73ecuzwllfmqlhpmjtmrt5jb5gwhrdjvgsctzt75n3sefsg7e.ipfs.nftstorage.link/",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "God"
+    },
+    {
+      "trait_type": "Period",
+      "value": "Greek"
+    },
+    {
+      "trait_type": "Clothing",
+      "value": "Helmet"
+    },
+    {
+      "trait_type": "Material",
+      "value": "Stone"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Closed"
+    },
+    {
+      "trait_type": "Weapon",
+      "value": "Spear"
+    },
+    {
+      "trait_type": "Background",
+      "value": "Colored"
+    }
+  ]
+}

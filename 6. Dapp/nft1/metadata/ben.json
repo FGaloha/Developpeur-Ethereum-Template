@@ -1,0 +1,21 @@
+{
+  "description": "Le premier NFT créé par la promotion Goerli",
+  "external_url": "https://alyra.fr",
+  "image": "https://bafybeiec33ljwxq33uiu7xy4wfyhiocvrufep5bbt35weko3ilvnqg53fa.ipfs.nftstorage.link/redcharlie-redcharlie1-z7E1vxpI0b8-unsplash.jpg",
+  "name": "Alyra Exo NFT#1",
+  "attributes": [
+    {
+      "trait_type": "Stamina",
+      "value": 1.4
+    },
+    {
+      "trait_type": "Personality",
+      "value": "Sad"
+    },
+    {
+      "display_type": "boost_number",
+      "trait_type": "Aqua Power",
+      "value": 40
+    }
+  ]
+}

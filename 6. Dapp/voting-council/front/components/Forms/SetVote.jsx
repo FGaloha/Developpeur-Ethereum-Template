@@ -1,5 +1,5 @@
 import { Input, Button, Text, Flex, useToast, Select } from '@chakra-ui/react'
-import { useSigner, useAccount } from 'wagmi'
+import { useSigner, useAccount, useProvider } from 'wagmi'
 import { useState, useEffect } from "react";
 import { ethers } from 'ethers'
 import Contract from '../../contract/Voting'
@@ -9,11 +9,9 @@ import useMembersProvider from '@/hooks/useMembersProvider'
 export const SetVote = () => {
   const { address, isConnected } = useAccount()
   const { data: signer } = useSigner()
+  const provider = useProvider()
   const toast = useToast()
-
-  const { contractAddress, proposals, setProposals, addHasVoted } = useMembersProvider()
-
-  // STATE
+  const { contractAddress, proposals, setProposals, addHasVoted, setAddHasVoted } = useMembersProvider()
   const [isLoading, setIsLoading] = useState(false)
   const [vote, setVote] = useState(null)
 
@@ -22,7 +20,7 @@ export const SetVote = () => {
   }, [isConnected, address])
 
   const getProposals = async () => {
-    const contract = new ethers.Contract(contractAddress, Contract.abi, signer)
+    const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
     const registeredProposalsEvents = await contract.queryFilter('ProposalRegistered', 0, 'latest')
     let registeredList = []
     for await (const registeredProposalsEvent of registeredProposalsEvents) {
@@ -30,7 +28,6 @@ export const SetVote = () => {
       registeredList.push([registeredProposalsEvent.args.proposalId.toString(), registeredProposal.voteCount.toString(), registeredProposal.description])
     }
     setProposals(registeredList)
-    //console.log(registeredList)
   }
 
   const registerVote = async () => {
@@ -39,6 +36,7 @@ export const SetVote = () => {
       const contract = new ethers.Contract(contractAddress, Contract.abi, signer)
       const voteRecording = await contract.setVote(vote)
       await voteRecording.wait()
+      setAddHasVoted(true)
       toast({
         title: 'Vote stored',
         description: `You successfully vote for proposal ${vote}`,
@@ -60,25 +58,25 @@ export const SetVote = () => {
   }
 
   return (
-    <Flex>
-      <Flex>
-        <Text>Set vote</Text>
+    <Flex direction="column" width="100%">
+      <Flex ps="2" alignItems="center" justifyContent="start" width="100%">
+        {!addHasVoted && <Text>Set vote</Text>}
         {proposals.length > 0 ? (
           <Flex>
             {!addHasVoted ? (
-              <Flex>
-                <Select placeholder='Select your proposal' size='md' onChange={e => setVote(e.target.value)} >
+              <Flex my="4">
+                <Select id="selectVote" ms="2" placeholder='Select your proposal' size='md' onChange={e => setVote(e.target.value)} >
                   {proposals.slice(0).map(proposal => (
                     <option key={proposal[0]} value={proposal[0]}>{proposal[0]}-{proposal[2]}</option>))}
                 </Select>
-                <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' mt="1rem" colorScheme='whatsapp' onClick={() => registerVote()}>Vote</Button>
+                <Button ms="2" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='whatsapp' onClick={() => registerVote()}>Vote</Button>
               </Flex>
             ) : (<Text>Thank you to have voted ! </Text>)}
           </Flex>
         ) : (<Text>No proposals to vote</Text>)}
       </Flex>
       {!addHasVoted && (
-        <Flex><RegisteredProposals /></Flex>)}
+        <Flex borderTop="2px" alignItems="center" justifyContent="center" pt="2" pb="4"><RegisteredProposals /></Flex>)}
     </Flex>
   )
 }

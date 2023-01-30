@@ -73,6 +73,14 @@ const { developmentChains } = require("../../helper-hardhat-config")
           .withArgs(2);
       })
 
+      // for (let i = 3; i < 256; i++) {
+      //   it("should be possible for another voter to add a proposal with a description during (1)-ProposalsRegistrationStarted", async function () {
+      //     await expect(voting.connect(voter2).addProposal(`Raise wages ${i.toString()}`))
+      //       .to.emit(voting, 'ProposalRegistered')
+      //       .withArgs(i);
+      //   })
+      // }
+
       it("should be possible for the owner to endProposalsRegistering when current phase is (1)-ProposalsRegistrationStarted", async function () {
         await expect(await voting.endProposalsRegistering())
           .to.emit(voting, 'WorkflowStatusChange')

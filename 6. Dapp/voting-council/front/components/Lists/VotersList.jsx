@@ -45,7 +45,6 @@ export const VotersList = () => {
       votingList.push([votingEvent.args.proposalId.toString(), votingEvent.args.voter])
     })
     setVoters(votingList)
-    console.log(votingList)
   }
 
   return (

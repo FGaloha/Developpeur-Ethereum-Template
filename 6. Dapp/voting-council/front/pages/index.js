@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.css'
-import { Box, Heading, Flex, Text, Textarea, Input, Button, useToast, Alert, AlertIcon, Image } from '@chakra-ui/react';
+import { Box, Heading, Flex, Text, Textarea, Input, Button, useToast, Alert, AlertIcon, Image, flexbox } from '@chakra-ui/react';
 import { useState, useEffect } from 'react'
 import { useAccount, useProvider, useSigner, useBalance } from 'wagmi'
 import Contract from "../contract/Voting"
@@ -95,37 +95,48 @@ export default function Home() {
       {isConnected ? (
         <Flex direction="column" alignItems="center" justifyContent="top" w="100%">
 
-          <Flex direction="column" height="100%" w="100%" alignItems="center" justifyContent="top" >
-            <Flex borderBottom="2px" width="100%" alignItems="center" justifyContent="center" pt="2" >
+          <Flex direction="column" height="100%" w="100%" alignItems="center" justifyContent="top" pb="4">
+            <Flex borderBottom="2px" width="100%" alignItems="center" justifyContent="center" pt="2" mb="4">
               <CurrentPhase />
             </Flex>
 
-            <Flex mt="4" direction="column" alignItems="center" justifyContent="center" border="2px" width="40%">
-              {address == owner && (<Flex ps="2" alignItems="start" justifyContent="start" width="100%"><Text>Status: Admin</Text></Flex>)}
+            {address == owner && (
+              <Flex width="100%" alignItems="center" justifyContent="center">
+                <Text fontSize='xl' width="40%" alignItems="start">Admin actions</Text>
+              </Flex>)}
+
+            < Flex direction="column" alignItems="center" justifyContent="center" border="2px" width="40%">
+              {address == owner && (
+                <Flex ps="2" alignItems="start" justifyContent="start" width="100%">
+                  <Text>Status: Admin</Text>
+                </Flex>
+              )}
 
               {isMember ? (<Flex ps="2" alignItems="start" justifyContent="start" width="100%"><Text>Member: voting rights & full data access.</Text></Flex>)
                 : (<Flex ps="2" alignItems="start" justifyContent="start" width="100%"><Text>Visitor: no voting rights, data limited.</Text></Flex>)}
             </Flex>
-            {address == owner ? (
+            {address == owner && (
               <Flex direction="column" alignItems="start" justifyContent="start" width="40%">
                 <Workflow w="100%" getData={getData} />
-              </Flex>) :
+              </Flex>)}
 
-              (isMember && (
-                <Flex>
-                  {workflow == 1 &&
-                    < AddProposals />
-                  }
-                  {workflow == 3 &&
-                    < SetVote />
-                  }
+            {isMember && (
+              <Flex direction="column" width="100%" alignItems="center" justifyContent="center">
+                <Text fontSize='xl' width="40%" alignItems="start">Voter actions</Text>
+                <Flex width="40%" alignItems="center" justifyContent="center" border="2px">
+
+                  {workflow == 1 || workflow == 3 ? (
+                    <>
+                      {workflow == 1 && < AddProposals />}
+                      {workflow == 3 && < SetVote />}
+                    </>
+                  )
+                    : (<Text>No voter action to manage for the moment</Text>)}
+
                 </Flex>
-              )
-              )
-
-            }
+              </Flex>)}
             {workflow == 5 &&
-              <Flex ms="2" bg="black">< Results /></Flex>
+              < Results />
             }
           </Flex>
         </Flex >
@@ -134,8 +145,9 @@ export default function Home() {
           <Flex direction="column" width="100%" alignItems="center" justifyContent="center">
             <Image boxSize="80%" src='https://wallpaperaccess.com/full/376659.jpg' alt='High Jedi Council' />
           </Flex>
-        )}
+        )
+      }
 
-    </Flex>
+    </Flex >
   )
 }

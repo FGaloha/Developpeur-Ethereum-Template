@@ -20,20 +20,18 @@ export const Workflow = ({ getData }) => {
     setIsLoading(true);
     try {
       const contract = new ethers.Contract(contractAddress, Contract.abi, signer)
-      //console.log(voterAddress)
       const voterRegistration = await contract.addVoter(voterAddress)
       await voterRegistration.wait()
-      // console.log(voterAddress)
       const registeredEvents = await contract.queryFilter('VoterRegistered', 0, 'latest')
       let registeredList = []
       registeredEvents.forEach(registeredEvent => {
         registeredList.push(registeredEvent.args[0])
       })
       setRegistered(registeredList)
-      //getData()
+      setVoterAddress(null)
       toast({
         title: 'New address added',
-        description: `You successfully added ${voterAddress}`, //error.message
+        description: `You successfully added ${voterAddress.substring(0, 5)}...${voterAddress.substring(voterAddress.length - 4)}`,
         status: 'success',
         duration: 5000,
         isClosable: true,
@@ -52,15 +50,18 @@ export const Workflow = ({ getData }) => {
   }
 
   const SpinnerNext = () => {
-    return (isLoading && (
-      <Spinner
-        thickness='4px'
-        speed='0.65s'
-        emptyColor='gray.200'
-        color='blue.500'
-        size='xl'
-      />
-    ))
+    return (
+      <Flex mt="4" mb="2" direction="column" width="100%" alignItems="center" justifyContent="center">
+        <Text as='b'>Processing</Text>
+        <Spinner
+          thickness='4px'
+          speed='0.65s'
+          emptyColor='gray.200'
+          color='blue.500'
+          size='xl'
+        />
+      </Flex>
+    )
   }
 
   const launchNextPhase = async () => {
@@ -87,7 +88,6 @@ export const Workflow = ({ getData }) => {
       }
       await nextPhase.wait()
       await getData()
-      // console.log(workflow)
       toast({
         title: 'New phase started',
         description: `You successfully ended phase ${workflow}`,
@@ -147,7 +147,7 @@ export const Workflow = ({ getData }) => {
             default:
               return (
                 <>
-                  <Flex direction="column" w="100%" py="4">
+                  <Flex direction="column" w="100%">
                     <Flex mt="2" w="100%" direction="column" alignItems="start" justifyContent="center" border="2px">
                       {!isLoading && (
                         <>
@@ -157,13 +157,15 @@ export const Workflow = ({ getData }) => {
                             <Input placeholder='Address of the voter to register' onChange={e => setVoterAddress(e.target.value)} />
                             <Button mx="2" colorScheme='whatsapp' onClick={() => registerVoter()}>Register</Button>
                           </Flex>
-                          <Flex ps="2" mb="10" justifyContent="center" width="100%">
+                          <Flex ps="2" mt="3" mb="10" justifyContent="center" width="100%">
                             <RegisteredList />
                           </Flex>
                         </>
                       )}
                     </Flex>
-                    <SpinnerNext />
+                    {isLoading && (
+                      <SpinnerNext />
+                    )}
                     {!isLoading && (
                       <Flex width="100%" alignItems="center" justifyContent="start" border="2px" my="4">
                         <Text ps="2">Start registering proposal</Text>

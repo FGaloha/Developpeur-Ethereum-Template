@@ -30,23 +30,7 @@ export const RegisteredList = () => {
   // const [registered, setRegistered] = useState([])
   const { registered, setRegistered, contractAddress } = useMembersProvider()
 
-  // useEffect(() => {
-  //   if (isConnected) {
-  //     getRegistered()
-  //   }
-  // }, [isConnected])
 
-  // List of registered accounts
-  // const getRegistered = async () => {
-  //   const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
-  //   const registeredEvents = await contract.queryFilter('VoterRegistered', 0, 'latest')
-  //   let registeredList = []
-  //   registeredEvents.forEach(registeredEvent => {
-  //     registeredList.push(registeredEvent.args[0])
-  //   })
-  //   setRegistered(registeredList)
-  //   //console.log(registeredList)
-  // }
 
   return (
     <Flex bg="black">

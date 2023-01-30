@@ -33,7 +33,7 @@ export const RegisteredProposals = () => {
             </Tbody>
           </Table>
         </TableContainer>
-      ) : (<Text></Text>)}
+      ) : (<Text justifyContent="end" alignItems="end" mt="4">No registered proposal for the moment</Text>)}
     </>
   )
 }

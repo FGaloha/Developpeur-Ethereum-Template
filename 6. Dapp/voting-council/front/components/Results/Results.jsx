@@ -40,23 +40,12 @@ export const Results = () => {
   const getResults = async () => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
     const winningId = await contract.winningProposalID()
-    //const proposalCount = await contract.getOneProposal(winningId)
-    //let winningResult = [winningId.toString(), proposalCount.description, proposalCount.voteCount.toString()]
-    // proposals.forEach(proposal => {
-    //   if (proposal[0] == winningId) {
-    //     winningResult.push([winningId, proposal[1]])
-    //   }
-    // })
     setWinningProposal([winningId.toString()])
-    console.log("address appel gagnant")
-    console.log(address)
-    console.log(winningProposal)
-    console.log(proposals)
   }
 
   return (
-    <>
-      <Heading>Winning proposal: {winningProposal[0]}</Heading>
-    </>
+    <Flex mt="5" bg="#25D366" color="black" alignItems="center" justifyContent="center" width="40%">
+      <Heading width="100%" p="100">Winning proposal: {winningProposal[0]}</Heading>
+    </Flex>
   )
 }

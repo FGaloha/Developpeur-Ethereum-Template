@@ -105,7 +105,7 @@ contract Voting is Ownable {
             "Proposals session not open"
         );
         require(bytes(_desc).length > 0, "Missing description");
-
+        require(proposalsLength < 255, "Max proposals reached");
         Proposal memory proposal;
         proposal.description = _desc;
         proposalsArray[proposalsLength] = proposal;
@@ -146,7 +146,7 @@ contract Voting is Ownable {
 
         Proposal memory proposal;
         proposal.description = "GENESIS";
-        proposalsArray[proposalsLength];
+        proposalsArray[proposalsLength] = proposal;
         ++proposalsLength;
 
         emit WorkflowStatusChange(

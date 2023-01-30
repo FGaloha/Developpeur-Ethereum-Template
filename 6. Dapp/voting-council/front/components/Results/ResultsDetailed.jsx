@@ -39,7 +39,7 @@ export const ResultsDetailed = () => {
   // Results for each proposal
   const getResults = async () => {
 
-    const contract = new ethers.Contract(contractAddress, Contract.abi, signer)
+    const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
     const registeredProposalsEvents = await contract.queryFilter('ProposalRegistered', 0, 'latest')
     let registeredList = []
     for await (const registeredProposalsEvent of registeredProposalsEvents) {
@@ -53,23 +53,18 @@ export const ResultsDetailed = () => {
   }
 
   return (
-    <Flex bg="black">
+    <Flex bg="black" direction="column" px="10" py="5" justifyContent="center" alignItems="center">
       <Heading>Winning proposal: {winningProposal}</Heading>
-      <TableContainer>
+      <TableContainer mt="3">
         <Table variant='simple'>
           <Thead>
             <Tr>
-              <Th>Index</Th>
+              <Th>Proposal number</Th>
               <Th>Number of votes</Th>
-              <Th>Winning proposal</Th>
+              <Th>Description</Th>
             </Tr>
           </Thead>
           <Tbody>
-            <Tr>
-              <Td>Proposal number</Td>
-              <Td>Number of votes</Td>
-              <Td>Description</Td>
-            </Tr>
             {proposals.slice(0).map(proposal => (
               <Tr key={proposals.indexOf(proposal)}>
                 <Td>{proposal[0]}</Td>

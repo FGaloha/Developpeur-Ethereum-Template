@@ -49,7 +49,7 @@ export const VotersList = () => {
   }
 
   return (
-    <>
+    <Flex bg="black">
       {voters.length > 0 ? (
         <TableContainer>
           <Table variant='simple'>
@@ -74,6 +74,6 @@ export const VotersList = () => {
           </Table>
         </TableContainer>
       ) : (<Text></Text>)}
-    </>
+    </Flex>
   )
 }

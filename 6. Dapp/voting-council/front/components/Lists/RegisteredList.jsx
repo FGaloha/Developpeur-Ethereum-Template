@@ -49,7 +49,7 @@ export const RegisteredList = () => {
   // }
 
   return (
-    <>
+    <Flex bg="black">
       {registered.length > 0 ? (
         <TableContainer>
           <Table variant='simple'>
@@ -70,6 +70,6 @@ export const RegisteredList = () => {
           </Table>
         </TableContainer>
       ) : (<Text></Text>)}
-    </>
+    </Flex>
   )
 }

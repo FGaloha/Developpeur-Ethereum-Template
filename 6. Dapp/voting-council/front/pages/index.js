@@ -1,8 +1,7 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.css'
-import { Box, Heading, Flex, Text, Textarea, Input, Button, useToast, Alert, AlertIcon } from '@chakra-ui/react';
+import { Box, Heading, Flex, Text, Textarea, Input, Button, useToast, Alert, AlertIcon, Image } from '@chakra-ui/react';
 import { useState, useEffect } from 'react'
 import { useAccount, useProvider, useSigner, useBalance } from 'wagmi'
 import Contract from "../contract/Voting"
@@ -91,23 +90,26 @@ export default function Home() {
       // direction={["column", "column", "row", "row"]}
       // alignItems={["center", "center", "flex-start", "flex-start"]}
       // flexWrap="wrap"
-      border="2px"
+      border="2px" bg="black"
     >
       {isConnected ? (
-        <Flex direction="column">
+        <Flex direction="column" alignItems="center" justifyContent="top" w="100%">
 
-          {address == owner && (<Flex ms="2"><Text>Status: Admin</Text></Flex>)}
+          <Flex direction="column" height="100%" w="100%" alignItems="center" justifyContent="top" >
+            <Flex borderBottom="2px" width="100%" alignItems="center" justifyContent="center" pt="2" >
+              <CurrentPhase />
+            </Flex>
 
-          {isMember ? (<Flex ms="2"><Text>Member: voting rights & full data access.</Text></Flex>)
-            : (<Flex ms="2"><Text>Visitor: no voting rights, data limited.</Text></Flex>)}
+            <Flex mt="4" direction="column" alignItems="center" justifyContent="center" border="2px" width="40%">
+              {address == owner && (<Flex ps="2" alignItems="start" justifyContent="start" width="100%"><Text>Status: Admin</Text></Flex>)}
 
-          <Flex direction="column" height="100%" w="100%" alignItems="start" justifyContent="start" border="2px">
-            <CurrentPhase />
+              {isMember ? (<Flex ps="2" alignItems="start" justifyContent="start" width="100%"><Text>Member: voting rights & full data access.</Text></Flex>)
+                : (<Flex ps="2" alignItems="start" justifyContent="start" width="100%"><Text>Visitor: no voting rights, data limited.</Text></Flex>)}
+            </Flex>
             {address == owner ? (
-              <Flex direction="column">
+              <Flex direction="column" alignItems="start" justifyContent="start" width="40%">
                 <Workflow w="100%" getData={getData} />
-              </Flex>
-            ) :
+              </Flex>) :
 
               (isMember && (
                 <Flex>
@@ -118,23 +120,19 @@ export default function Home() {
                     < SetVote />
                   }
                 </Flex>
-              ))
+              )
+              )
 
             }
             {workflow == 5 &&
-              <Flex ms="2">< Results /></Flex>
+              <Flex ms="2" bg="black">< Results /></Flex>
             }
           </Flex>
         </Flex >
       )
         : (
-          <Flex height="100%" width="100%" alignItems="center" justifyContent="center">
-            <Alert status='warning' width="300px">
-              <AlertIcon />
-              <Flex direction="column">
-                <Text as='span'>Please connect your Wallet</Text>
-              </Flex>
-            </Alert>
+          <Flex direction="column" width="100%" alignItems="center" justifyContent="center">
+            <Image boxSize="80%" src='https://wallpaperaccess.com/full/376659.jpg' alt='High Jedi Council' />
           </Flex>
         )}
 

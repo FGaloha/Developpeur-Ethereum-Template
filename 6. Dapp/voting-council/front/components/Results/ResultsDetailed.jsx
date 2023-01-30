@@ -53,7 +53,7 @@ export const ResultsDetailed = () => {
   }
 
   return (
-    <>
+    <Flex bg="black">
       <Heading>Winning proposal: {winningProposal}</Heading>
       <TableContainer>
         <Table variant='simple'>
@@ -80,6 +80,6 @@ export const ResultsDetailed = () => {
           </Tbody>
         </Table>
       </TableContainer>
-    </>
+    </Flex>
   )
 }

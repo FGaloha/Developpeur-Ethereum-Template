@@ -3,7 +3,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 import '@rainbow-me/rainbowkit/styles.css';
 import {
   getDefaultWallets,
-  RainbowKitProvider, darkTheme
+  RainbowKitProvider, darkTheme, lightTheme
 } from '@rainbow-me/rainbowkit';
 import { configureChains, createClient, WagmiConfig } from 'wagmi';
 import { hardhat, goerli, mainnet } from 'wagmi/chains';
@@ -35,10 +35,11 @@ export default function App({ Component, pageProps }) {
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider modalSize="compact" chains={chains}
-        theme={
-          darkTheme({
-            ...darkTheme.accentColors.orange,
-          })}>
+        theme={lightTheme({
+          accentColor: '#25D366',
+          accentColorForeground: 'white',
+          borderRadius: 'medium',
+        })}>
         <ChakraProvider>
           <MembersProvider>
             <Layout>

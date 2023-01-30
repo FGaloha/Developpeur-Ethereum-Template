@@ -110,51 +110,54 @@ export const Workflow = ({ getData }) => {
 
   return (
     <>
-      <Flex>
+      <Flex width="100%">
 
         {(() => {
           switch (workflow) {
             case 1:
               return (
-                <>
-                  <Text>End registering proposal</Text>
-                  <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' mt="1rem" colorScheme='whatsapp' onClick={() => launchNextPhase()}>Validate</Button>
-                </>)
+                <Flex width="100%" alignItems="center" justifyContent="start" border="2px" my="4">
+                  <Text ps="2">End registering proposal</Text>
+                  <Button my="2" ms="2" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='whatsapp' onClick={() => launchNextPhase()}>Validate</Button>
+                </Flex>)
             case 2:
               return (
-                <>
-                  <Text>Start voting</Text>
-                  <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' mt="1rem" colorScheme='whatsapp' onClick={() => launchNextPhase()}>Validate</Button>
-                </>)
+                <Flex width="100%" alignItems="center" justifyContent="start" border="2px" my="4">
+                  <Text ps="2">Start voting</Text>
+                  <Button my="2" ms="2" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='whatsapp' onClick={() => launchNextPhase()}>Validate</Button>
+                </Flex>)
             case 3:
               return (
-                <>
-                  <Text>End voting</Text>
-                  <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' mt="1rem" colorScheme='whatsapp' onClick={() => launchNextPhase()}>Validate</Button>
-                </>)
+                <Flex width="100%" alignItems="center" justifyContent="start" border="2px" my="4">
+                  <Text ps="2">End voting</Text>
+                  <Button my="2" ms="2" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='whatsapp' onClick={() => launchNextPhase()}>Validate</Button>
+                </Flex>)
             case 4:
               return (
-                <>
-                  <Text>Tally votes</Text>
-                  <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' mt="1rem" colorScheme='whatsapp' onClick={() => launchNextPhase()}>Validate</Button>
-                </>)
+                <Flex width="100%" alignItems="center" justifyContent="start" border="2px" my="4">
+                  <Text ps="2">Tally votes</Text>
+                  <Button my="2" ms="2" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='whatsapp' onClick={() => launchNextPhase()}>Validate</Button>
+                </Flex>)
             case 5:
               return (
-                <Text>Voting process ended. Results publically available.</Text>
+                <Flex width="100%" alignItems="center" justifyContent="start" border="2px" my="4">
+                  <Text ps="2">Voting process ended. Results publically available.</Text>
+                </Flex>
               )
             default:
               return (
                 <>
-                  <Flex direction="column" w="100%">
-                    <Flex w="100%" direction="column" alignItems="center" justifyContent="start" border="2px">
+                  <Flex direction="column" w="100%" py="4">
+                    <Flex mt="2" w="100%" direction="column" alignItems="start" justifyContent="center" border="2px">
                       {!isLoading && (
                         <>
-                          <Flex>
-                            <Text width="100%">Manage voters registration</Text>
+                          <Text my="2" ps="2">Manage voters registration</Text>
+                          <Flex ps="2" mb="2" alignItems="start" justifyContent="center" width="100%">
+
                             <Input placeholder='Address of the voter to register' onChange={e => setVoterAddress(e.target.value)} />
-                            <Button colorScheme='whatsapp' onClick={() => registerVoter()}>Register</Button>
+                            <Button mx="2" colorScheme='whatsapp' onClick={() => registerVoter()}>Register</Button>
                           </Flex>
-                          <Flex justifyContent="start" width="100%">
+                          <Flex ps="2" mb="10" justifyContent="center" width="100%">
                             <RegisteredList />
                           </Flex>
                         </>
@@ -162,9 +165,9 @@ export const Workflow = ({ getData }) => {
                     </Flex>
                     <SpinnerNext />
                     {!isLoading && (
-                      <Flex width="100%" alignItems="center" justifyContent="start">
-                        <Text>Start registering proposal</Text>
-                        <Button colorScheme='whatsapp' onClick={() => launchNextPhase()}>Validate</Button>
+                      <Flex width="100%" alignItems="center" justifyContent="start" border="2px" my="4">
+                        <Text ps="2">Start registering proposal</Text>
+                        <Button my="2" ms="2" colorScheme='whatsapp' onClick={() => launchNextPhase()}>Validate</Button>
                       </Flex>)
                     }
                   </Flex>

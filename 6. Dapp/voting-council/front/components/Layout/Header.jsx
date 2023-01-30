@@ -27,7 +27,7 @@ export const Header = () => {
             <Flex me="4"><Link href="/">Home</Link></Flex>
             <Flex me="4"><Link href="/registered">Registered</Link></Flex>
             {workflow >= 3 && (<Flex me="4"><Link href="/voters">Voters</Link></Flex>)}
-            {isMember && workflow >= 3 && (<Flex><Link href="/detailedResults">Detailed results</Link></Flex>)}
+            {isMember && workflow == 5 && (<Flex><Link href="/detailedResults">Detailed results</Link></Flex>)}
           </Flex>
         }
 

@@ -85,13 +85,7 @@ export default function Home() {
   }
 
   return (
-    <Flex
-      w="100%" m="0px" p="0px"
-      // direction={["column", "column", "row", "row"]}
-      // alignItems={["center", "center", "flex-start", "flex-start"]}
-      // flexWrap="wrap"
-      border="2px" bg="black"
-    >
+    <Flex w="100%" m="0px" p="0px" border="2px" bg="black">
       {isConnected ? (
         <Flex direction="column" alignItems="center" justifyContent="top" w="100%">
 
@@ -143,7 +137,7 @@ export default function Home() {
       )
         : (
           <Flex direction="column" width="100%" alignItems="center" justifyContent="center">
-            <Image boxSize="80%" src='https://wallpaperaccess.com/full/376659.jpg' alt='High Jedi Council' />
+            <Image boxSize="100%" src='https://bafybeigcaaehvwni6i6j4i6vbgyqriiipafonvzizzr5ra2rqq4t3jnv2m.ipfs.nftstorage.link/' alt='High Jedi Council' />
           </Flex>
         )
       }

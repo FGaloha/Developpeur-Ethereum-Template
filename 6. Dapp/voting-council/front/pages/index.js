@@ -42,7 +42,7 @@ export default function Home() {
     let registeredEvents = [];
     // code pour récupérer les events par block de 1000
     const startBlock = 8405203; //Block number where the contract was deployed
-    const endBlock = latest;
+    const endBlock = 'latest';
 
     for (let i = startBlock; i < endBlock; i += 100) {
       console.log("i", i)

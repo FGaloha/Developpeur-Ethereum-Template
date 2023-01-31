@@ -26,7 +26,21 @@ export const VotersList = () => {
   // List of people who have already voted
   const getVoters = async () => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
-    const votingEvents = await contract.queryFilter('Voted', 8405203, 'latest')
+    // const votingEvents = await contract.queryFilter('Voted', 8405203, 'latest')
+
+    let votingEvents = [];
+    // code pour récupérer les events par block de 1000
+    const startBlock = 8405203; //Block number where the contract was deployed
+    const endBlock = latest;
+
+    for (let i = startBlock; i < endBlock; i += 1000) {
+      console.log("i", i)
+      const _startBlock = i;
+      const _endBlock = Math.min(endBlock, i + 999);
+      const data = await contract.queryFilter('Voted', _startBlock, _endBlock);
+      votingEvents = [...votingEvents, ...data]
+    }
+
     let votingList = []
     votingEvents.forEach(votingEvent => {
       votingList.push([votingEvent.args.proposalId.toString(), votingEvent.args.voter])

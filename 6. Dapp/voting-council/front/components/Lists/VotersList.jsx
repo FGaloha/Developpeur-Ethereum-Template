@@ -31,7 +31,7 @@ export const VotersList = () => {
     let votingEvents = [];
     // code pour récupérer les events par block de 1000
     const startBlock = 8405203; //Block number where the contract was deployed
-    const endBlock = 'latest';
+    const endBlock = await provider.getBlockNumber();
 
     for (let i = startBlock; i < endBlock; i += 100) {
       console.log("i", i)

@@ -6,7 +6,11 @@ import Link from 'next/link'
 import useMembersProvider from '@/hooks/useMembersProvider'
 
 export const Header = () => {
+
+  // Wagmi
   const { isConnected } = useAccount()
+
+  // Context
   const { isMember, workflow } = useMembersProvider()
 
   return (

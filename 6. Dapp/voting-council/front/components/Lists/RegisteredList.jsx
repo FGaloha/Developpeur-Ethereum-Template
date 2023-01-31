@@ -3,7 +3,7 @@ import useMembersProvider from '@/hooks/useMembersProvider'
 
 export const RegisteredList = () => {
 
-  //STATES
+  // Context
   const { registered } = useMembersProvider()
 
   return (

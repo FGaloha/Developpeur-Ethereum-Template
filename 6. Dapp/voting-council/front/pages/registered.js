@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi'
 
 export default function Registered() {
 
+  // Wagmi
   const { isConnected } = useAccount()
 
   return (

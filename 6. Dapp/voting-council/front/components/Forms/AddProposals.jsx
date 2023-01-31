@@ -8,11 +8,18 @@ import useMembersProvider from '@/hooks/useMembersProvider'
 
 export const AddProposals = () => {
 
+  // Wagmi
   const { address, isConnected } = useAccount()
   const { data: signer } = useSigner()
   const provider = useProvider()
+
+  // Chakra
   const toast = useToast()
+
+  // Context
   const { contractAddress, setProposals } = useMembersProvider()
+
+  // State
   const [isLoading, setIsLoading] = useState(false)
   const [proposal, setProposal] = useState("")
 
@@ -32,7 +39,6 @@ export const AddProposals = () => {
     const endBlock = await provider.getBlockNumber();
 
     for (let i = startBlock; i < endBlock; i += 3000) {
-      // console.log("i", i)
       const _startBlock = i;
       const _endBlock = Math.min(endBlock, i + 2999);
       const data = await contract.queryFilter('ProposalRegistered', _startBlock, _endBlock);

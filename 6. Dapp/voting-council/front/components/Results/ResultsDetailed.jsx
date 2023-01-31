@@ -1,5 +1,5 @@
 import {
-  Heading, Flex, useToast, Thead, Table,
+  Heading, Flex, Thead, Table,
   Tbody, Tr, Th, Td, TableContainer
 } from '@chakra-ui/react'
 import { useEffect } from 'react'
@@ -10,14 +10,11 @@ import useMembersProvider from '@/hooks/useMembersProvider'
 
 export const ResultsDetailed = () => {
 
-  //WAGMI
+  // Wagmi
   const { isConnected, address } = useAccount()
   const provider = useProvider()
 
-  //CHAKRA-UI
-  const toast = useToast()
-
-  // STATES
+  // Context
   const { proposals, setProposals, contractAddress, winningProposal, setWinningProposal, isMember } = useMembersProvider()
 
   useEffect(() => {

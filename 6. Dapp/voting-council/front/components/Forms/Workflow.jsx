@@ -7,13 +7,17 @@ import { RegisteredList } from "../../components/Lists/RegisteredList";
 import useMembersProvider from '@/hooks/useMembersProvider'
 
 export const Workflow = ({ getData }) => {
-  const { data: signer } = useSigner()
-  const { address } = useAccount()
 
-  const { workflow, setRegistered, registered, contractAddress } = useMembersProvider()
+  // Wagmi
+  const { data: signer } = useSigner()
+
+  // Context
+  const { workflow, contractAddress } = useMembersProvider()
+
+  // Chakra
   const toast = useToast()
 
-  // STATE
+  // State
   const [isLoading, setIsLoading] = useState(false)
   const [voterAddress, setVoterAddress] = useState(null)
 
@@ -23,28 +27,6 @@ export const Workflow = ({ getData }) => {
       const contract = new ethers.Contract(contractAddress, Contract.abi, signer)
       const voterRegistration = await contract.addVoter(voterAddress)
       await voterRegistration.wait()
-
-      //const registeredEvents = await contract.queryFilter('VoterRegistered', 0, 'latest')
-
-      // let registeredEvents = [];
-      // // code pour récupérer les events par block de 1000
-      // // = 8405203; //Block number where the contract was deployed
-      // const endBlock = await provider.getBlockNumber();
-
-      // for (let i = startBlock; i < endBlock; i += 3000) {
-      //   console.log("i", i)
-      //   const _startBlock = i;
-      //   const _endBlock = Math.min(endBlock, i + 2999);
-      //   const data = await contract.queryFilter('VoterRegistered', _startBlock, _endBlock);
-      //   registeredEvents = [...registeredEvents, ...data]
-      // }
-
-      // let registeredList = []
-      // registeredEvents.forEach(registeredEvent => {
-      //   registeredList.push(registeredEvent.args[0])
-      // })
-      // setRegistered(registeredList)
-
       setVoterAddress(null)
       await getData()
       toast({

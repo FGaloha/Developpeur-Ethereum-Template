@@ -1,5 +1,5 @@
 import { Inter } from '@next/font/google'
-import { Heading, Flex, Text, useToast, Image } from '@chakra-ui/react';
+import { Heading, Flex, Text, Image } from '@chakra-ui/react';
 import { useEffect } from 'react'
 import { useAccount, useProvider } from 'wagmi'
 import Contract from "../contract/Voting"
@@ -14,14 +14,11 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
 
-  // WAGMI
+  // Wagmi
   const { address, isConnected } = useAccount()
   const provider = useProvider()
 
-  // CHAKRA-UI
-  const toast = useToast()
-
-  // CONTEXT
+  // Context
   const { owner, workflow, setWorkflow, contractAddress, setHasVotedList } = useMembersProvider()
   const { registered, setRegistered, isMember, setIsMember, setAddHasVoted } = useMembersProvider()
 

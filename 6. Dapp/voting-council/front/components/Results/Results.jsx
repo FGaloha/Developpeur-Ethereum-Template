@@ -7,14 +7,14 @@ import useMembersProvider from '@/hooks/useMembersProvider'
 
 export const Results = () => {
 
-  //WAGMI
+  // Wagmi
   const { isConnected, address } = useAccount()
   const provider = useProvider()
 
-  //CHAKRA-UI
+  // Chakra
   const toast = useToast()
 
-  // STATES
+  // Context
   const { contractAddress, winningProposal, setWinningProposal } = useMembersProvider()
 
 

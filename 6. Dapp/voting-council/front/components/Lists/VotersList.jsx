@@ -1,4 +1,4 @@
-import { Flex, Text, useToast, Thead, Table, Tbody, Tr, Th, Td, TableContainer } from '@chakra-ui/react'
+import { Flex, Text, Thead, Table, Tbody, Tr, Th, Td, TableContainer } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import { useAccount, useProvider } from 'wagmi'
 import Contract from '../../contract/Voting';
@@ -7,14 +7,11 @@ import useMembersProvider from '@/hooks/useMembersProvider'
 
 export const VotersList = () => {
 
-  //WAGMI
+  // Wagmi
   const { isConnected } = useAccount()
   const provider = useProvider()
 
-  //CHAKRA-UI
-  const toast = useToast()
-
-  // STATES
+  // Context
   const { voters, setVoters, contractAddress } = useMembersProvider()
 
   useEffect(() => {

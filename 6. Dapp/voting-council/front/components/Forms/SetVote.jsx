@@ -7,11 +7,19 @@ import { RegisteredProposals } from "../../components/Lists/RegisteredProposals"
 import useMembersProvider from '@/hooks/useMembersProvider'
 
 export const SetVote = () => {
+
+  // Wagmi
   const { address, isConnected } = useAccount()
   const { data: signer } = useSigner()
   const provider = useProvider()
+
+  // Chakra
   const toast = useToast()
+
+  // Context
   const { contractAddress, proposals, setProposals, addHasVoted, setAddHasVoted } = useMembersProvider()
+
+  // State
   const [isLoading, setIsLoading] = useState(false)
   const [vote, setVote] = useState(null)
 

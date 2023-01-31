@@ -12,10 +12,11 @@ export const MembersProvider = ({ children }) => {
   const contractAddress = (env == 'production') ? process.env.NEXT_PUBLIC_NETWORK_GOERLI : process.env.NEXT_PUBLIC_NETWORK_HARDHAT
   // const contractAddress = process.env.NEXT_PUBLIC_NETWORK_GOERLI
 
+  // Wagmi
   const { address, isConnected } = useAccount()
   const provider = useProvider()
 
-  // STATES
+  // State
   const [owner, setOwner] = useState(null)
   const [isMember, setIsMember] = useState(false)
   const [registered, setRegistered] = useState([])

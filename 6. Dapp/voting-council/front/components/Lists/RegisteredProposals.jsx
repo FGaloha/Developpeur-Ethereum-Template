@@ -3,6 +3,7 @@ import useMembersProvider from '@/hooks/useMembersProvider'
 
 export const RegisteredProposals = () => {
 
+  // Context
   const { proposals } = useMembersProvider()
 
   return (

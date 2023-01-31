@@ -44,10 +44,10 @@ export default function Home() {
     const startBlock = 8405203; //Block number where the contract was deployed
     const endBlock = await provider.getBlockNumber();
 
-    for (let i = startBlock; i < endBlock; i += 100) {
+    for (let i = startBlock; i < endBlock; i += 3000) {
       console.log("i", i)
       const _startBlock = i;
-      const _endBlock = Math.min(endBlock, i + 99);
+      const _endBlock = Math.min(endBlock, i + 2999);
       const data = await contract.queryFilter('VoterRegistered', _startBlock, _endBlock);
       registeredEvents = [...registeredEvents, ...data]
     }
@@ -67,10 +67,10 @@ export default function Home() {
     let hasVotedEvents = [];
     // code pour récupérer les events par block de 1000
 
-    for (let i = startBlock; i < endBlock; i += 100) {
+    for (let i = startBlock; i < endBlock; i += 3000) {
       console.log("i", i)
       const _startBlock = i;
-      const _endBlock = Math.min(endBlock, i + 99);
+      const _endBlock = Math.min(endBlock, i + 2999);
       const data = await contract.queryFilter('Voted', _startBlock, _endBlock);
       hasVotedEvents = [...hasVotedEvents, ...data]
     }

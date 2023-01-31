@@ -28,10 +28,10 @@ export const SetVote = () => {
     const startBlock = 8405203; //Block number where the contract was deployed
     const endBlock = await provider.getBlockNumber();
 
-    for (let i = startBlock; i < endBlock; i += 100) {
+    for (let i = startBlock; i < endBlock; i += 3000) {
       console.log("i", i)
       const _startBlock = i;
-      const _endBlock = Math.min(endBlock, i + 99);
+      const _endBlock = Math.min(endBlock, i + 2999);
       const data = await contract.queryFilter('ProposalRegistered', _startBlock, _endBlock);
       registeredProposalsEvents = [...registeredProposalsEvents, ...data]
     }

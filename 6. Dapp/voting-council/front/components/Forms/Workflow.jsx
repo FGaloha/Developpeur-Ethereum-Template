@@ -1,5 +1,5 @@
 import { Input, Button, Text, Flex, Spinner, useToast } from '@chakra-ui/react'
-import { useSigner } from 'wagmi'
+import { useSigner, useAccount } from 'wagmi'
 import { useState } from "react";
 import { ethers } from 'ethers'
 import Contract from '../../contract/Voting'
@@ -8,8 +8,9 @@ import useMembersProvider from '@/hooks/useMembersProvider'
 
 export const Workflow = ({ getData }) => {
   const { data: signer } = useSigner()
+  const { address } = useAccount()
 
-  const { workflow, setRegistered, contractAddress } = useMembersProvider()
+  const { workflow, setRegistered, registered, contractAddress } = useMembersProvider()
   const toast = useToast()
 
   // STATE
@@ -23,28 +24,29 @@ export const Workflow = ({ getData }) => {
       const voterRegistration = await contract.addVoter(voterAddress)
       await voterRegistration.wait()
 
-      //const registeredProposalsEvents = await contract.queryFilter('ProposalRegistered', 8405203, 'latest')
-      console.log("new query index")
+      //const registeredEvents = await contract.queryFilter('VoterRegistered', 0, 'latest')
 
-      let registeredProposalsEvents = [];
-      // code pour récupérer les events par block de 1000
-      const startBlock = 8405203; //Block number where the contract was deployed
-      const endBlock = await provider.getBlockNumber();
+      // let registeredEvents = [];
+      // // code pour récupérer les events par block de 1000
+      // // = 8405203; //Block number where the contract was deployed
+      // const endBlock = await provider.getBlockNumber();
 
-      for (let i = startBlock; i < endBlock; i += 3000) {
-        console.log("i", i)
-        const _startBlock = i;
-        const _endBlock = Math.min(endBlock, i + 2999);
-        const data = await contract.queryFilter('ProposalRegistered', _startBlock, _endBlock);
-        registeredProposalsEvents = [...registeredProposalsEvents, ...data]
-      }
+      // for (let i = startBlock; i < endBlock; i += 3000) {
+      //   console.log("i", i)
+      //   const _startBlock = i;
+      //   const _endBlock = Math.min(endBlock, i + 2999);
+      //   const data = await contract.queryFilter('VoterRegistered', _startBlock, _endBlock);
+      //   registeredEvents = [...registeredEvents, ...data]
+      // }
 
-      let registeredList = []
-      registeredEvents.forEach(registeredEvent => {
-        registeredList.push(registeredEvent.args[0])
-      })
-      setRegistered(registeredList)
+      // let registeredList = []
+      // registeredEvents.forEach(registeredEvent => {
+      //   registeredList.push(registeredEvent.args[0])
+      // })
+      // setRegistered(registeredList)
+
       setVoterAddress(null)
+      await getData()
       toast({
         title: 'New address added',
         description: `You successfully added ${voterAddress.substring(0, 5)}...${voterAddress.substring(voterAddress.length - 4)}`,
@@ -157,7 +159,7 @@ export const Workflow = ({ getData }) => {
             case 5:
               return (
                 <Flex width="100%" alignItems="center" justifyContent="start" border="2px" my="4">
-                  <Text ps="2">Voting process ended. Results publically available.</Text>
+                  <Text ps="2">Voting process ended. Results publicaly available.</Text>
                 </Flex>
               )
             default:

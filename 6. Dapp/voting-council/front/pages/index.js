@@ -37,15 +37,16 @@ export default function Home() {
     setWorkflow(worflowStatus)
 
     // List of registered address
+
+    // Development
     // const registeredEvents = await contract.queryFilter('VoterRegistered', 0, 'latest')
 
+    // Production: to get events by 3000 blocks from contract block number  8405203
     let registeredEvents = [];
-    // code pour récupérer les events par block de 1000
-    const startBlock = 8405203; //Block number where the contract was deployed
+    const startBlock = 8405203;
     const endBlock = await provider.getBlockNumber();
 
     for (let i = startBlock; i < endBlock; i += 3000) {
-      console.log("i", i)
       const _startBlock = i;
       const _endBlock = Math.min(endBlock, i + 2999);
       const data = await contract.queryFilter('VoterRegistered', _startBlock, _endBlock);
@@ -62,13 +63,13 @@ export default function Home() {
     setIsMember(registered.includes(address))
 
     // List of address who have voted
+
+    // Development
     // const hasVotedEvents = await contract.queryFilter('Voted', 0, 'latest')
 
+    // Production: to get events by 3000 blocks from contract block number  8405203
     let hasVotedEvents = [];
-    // code pour récupérer les events par block de 1000
-
     for (let i = startBlock; i < endBlock; i += 3000) {
-      console.log("i", i)
       const _startBlock = i;
       const _endBlock = Math.min(endBlock, i + 2999);
       const data = await contract.queryFilter('Voted', _startBlock, _endBlock);

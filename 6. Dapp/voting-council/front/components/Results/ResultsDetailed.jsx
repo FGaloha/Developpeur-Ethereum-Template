@@ -29,15 +29,16 @@ export const ResultsDetailed = () => {
   // Results for each proposal
   const getResults = async () => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
-    // const registeredProposalsEvents = await contract.queryFilter('ProposalRegistered', 8405203, 'latest')
 
+    // Developement
+    // const registeredProposalsEvents = await contract.queryFilter('ProposalRegistered', 0, 'latest')
+
+    // Production: to get events by 3000 blocks from contract block number  8405203
     let registeredProposalsEvents = [];
-    // code pour récupérer les events par block de 1000
-    const startBlock = 8405203; //Block number where the contract was deployed
+    const startBlock = 8405203;
     const endBlock = await provider.getBlockNumber();
 
     for (let i = startBlock; i < endBlock; i += 3000) {
-      console.log("i", i)
       const _startBlock = i;
       const _endBlock = Math.min(endBlock, i + 2999);
       const data = await contract.queryFilter('ProposalRegistered', _startBlock, _endBlock);

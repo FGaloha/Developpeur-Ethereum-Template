@@ -13,7 +13,7 @@ export const RegisteredList = () => {
           <Table variant='simple'>
             <Thead>
               <Tr>
-                <Th>Index</Th>
+                <Th>Inscription order</Th>
                 <Th>Registered address</Th>
               </Tr>
             </Thead>

@@ -12,10 +12,28 @@ This project is the last phase of the Voting dapp. Here are the steps followed:
 
 Conclusion : with the new contract we avoid a DOS gas limit, we save 64440 gas compare to Alyra version & the tests remains at 100% coverage.
 
-The smart contract is here :  [Etherscan](https://goerli.etherscan.io/address/0x3c5C0AD32375e8973e35E0eF2CDaD9490F0B4330#code)
-The platform is here : [High Jedi Council Voting Dapp](https://jedi-council.vercel.app/)
-
 The following video show how the platform has been used by the High Jedi Council: [DEMO](https://www.loom.com/share/400ed797f4784cd7acfa2b808a372c49)
+
+The smart contract is here :  [Etherscan](https://goerli.etherscan.io/address/0x3c5C0AD32375e8973e35E0eF2CDaD9490F0B4330#code)
+
+The deployed platform (Vercel) is here : [High Jedi Council Voting Dapp](https://jedi-council.vercel.app/)
+
+<br>
+Home
+
+<img src="https://bafybeicbpvsugvsbry5xjg5zivtw5lkyyvp67zxinkxa7frxzqbccyr3ym.ipfs.nftstorage.link/" width="50%"  alt="High Jedi Council Home">
+
+<br>
+Voter: voting actions & detailed results
+
+<img src="https://bafkreiglpqwoxlergdjprl6axfduujhtps7bbf5ql53jh6dkwvez4k72aa.ipfs.nftstorage.link/" width="50%"  alt="High Jedi Council Voting Result">
+
+<br>
+Visitor: partial results
+
+<img src="https://bafkreify6vukzikddfs6nflke6txxxoij7lo4whiydvj4zxfoypa5x4eae.ipfs.nftstorage.link/" width="50%"  alt="High Jedi Council Voting Result">
+
+<br>
 
 Happy discovery !
 

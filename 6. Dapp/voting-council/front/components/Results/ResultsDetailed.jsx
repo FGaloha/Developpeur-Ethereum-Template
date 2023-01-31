@@ -46,7 +46,7 @@ export const ResultsDetailed = () => {
 
     let registeredList = []
     for await (const registeredProposalsEvent of registeredProposalsEvents) {
-      const registeredProposal = await contract.getOneProposal(registeredProposalsEvent.args.proposalId)
+      const registeredProposal = await contract.connect(address).getOneProposal(registeredProposalsEvent.args.proposalId)
       registeredList.push([registeredProposalsEvent.args.proposalId.toString(), registeredProposal.voteCount.toString(), registeredProposal.description])
     }
     setProposals(registeredList)

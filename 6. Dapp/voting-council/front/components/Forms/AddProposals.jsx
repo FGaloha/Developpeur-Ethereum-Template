@@ -22,7 +22,22 @@ export const AddProposals = () => {
 
   const getProposals = async () => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
-    const registeredProposalsEvents = await contract.queryFilter('ProposalRegistered', 8405203, 'latest')
+    let registeredProposalsEvents = [];
+
+    // code pour récupérer les events par block de 1000
+    const startBlock = 8405203; //Block number where the contract was deployed
+    const endBlock = latest;
+
+    for (let i = startBlock; i < endBlock; i += 1000) {
+      console.log("i", i)
+      const _startBlock = i;
+      const _endBlock = Math.min(endBlock, i + 999);
+      const data = await contract.queryFilter('ProposalRegistered', _startBlock, _endBlock);
+      registeredProposalsEvents = [...registeredProposalsEvents, ...data]
+    }
+    //const registeredProposalsEvents = await contract.queryFilter('ProposalRegistered', 8405203, 'latest')
+    console.log("new query index")
+
     let registeredList = []
     for await (const registeredProposalsEvent of registeredProposalsEvents) {
       const registeredProposal = await contract.getOneProposal(registeredProposalsEvent.args.proposalId)

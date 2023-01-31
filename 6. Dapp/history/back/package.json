@@ -24,6 +24,8 @@
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.1",
     "dotenv": "^16.0.3",
-    "hardhat-deploy": "^0.11.22"
+    "erc721a": "^4.2.3",
+    "hardhat-deploy": "^0.11.22",
+    "save-dev": "^0.0.1-security"
   }
 }

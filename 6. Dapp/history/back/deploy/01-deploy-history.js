@@ -7,7 +7,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deployer } = await getNamedAccounts()
 
   log("--------------------------------------")
-  arguments = []
+  arguments = ["bafybeidyu7i6vii4lf6vdvaqpe3y5ezbo6w3ikmuxqeeoj74kutb4ox2xm"]
   const History = await deploy("History", {
     from: deployer,
     args: arguments,

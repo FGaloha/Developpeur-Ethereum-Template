@@ -60,7 +60,7 @@ Given the fact that the statement of the exercice precises it is for a small org
 - proposals array limited to 255 to be aligned with a proposalId uint8
 - uint8 for proposalId when it was saving gas. It stayed at uint256 when the modification was costing more but all cases has been tested (example winningProposalId).
 - For lisibility & gas, "bytes(_desc).length > 0" replaces "keccak256(abi.encode(_desc)) != keccak256(abi.encode(""))"
-- packing possibilities has been tested: it showed increases in the gas costs so the contract has been remained without
+- packing struct possibilities has been tested: it showed increases (1987825 vs 1942843) in the gas costs so the contract has been remained without
 - Linting code: visibility has been added were it was mising to improve lisibility (internal variables)
 
 ## Test & coverage

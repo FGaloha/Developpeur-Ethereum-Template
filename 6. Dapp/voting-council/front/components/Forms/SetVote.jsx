@@ -1,5 +1,5 @@
 import { Button, Text, Flex, useToast, Select } from '@chakra-ui/react'
-import { useSigner, useAccount, useProvider } from 'wagmi'
+import { useSigner, useAccount, useProvider, useBalance } from 'wagmi'
 import { useState, useEffect } from "react";
 import { ethers } from 'ethers'
 import Contract from '../../contract/Voting'
@@ -12,6 +12,10 @@ export const SetVote = () => {
   const { address, isConnected } = useAccount()
   const { data: signer } = useSigner()
   const provider = useProvider()
+  const { data } = useBalance({
+    address: address,
+    watch: true
+  })
 
   // Chakra
   const toast = useToast()
@@ -27,6 +31,7 @@ export const SetVote = () => {
     getProposals()
   }, [isConnected, address])
 
+  // To display list of proposals
   const getProposals = async () => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
 
@@ -53,6 +58,7 @@ export const SetVote = () => {
     setProposals(registeredList)
   }
 
+  // To vote for a proposal
   const registerVote = async () => {
     setIsLoading(true);
     try {

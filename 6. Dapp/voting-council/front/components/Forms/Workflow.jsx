@@ -1,5 +1,5 @@
 import { Input, Button, Text, Flex, Spinner, useToast } from '@chakra-ui/react'
-import { useSigner, useAccount } from 'wagmi'
+import { useSigner, useBalance, useAccount } from 'wagmi'
 import { useState } from "react";
 import { ethers } from 'ethers'
 import Contract from '../../contract/Voting'
@@ -10,6 +10,11 @@ export const Workflow = ({ getData }) => {
 
   // Wagmi
   const { data: signer } = useSigner()
+  const { address } = useAccount()
+  const { data } = useBalance({
+    address: address,
+    watch: true
+  })
 
   // Context
   const { workflow, contractAddress } = useMembersProvider()
@@ -21,6 +26,7 @@ export const Workflow = ({ getData }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [voterAddress, setVoterAddress] = useState(null)
 
+  // To add an address to the list of voters
   const registerVoter = async () => {
     setIsLoading(true);
     try {
@@ -49,6 +55,7 @@ export const Workflow = ({ getData }) => {
     setIsLoading(false);
   }
 
+  // To render a spinner when waiting for blockchain answer
   const SpinnerNext = () => {
     return (
       <Flex mt="4" mb="2" direction="column" width="100%" alignItems="center" justifyContent="center">
@@ -64,6 +71,7 @@ export const Workflow = ({ getData }) => {
     )
   }
 
+  // To display the admin action given the current phase
   const launchNextPhase = async () => {
     setIsLoading(true);
     try {

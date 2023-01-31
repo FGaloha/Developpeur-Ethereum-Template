@@ -1,5 +1,5 @@
 import { Input, Button, Text, Flex, useToast } from '@chakra-ui/react'
-import { useAccount, useSigner, useProvider } from 'wagmi'
+import { useAccount, useSigner, useProvider, useBalance } from 'wagmi'
 import { useState, useEffect } from "react";
 import { ethers } from 'ethers'
 import Contract from '../../contract/Voting'
@@ -12,12 +12,16 @@ export const AddProposals = () => {
   const { address, isConnected } = useAccount()
   const { data: signer } = useSigner()
   const provider = useProvider()
+  const { data } = useBalance({
+    address: address,
+    watch: true
+  })
 
   // Chakra
   const toast = useToast()
 
   // Context
-  const { contractAddress, setProposals } = useMembersProvider()
+  const { contractAddress, setProposals, isMember } = useMembersProvider()
 
   // State
   const [isLoading, setIsLoading] = useState(false)
@@ -29,7 +33,6 @@ export const AddProposals = () => {
 
   const getProposals = async () => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
-
     // Development
     // const registeredProposalsEvents = await contract.queryFilter('ProposalRegistered', 0, 'latest')
 
@@ -53,6 +56,7 @@ export const AddProposals = () => {
     setProposals(registeredList)
   }
 
+  // To add a new proposal
   const registerProposal = async () => {
     setIsLoading(true);
     try {

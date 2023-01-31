@@ -20,7 +20,7 @@ export const VotersList = () => {
     }
   }, [isConnected])
 
-  // List of people who have already voted
+  // To get the list of people who have already voted
   const getVoters = async () => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
 

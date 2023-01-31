@@ -22,7 +22,7 @@ export const Results = () => {
     getResults()
   }, [isConnected, address])
 
-  // List of people who have already voted
+  // To get the list of people who have already voted
   const getResults = async () => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
     const winningId = await contract.winningProposalID()

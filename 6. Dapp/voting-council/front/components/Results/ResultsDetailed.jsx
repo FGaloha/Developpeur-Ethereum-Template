@@ -23,7 +23,7 @@ export const ResultsDetailed = () => {
     }
   }, [isConnected, address])
 
-  // Results for each proposal
+  // Detailed results for each proposal
   const getResults = async () => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
 

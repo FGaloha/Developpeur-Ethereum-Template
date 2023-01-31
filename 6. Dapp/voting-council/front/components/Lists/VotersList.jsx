@@ -33,10 +33,10 @@ export const VotersList = () => {
     const startBlock = 8405203; //Block number where the contract was deployed
     const endBlock = latest;
 
-    for (let i = startBlock; i < endBlock; i += 1000) {
+    for (let i = startBlock; i < endBlock; i += 100) {
       console.log("i", i)
       const _startBlock = i;
-      const _endBlock = Math.min(endBlock, i + 999);
+      const _endBlock = Math.min(endBlock, i + 99);
       const data = await contract.queryFilter('Voted', _startBlock, _endBlock);
       votingEvents = [...votingEvents, ...data]
     }

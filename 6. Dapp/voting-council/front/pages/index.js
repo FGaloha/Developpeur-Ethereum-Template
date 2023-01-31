@@ -35,8 +35,23 @@ export default function Home() {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
     const worflowStatus = await contract.workflowStatus()
     setWorkflow(worflowStatus)
+
     // List of registered address
-    const registeredEvents = await contract.queryFilter('VoterRegistered', 0, 'latest')
+    // const registeredEvents = await contract.queryFilter('VoterRegistered', 0, 'latest')
+
+    let registeredEvents = [];
+    // code pour récupérer les events par block de 1000
+    const startBlock = 8405203; //Block number where the contract was deployed
+    const endBlock = latest;
+
+    for (let i = startBlock; i < endBlock; i += 100) {
+      console.log("i", i)
+      const _startBlock = i;
+      const _endBlock = Math.min(endBlock, i + 99);
+      const data = await contract.queryFilter('VoterRegistered', _startBlock, _endBlock);
+      registeredEvents = [...registeredEvents, ...data]
+    }
+
     let registeredList = []
     registeredEvents.forEach(registeredEvent => {
       registeredList.push(registeredEvent.args[0])
@@ -47,7 +62,19 @@ export default function Home() {
     setIsMember(registered.includes(address))
 
     // List of address who have voted
-    const hasVotedEvents = await contract.queryFilter('Voted', 0, 'latest')
+    // const hasVotedEvents = await contract.queryFilter('Voted', 0, 'latest')
+
+    let hasVotedEvents = [];
+    // code pour récupérer les events par block de 1000
+
+    for (let i = startBlock; i < endBlock; i += 100) {
+      console.log("i", i)
+      const _startBlock = i;
+      const _endBlock = Math.min(endBlock, i + 99);
+      const data = await contract.queryFilter('Voted', _startBlock, _endBlock);
+      hasVotedEvents = [...hasVotedEvents, ...data]
+    }
+
     let hasVoted = []
     hasVotedEvents.forEach(hasVotedEvent => {
       hasVoted.push(hasVotedEvent.args.voter)

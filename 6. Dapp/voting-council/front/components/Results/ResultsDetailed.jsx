@@ -29,7 +29,7 @@ export const ResultsDetailed = () => {
   // Results for each proposal
   const getResults = async () => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
-    const registeredProposalsEvents = await contract.queryFilter('ProposalRegistered', 0, 'latest')
+    const registeredProposalsEvents = await contract.queryFilter('ProposalRegistered', 8405203, 'latest')
     let registeredList = []
     for await (const registeredProposalsEvent of registeredProposalsEvents) {
       const registeredProposal = await contract.getOneProposal(registeredProposalsEvent.args.proposalId)

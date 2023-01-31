@@ -22,7 +22,7 @@ export const Workflow = ({ getData }) => {
       const contract = new ethers.Contract(contractAddress, Contract.abi, signer)
       const voterRegistration = await contract.addVoter(voterAddress)
       await voterRegistration.wait()
-      const registeredEvents = await contract.queryFilter('VoterRegistered', 0, 'latest')
+      const registeredEvents = await contract.queryFilter('VoterRegistered', 8405203, 'latest')
       let registeredList = []
       registeredEvents.forEach(registeredEvent => {
         registeredList.push(registeredEvent.args[0])

@@ -26,7 +26,7 @@ export const VotersList = () => {
   // List of people who have already voted
   const getVoters = async () => {
     const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
-    const votingEvents = await contract.queryFilter('Voted', 0, 'latest')
+    const votingEvents = await contract.queryFilter('Voted', 8405203, 'latest')
     let votingList = []
     votingEvents.forEach(votingEvent => {
       votingList.push([votingEvent.args.proposalId.toString(), votingEvent.args.voter])

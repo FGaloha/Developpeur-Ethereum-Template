@@ -24,6 +24,11 @@ Home
 <img src="https://bafybeicbpvsugvsbry5xjg5zivtw5lkyyvp67zxinkxa7frxzqbccyr3ym.ipfs.nftstorage.link/" width="50%"  alt="High Jedi Council Home">
 
 <br>
+Admin: admin actions (voting actions & detailed results if whitelisted)
+
+<img src="https://bafkreiamki45pr3lhywkueprohcbx7loothmqc4angkz55lwyzzkris2zi.ipfs.nftstorage.link/" width="50%"  alt="High Jedi Council Home">
+
+<br>
 Voter: voting actions & detailed results
 
 <img src="https://bafkreiglpqwoxlergdjprl6axfduujhtps7bbf5ql53jh6dkwvez4k72aa.ipfs.nftstorage.link/" width="50%"  alt="High Jedi Council Voting Result">

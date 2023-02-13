@@ -1,0 +1,35 @@
+{
+  "description": "Lieutenant are precious guards, only 20 of them. They protect the Unique",
+  "name": "History #1",
+  "image": "ipfs://bafybeiff57fsbely5z3lro4li2wrnsjfqojigxakxeuuq6xr7vx5acqbkq/1",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Unique"
+    },
+    {
+      "trait_type": "Period",
+      "value": "Eternal"
+    },
+    {
+      "trait_type": "Clothing",
+      "value": "Space lieutenant"
+    },
+    {
+      "trait_type": "Material",
+      "value": "Platinum"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Invisible"
+    },
+    {
+      "trait_type": "Weapon",
+      "value": "Brain"
+    },
+    {
+      "trait_type": "Background",
+      "value": "Blue"
+    }
+  ]
+}

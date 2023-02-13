@@ -1,0 +1,35 @@
+{
+  "description": "Lieutenant are precious guards, only 20 of them. They protect the Unique",
+  "name": "History #2",
+  "image": "ipfs://bafybeiff57fsbely5z3lro4li2wrnsjfqojigxakxeuuq6xr7vx5acqbkq/2",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Guard"
+    },
+    {
+      "trait_type": "Period",
+      "value": "Eternal"
+    },
+    {
+      "trait_type": "Clothing",
+      "value": "Space ranger"
+    },
+    {
+      "trait_type": "Material",
+      "value": "Iron"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Invisible"
+    },
+    {
+      "trait_type": "Weapon",
+      "value": "Strength"
+    },
+    {
+      "trait_type": "Background",
+      "value": "Blue"
+    }
+  ]
+}

@@ -14,6 +14,7 @@
     "@emotion/styled": "^11.10.5",
     "@next/font": "^13.1.6",
     "@rainbow-me/rainbowkit": "^0.8.1",
+    "axios": "0.26.1",
     "ethers": "5.7.2",
     "framer-motion": "^9.0.1",
     "next": "13.1.6",

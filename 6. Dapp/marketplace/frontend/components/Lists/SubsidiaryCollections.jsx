@@ -44,7 +44,7 @@ export const SubsidiaryCollections = () => {
       }
     }
     setCollections(subsidiaryCollections)
-    console.log(subsidiaryCollections)
+    console.log(collections[0])
   }
 
   return (
@@ -77,7 +77,7 @@ export const SubsidiaryCollections = () => {
             </Tbody>
           </Table>
         </TableContainer>
-      ) : (<Text>No collection for the moment</Text>)}
+      ) : (<Text mt="20" fontSize="3xl">No collection for the moment</Text>)}
     </Flex>
   )
 }

@@ -19,13 +19,6 @@ contract Collection is ERC721Enumerable, ERC2981, PaymentSplitter, Ownable {
     uint256 private price;
     uint256[] private _teamShares = [97, 3];
 
-    // Factory owner (Morpheus inc) & collection owner who will receive 5% royalties
-    //ameliorer l'initialisation pour la gestion des adresses
-    //address[] private _team = [
-    //  0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, // contract owner = subsidiary paris
-    //0x5B38Da6a701c568545dCfcB03FcB875f56beddC4 // factory owner = deployer
-    //];
-
     constructor(
         string memory name_,
         string memory symbol_,
@@ -40,6 +33,14 @@ contract Collection is ERC721Enumerable, ERC2981, PaymentSplitter, Ownable {
     }
 
     event Mint(address indexed minter, uint256 tokenId);
+
+    function getPrice() public view returns (uint256) {
+        return price;
+    }
+
+    function getMaxSupply() public view returns (uint256) {
+        return maxSupply;
+    }
 
     function init(
         uint256 _maxSupply,

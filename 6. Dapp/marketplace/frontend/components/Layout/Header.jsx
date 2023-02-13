@@ -86,7 +86,7 @@ export const Header = () => {
             <Flex me="4"><Link href="/marketplace">Marketplace</Link></Flex>
             <Flex me="4"><Link href={{
               pathname: '/collection/mint',
-              query: { address: '0xaC4D884AB51Ed7E175c2AEa3AFa518F591ca7aa8' },
+              query: { address: '0x0f6D22Ee4c19cf80A9F31e38c5A1bEe75A40c3A1' },
             }}>Mint</Link></Flex>
             {ownerFactory == address && (<Flex me="4"><Link href="/admin">Admin</Link></Flex>)}
             {isSubsidiary && (<Flex me="4"><Link href="/subsidiary">Subsidiary</Link></Flex>)}

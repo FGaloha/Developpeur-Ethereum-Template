@@ -62,7 +62,7 @@ export const Subsidiaries = () => {
             </Tbody>
           </Table>
         </TableContainer>
-      ) : (<Text>No subsidiary</Text>)}
+      ) : (<Text mt="20" fontSize="3xl">No subsidiary for the moment</Text>)}
     </Flex>
   )
 }

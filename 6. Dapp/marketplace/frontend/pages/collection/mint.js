@@ -3,18 +3,22 @@ import {
   NumberInputField,
   NumberInputStepper,
   NumberIncrementStepper,
-  NumberDecrementStepper, Button, useToast, Text
+  NumberDecrementStepper, Button, useToast, Text,
+  Card, CardHeader, CardBody, Box, Stack, StackDivider
 } from '@chakra-ui/react';
-import { useAccount, useSigner } from 'wagmi'
+import { useAccount, useSigner, useProvider } from 'wagmi'
 import { useEffect, useState } from 'react'
 import { useRouter } from "next/router";
-import ContractCollection from "../../contracts/Factory";
+import ContractCollection from "../../contracts/Collection";
+import { ethers } from 'ethers'
+import axios from 'axios'
 
 export default function mintCollection() {
 
   // Wagmi
   const { isConnected, address } = useAccount()
   const { data: signer } = useSigner()
+  const provider = useProvider()
 
   // Router
   const router = useRouter();
@@ -26,12 +30,16 @@ export default function mintCollection() {
 
   // State
   const [isLoading, setIsLoading] = useState(false)
-  const [quantity, setQuantity] = useState(null)
+  const [quantity, setQuantity] = useState(1)
+  const [price, setPrice] = useState(null)
+  const [maxSupply, setMaxSupply] = useState(null)
+  const [remainingSupply, setRemainingSupply] = useState(null)
+
+  const [mintedNFT, setMintedNFT] = useState(null)
 
   useEffect(() => {
     if (isConnected) {
-      // console.log(contractAddressCollection)
-      //get collection info
+      getCollection();
     }
   }, [isConnected])
 
@@ -40,9 +48,9 @@ export default function mintCollection() {
     setIsLoading(true);
     try {
       const contract = new ethers.Contract(contractAddressCollection, ContractCollection.abi, signer)
-      const mintCollection = await contract.mint(1, { value: 0.1 })
+      const mintCollection = await contract.mint(quantity, { value: ethers.utils.parseEther(price) })
       await mintCollection.wait()
-      console.log(mintCollection)
+      console.log(contractAddressCollection)
       toast({
         title: 'NFT(s) minted',
         description: `You successfully mint ${quantity} NFT(s)`,
@@ -63,48 +71,111 @@ export default function mintCollection() {
     setIsLoading(false);
   }
 
-  // To update the collection
-  // const updateCollection = async () => {
-  //   const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, provider)
+  // To get infos of the collection
+  const getCollection = async () => {
+    const contract = new ethers.Contract(contractAddressCollection, ContractCollection.abi, provider)
+    const price = await contract.getPrice();
+    const maxSupply = await contract.getMaxSupply();
+    const currentSupply = await contract.totalSupply();
 
-  //   let createdCollectionsEvents = [];
-  //   const startBlock = 0; // block number of the contract Factory
-  //   const endBlock = await provider.getBlockNumber();
+    const tokenId = 1
+    const rawUri = await contract.tokenURI(tokenId)
+    const Uri = Promise.resolve(rawUri)
+    const getUri = Uri.then(value => {
+      let str = value
+      let cleanUri = str.replace('ipfs://', 'https://ipfs.io/ipfs/')
+      let metadata = axios.get(cleanUri).catch(function (error) {
+        console.log(error.toJSON());
+      });
+      return metadata;
+    })
+    getUri.then(value => {
+      let rawImg = value.data.image
+      let name = value.data.name
+      let desc = value.data.description
+      let image = rawImg.replace('ipfs://', 'https://ipfs.io/ipfs/')
+      let attributes = value.data.attributes
+      console.log(name)
+      console.log(desc)
+      console.log(image)
+      console.log(attributes)
+    })
 
-  //   for (let i = startBlock; i < endBlock; i += 3000) {
-  //     const _startBlock = i;
-  //     const _endBlock = Math.min(endBlock, i + 2999);
-  //     const data = await contract.queryFilter('CollectionCreated', _startBlock, _endBlock);
-  //     createdCollectionsEvents = [...createdCollectionsEvents, ...data]
-  //   }
+    // let meta = {
+    //   //name: name,
+    //   img: image,
+    //   tokenId: tokenId,
+    //   //wallet: ownerW,
+    //   desc,
+    // }
+    // console.log(meta)
+    // console.log(meta.image)
+    //let data = await axios.get(tokenUri)
+    // let meta = data.data
+    // setMintedNFT(meta.image)
+    // console.log(meta.image)
 
-  //   //Filter to get only collections of the subsidiary
-  //   let subsidiaryCollections = [];
-  //   for (let i = 0; i < createdCollectionsEvents.length; i++) {
-  //     if (createdCollectionsEvents[i].args[3] == address) {
-  //       subsidiaryCollections.push([createdCollectionsEvents[i].args[0], createdCollectionsEvents[i].args[1], createdCollectionsEvents[i].args[2], createdCollectionsEvents[i].args[3]]);
-  //     }
-  //   }
-  //   setCollections(subsidiaryCollections)
-  // }
+    //    setMintedNFT(meta.image)
+
+    setPrice(ethers.utils.formatEther(price).toString())
+    setMaxSupply(maxSupply.toString())
+    const remainingSupply = maxSupply.sub(currentSupply)
+    setRemainingSupply(remainingSupply.toString())
+  }
 
   return (
     //isConnected &&
     <Flex direction="column" alignItems="center" w="100%" backgroundColor='black'>
       {isConnected ? (
-        <Flex direction="column" alignItems="center" w="100%">
-          <Heading as='h1' size='xl' noOfLines={1} color='white' mt='4' mb='100'>
+        <Flex direction="column" alignItems="center" justifyContent="center" w="100%">
+          <Heading as='h1' size='xl' noOfLines={1} color='white' mt='4' mb='50'>
             Mint NFT
           </Heading>
-          <Flex spacing={4} w="30%">
+
+          <Card w="30%">
+            <CardHeader>
+              <Heading size='md'>Collection mint status</Heading>
+            </CardHeader>
+
+            <CardBody>
+              <Stack divider={<StackDivider />} spacing='4'>
+                <Box>
+                  <Heading size='xs' textTransform='uppercase'>
+                    Price
+                  </Heading>
+                  <Text pt='2' fontSize='sm'>
+                    {price} ETH
+                  </Text>
+                </Box>
+                <Box>
+                  <Heading size='xs' textTransform='uppercase'>
+                    Maximum supply
+                  </Heading>
+                  <Text pt='2' fontSize='sm'>
+                    {maxSupply}
+                  </Text>
+                </Box>
+                <Box>
+                  <Heading size='xs' textTransform='uppercase'>
+                    Remaining supply
+                  </Heading>
+                  <Text pt='2' fontSize='sm'>
+                    {remainingSupply}
+                  </Text>
+                </Box>
+              </Stack>
+            </CardBody>
+          </Card>
+
+          <Flex spacing={4} w="30%" mt="10" alignItems="center">
             <NumberInput onChange={(quantityString) => setQuantity(quantityString)} step={1} defaultValue={1} min={1} max={50} focusBorderColor='pink.600'>
               <NumberInputField />
               <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
+                <NumberIncrementStepper bg='purple.200' />
+                <NumberDecrementStepper bg='purple.200' />
               </NumberInputStepper>
             </NumberInput>
-            <Button ms="2" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => mint()}>Mint</Button>
+            <Button ms="4" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => mint()}>Mint</Button>
           </Flex>
         </Flex>) : <Text fontSize='3xl' mt="10">Please connect</Text>}
     </Flex>

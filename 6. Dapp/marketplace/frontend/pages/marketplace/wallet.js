@@ -10,6 +10,7 @@ import { useAccount, useSigner, useProvider } from 'wagmi'
 import { useEffect, useState } from 'react'
 import { useRouter } from "next/router";
 import ContractCollection from "../../contracts/Collection";
+import ContractFactory from "../../contracts/Factory";
 import { ethers } from 'ethers'
 import axios from 'axios'
 
@@ -40,7 +41,7 @@ export default function Wallet() {
 
   useEffect(() => {
     if (isConnected) {
-      getNfts();
+      //getNfts();
     }
   }, [isConnected])
 
@@ -54,7 +55,7 @@ export default function Wallet() {
   };
 
   // To get wallet's NFTs using Alchemy API
-  const getNfts = async () => {
+  const getNftsAlchemy = async () => {
 
     let collectionNfts = []
 
@@ -66,23 +67,24 @@ export default function Wallet() {
         // Parse output
         const numNfts = nftsWallet['totalCount'];
         const nftList = nftsWallet['ownedNfts'];
+        console.log(nftList[0]['contract'].address)
 
         // console.log(`Total NFTs owned by ${address}: ${numNfts} \n`);
 
         for (let i = 0; i < nftList.length; i++) {
           // console.log(`${i + 1}. ${nftList[i]['metadata']['name']}`)
-          let image = nftList[i]['metadata']['image']
-          if (image) { image = image.replace('ipfs://', 'https://ipfs.io/ipfs/') }
+          //let image = nftList[i]['metadata']['image']
+          //if (image) { image = image.replace('ipfs://', 'https://ipfs.io/ipfs/') }
           let nft = {
             name: nftList[i]['metadata']['name'],
-            img: image,
+            img: nftList[i]['metadata']['image'],
             tokenId: nftList[i]['metadata']['id'],
             desc: nftList[i]['metadata']['description'],
             attributes: nftList[i]['metadata']['attributes'],
             // price
           }
           collectionNfts.push(nft)
-          console.log(nftList[i]['metadata']['image'])
+          //console.log(nftList[i]['metadata']['image'])
         }
 
         //await new Promise(r => setTimeout(r, 300));

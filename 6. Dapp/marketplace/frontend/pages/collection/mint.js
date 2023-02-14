@@ -24,6 +24,7 @@ export default function mintCollection() {
   const router = useRouter();
   const query = router.query;
   const contractAddressCollection = query.address;
+  //console.log(contractAddressCollection)
 
   // Chakra
   const toast = useToast()
@@ -45,10 +46,12 @@ export default function mintCollection() {
   const mint = async () => {
     setIsLoading(true);
     try {
+      //console.log(contractAddressCollection)
       const contract = new ethers.Contract(contractAddressCollection, ContractCollection.abi, signer)
-      const mintCollection = await contract.mint(quantity, { value: ethers.utils.parseEther(price) })
+      //console.log(ethers.utils.parseEther(price) * 3)
+      //console.log(price * 3)
+      const mintCollection = await contract.mint(quantity, { value: ethers.utils.parseEther(price) * 3 })
       await mintCollection.wait()
-      console.log(contractAddressCollection)
       toast({
         title: 'NFT(s) minted',
         description: `You successfully mint ${quantity} NFT(s)`,
@@ -75,46 +78,6 @@ export default function mintCollection() {
     const price = await contract.getPrice();
     const maxSupply = await contract.getMaxSupply();
     const currentSupply = await contract.totalSupply();
-
-    const tokenId = 1
-    const rawUri = await contract.tokenURI(tokenId)
-    const Uri = Promise.resolve(rawUri)
-    const getUri = Uri.then(value => {
-      let str = value
-      let cleanUri = str.replace('ipfs://', 'https://ipfs.io/ipfs/')
-      let metadata = axios.get(cleanUri).catch(function (error) {
-        console.log(error.toJSON());
-      });
-      return metadata;
-    })
-    getUri.then(value => {
-      let rawImg = value.data.image
-      let name = value.data.name
-      let desc = value.data.description
-      let image = rawImg.replace('ipfs://', 'https://ipfs.io/ipfs/')
-      let attributes = value.data.attributes
-      console.log(name)
-      console.log(desc)
-      console.log(image)
-      console.log(attributes)
-    })
-
-    // let meta = {
-    //   //name: name,
-    //   img: image,
-    //   tokenId: tokenId,
-    //   //wallet: ownerW,
-    //   desc,
-    // }
-    // console.log(meta)
-    // console.log(meta.image)
-    //let data = await axios.get(tokenUri)
-    // let meta = data.data
-    // setMintedNFT(meta.image)
-    // console.log(meta.image)
-
-    //    setMintedNFT(meta.image)
-
     setPrice(ethers.utils.formatEther(price).toString())
     setMaxSupply(maxSupply.toString())
     const remainingSupply = maxSupply.sub(currentSupply)
@@ -122,7 +85,6 @@ export default function mintCollection() {
   }
 
   return (
-    //isConnected &&
     <Flex direction="column" alignItems="center" w="100%" backgroundColor='black'>
       {isConnected ? (
         <Flex direction="column" alignItems="center" justifyContent="center" w="100%">

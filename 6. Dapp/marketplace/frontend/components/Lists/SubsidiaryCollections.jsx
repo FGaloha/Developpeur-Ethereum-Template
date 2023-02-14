@@ -44,7 +44,7 @@ export const SubsidiaryCollections = () => {
       }
     }
     setCollections(subsidiaryCollections)
-    console.log(collections[0])
+    console.log(collections)
   }
 
   return (

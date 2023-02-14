@@ -13,6 +13,7 @@ import ContractCollection from "../../contracts/Collection";
 import ContractFactory from "../../contracts/Factory";
 import { ethers } from 'ethers'
 import axios from 'axios'
+import useMembersProvider from '@/hooks/useMembersProvider'
 
 export default function Wallet() {
 
@@ -41,7 +42,7 @@ export default function Wallet() {
 
   useEffect(() => {
     if (isConnected) {
-      //getNfts();
+      getNfts();
     }
   }, [isConnected])
 
@@ -53,6 +54,9 @@ export default function Wallet() {
     method: 'get',
     url: url,
   };
+
+  // Context
+  const { contractAddressFactory } = useMembersProvider()
 
   // To get wallet's NFTs using Alchemy API
   const getNftsAlchemy = async () => {
@@ -96,6 +100,28 @@ export default function Wallet() {
       .catch(error => console.log('error', error));
 
 
+  }
+
+  // To get Morpheus NFTs owned by the wallet connected
+  const getNfts = async () => {
+    const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, provider);
+
+    let createdCollectionsEvents = [];
+    const startBlock = 0; // block number of the contract Factory
+    const endBlock = await provider.getBlockNumber();
+
+    for (let i = startBlock; i < endBlock; i += 3000) {
+      const _startBlock = i;
+      const _endBlock = Math.min(endBlock, i + 2999);
+      const data = await contract.queryFilter('CollectionCreated', _startBlock, _endBlock);
+      createdCollectionsEvents = [...createdCollectionsEvents, ...data]
+    }
+    console.log(createdCollectionsEvents)
+    //Filter to get only collections of the subsidiary
+    // let nfts = [];
+    // for (let i = 0; i < createdCollectionsEvents.length; i++) {
+    //   const contract = new ethers.Contract(createdCollectionsEvents, ContractFactory.abi, provider);
+    // }
   }
 
   // Buy an NFT of the collection

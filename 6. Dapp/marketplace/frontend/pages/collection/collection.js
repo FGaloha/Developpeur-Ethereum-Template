@@ -44,34 +44,38 @@ export default function Collection() {
     }
   }, [isConnected])
 
-
+  // Get NFTs of the collection on sale to show the button Buy /or Offer if time to implement
+  const nftOnSale = async () => {
+    //     const contract = new ethers.Contract(contractAddressMarket, ContractMarket.abi, provider)
+    // // [[tokenId,price], [tokenId,price]]
+    // // [tokenId, tokenId...]
+  }
 
   // Buy an NFT of the collection
-  const buyNFT = async () => {
-    setIsLoading(true);
-    try {
-      const contract = new ethers.Contract(contractAddressCollection, ContractCollection.abi, signer)
-      const mintCollection = await contract.mint(quantity, { value: ethers.utils.parseEther(price) })
-      await mintCollection.wait()
-      console.log(contractAddressCollection)
-      toast({
-        title: 'NFT(s) minted',
-        description: `You successfully mint ${quantity} NFT(s)`,
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      })
-    }
-    catch {
-      toast({
-        title: 'Error',
-        description: `The mint failed, please try again...`,
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      })
-    }
-    setIsLoading(false);
+  const buyNFT = async (tokenId, price) => {
+    //   setIsLoading(true);
+    //   try {
+    //     const contract = new ethers.Contract(contractAddressMarket, ContractMarket.abi, signer)
+    //     const buy = await contract.buyItem(contractAddressCollection, tokenId, { value: ethers.utils.parseEther(price) })
+    //     await buy.wait()
+    //     toast({
+    //       title: 'NFT(s) bought',
+    //       description: `You successfully bought NFT #${tokenI}`,
+    //       status: 'success',
+    //       duration: 5000,
+    //       isClosable: true,
+    //     })
+    //   }
+    //   catch {
+    //     toast({
+    //       title: 'Error',
+    //       description: `The transaction to buy NFT #${tokenIn} failed, please try again...`,
+    //       status: 'error',
+    //       duration: 5000,
+    //       isClosable: true,
+    //     })
+    //   }
+    //   setIsLoading(false);
   }
 
   // To get infos & NFT of the collection
@@ -120,8 +124,6 @@ export default function Collection() {
         }
         collectionNfts.push(nft)
       })
-      //
-
     }
     await new Promise(r => setTimeout(r, 300));
     setNfts(collectionNfts)
@@ -135,7 +137,6 @@ export default function Collection() {
   }
 
   return (
-    //isConnected &&
     <Flex direction="column" alignItems="center" w="100%" backgroundColor='black'>
       {isConnected ? (
         <Flex direction="column" alignItems="center" justifyContent="center" w="100%">
@@ -183,7 +184,7 @@ export default function Collection() {
                   </CardBody>
                   <Divider />
                   <CardFooter>
-                    <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => buy()}>
+                    <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => buyNFT()}>
                       Buy now
                     </Button>
                   </CardFooter>

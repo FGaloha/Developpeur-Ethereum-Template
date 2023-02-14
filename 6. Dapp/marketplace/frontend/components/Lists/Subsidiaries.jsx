@@ -35,6 +35,7 @@ export const Subsidiaries = () => {
       registeredSubsidiariesEvents = [...registeredSubsidiariesEvents, ...data]
     }
     setSubsidiaries(registeredSubsidiariesEvents)
+    //console.log(subsidiaries[0].address)
   }
 
   return (

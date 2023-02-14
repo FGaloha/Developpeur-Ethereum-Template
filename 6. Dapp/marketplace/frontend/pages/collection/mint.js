@@ -35,8 +35,6 @@ export default function mintCollection() {
   const [maxSupply, setMaxSupply] = useState(null)
   const [remainingSupply, setRemainingSupply] = useState(null)
 
-  const [mintedNFT, setMintedNFT] = useState(null)
-
   useEffect(() => {
     if (isConnected) {
       getCollection();

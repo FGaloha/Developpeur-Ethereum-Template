@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.1",
+    "axios": "0.26.1",
     "dotenv": "^16.0.3",
     "hardhat-deploy": "^0.11.22"
   }

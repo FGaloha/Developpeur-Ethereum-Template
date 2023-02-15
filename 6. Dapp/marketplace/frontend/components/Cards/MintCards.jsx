@@ -17,6 +17,9 @@ export const MintCards = () => {
   const { isConnected, address } = useAccount()
   const provider = useProvider()
 
+  // Router
+  const router = useRouter();
+
   // Context
   const { contractAddressFactory } = useMembersProvider()
 
@@ -147,7 +150,9 @@ export const MintCards = () => {
 
                   <Box fontSize="2xl" color={useColorModeValue('gray.800', 'white')}>
                     <Box as="span" color={'gray.600'} fontSize="lg">
-                      MINT
+                      <Button onClick={() => router.push(`../../collection/mint?address=${collection.addressCollection}`)}>
+                        Mint
+                      </Button>
                     </Box>
                     {/* {data.price.toFixed(2)} */}
                   </Box>

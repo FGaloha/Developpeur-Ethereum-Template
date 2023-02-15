@@ -14,7 +14,6 @@ export const Header = () => {
   const { isConnected, address } = useAccount()
   const provider = useProvider()
 
-
   // Context
   const { ownerFactory, isSubsidiary, contractAddressFactory, setSubsidiaries, subsidiaries, setIsSubsidiary } = useMembersProvider()
 

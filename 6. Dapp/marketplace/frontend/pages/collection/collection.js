@@ -10,8 +10,10 @@ import { useAccount, useSigner, useProvider } from 'wagmi'
 import { useEffect, useState } from 'react'
 import { useRouter } from "next/router";
 import ContractCollection from "../../contracts/Collection";
+import ContractMarket from "../../contracts/Market";
 import { ethers } from 'ethers'
 import axios from 'axios'
+import useMembersProvider from '@/hooks/useMembersProvider'
 
 export default function Collection() {
 
@@ -27,6 +29,9 @@ export default function Collection() {
 
   // Chakra
   const toast = useToast()
+
+  // Context
+  const { contractAddressMarket } = useMembersProvider()
 
   // State
   const [isLoading, setIsLoading] = useState(false)
@@ -44,40 +49,6 @@ export default function Collection() {
     }
   }, [isConnected])
 
-  // Get NFTs of the collection on sale to show the button Buy /or Offer if time to implement
-  const nftOnSale = async () => {
-    //     const contract = new ethers.Contract(contractAddressMarket, ContractMarket.abi, provider)
-    // // [[tokenId,price], [tokenId,price]]
-    // // [tokenId, tokenId...]
-  }
-
-  // Buy an NFT of the collection
-  const buyNFT = async (tokenId, price) => {
-    //   setIsLoading(true);
-    //   try {
-    //     const contract = new ethers.Contract(contractAddressMarket, ContractMarket.abi, signer)
-    //     const buy = await contract.buyItem(contractAddressCollection, tokenId, { value: ethers.utils.parseEther(price) })
-    //     await buy.wait()
-    //     toast({
-    //       title: 'NFT(s) bought',
-    //       description: `You successfully bought NFT #${tokenI}`,
-    //       status: 'success',
-    //       duration: 5000,
-    //       isClosable: true,
-    //     })
-    //   }
-    //   catch {
-    //     toast({
-    //       title: 'Error',
-    //       description: `The transaction to buy NFT #${tokenIn} failed, please try again...`,
-    //       status: 'error',
-    //       duration: 5000,
-    //       isClosable: true,
-    //     })
-    //   }
-    //   setIsLoading(false);
-  }
-
   // To get infos & NFT of the collection
   const getCollection = async () => {
     const contract = new ethers.Contract(contractAddressCollection, ContractCollection.abi, provider);
@@ -86,10 +57,18 @@ export default function Collection() {
     const currentSupply = await contract.totalSupply();
     const name = await contract.name();
 
+    // Contract Market to get NFTs on Sale
+    const contractMarket = new ethers.Contract(contractAddressMarket, ContractMarket.abi, provider)
+
     let collectionNfts = []
-    // change i= 1 to i = 0 when test(json/image) will be updated with 0.png/0.json
     for (let i = 0; i < currentSupply.toNumber(); i++) {
-      // console.log('token' + i);
+
+      // Market infos about collections onSale/price
+      const getSale = await contractMarket.getSale(contractAddressCollection, i)
+
+      // token owner
+      const owner = await contract.ownerOf(i);
+
       const rawUri = await contract.tokenURI(i)
       const Uri = Promise.resolve(rawUri)
       const getUri = Uri.then(value => {
@@ -118,6 +97,8 @@ export default function Collection() {
           name: name,
           img: image,
           tokenId: i,
+          price: ethers.utils.formatEther(getSale.price).toString(),
+          owner: owner.toString(),
           desc: desc,
           attributes: attributes,
           // price
@@ -134,6 +115,63 @@ export default function Collection() {
     const remainingSupply = maxSupply.sub(currentSupply);
     setRemainingSupply(remainingSupply.toString());
     setName(name);
+  }
+
+  // Owner can delete NFT from list of On Sale items
+  const deleteFromSale = async (collectionAddress, tokenId) => {
+    setIsLoading(true);
+    try {
+      const contract = new ethers.Contract(contractAddressMarket, ContractMarket.abi, signer)
+      const removeToken = await contract.deleteFromSale(collectionAddress, tokenId)
+      await removeToken.wait()
+      toast({
+        title: 'NFT(s) removed',
+        description: `You successfully unlisted NFT ${tokenId}`,
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+    catch {
+      toast({
+        title: 'Error',
+        description: `The unlisting failed, please try again...`,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+    setIsLoading(false);
+  }
+
+  // Buy an NFT of the collection
+  const buyNFT = async (tokenId, price) => {
+    setIsLoading(true);
+    try {
+      const contract = new ethers.Contract(contractAddressMarket, ContractMarket.abi, signer)
+      // console.log(tokenId)
+      // console.log(price)
+
+      const buy = await contract.buyItem(contractAddressCollection, tokenId, { value: ethers.utils.parseEther(price) })
+      await buy.wait()
+      toast({
+        title: 'NFT(s) bought',
+        description: `You successfully bought NFT #${tokenId}`,
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+    catch {
+      toast({
+        title: 'Error',
+        description: `The transaction to buy NFT #${tokenId} failed, please try again...`,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+    setIsLoading(false);
   }
 
   return (
@@ -173,21 +211,32 @@ export default function Collection() {
                       />
                       <Flex mt='2' direction="column">
                         <Heading size='md'>{nft.name}</Heading>
-                        <Flex alignItems="center">
-                          <Text fontSize='2xl'>
-                            0.001
-                          </Text>
-                          <Text color='purple.500' fontSize='2xl' ms="2">
-                            ETH
-                          </Text>
-                        </Flex>
+                        {nft.price > 0 && (
+                          <Flex alignItems="center">
+                            <Text fontSize='2xl'>
+                              {nft.price}
+                            </Text>
+                            <Text color='purple.500' fontSize='2xl' ms="2">
+                              ETH
+                            </Text>
+                          </Flex>)}
+
                       </Flex>
                     </CardBody>
                     <Divider />
-                    <CardFooter>
-                      <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => buyNFT()}>
-                        Buy now
-                      </Button>
+                    <CardFooter p='1'>
+                      {nft.price > 0 ? (
+
+                        nft.owner == address ? (
+                          <Button ms='2' my='2' isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => deleteFromSale(contractAddressCollection, nft.tokenId)}>
+                            Unlist
+                          </Button>
+                        ) : (
+                          <Button ms='2' my='2' isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => buyNFT(nft.tokenId, nft.price)}>
+                            Buy now
+                          </Button>)
+
+                      ) : <Text ms='2' my='1' color='purple.600' fontSize='lg' as='b'>Not listed</Text>}
                     </CardFooter>
                   </Card>
                 ))}
@@ -195,7 +244,8 @@ export default function Collection() {
             ) : <Text ms="5">Loading or NFT in mint phase</Text>}
           </Flex>
         </Flex>
-      ) : <Text fontSize='3xl' mt="10">Please connect</Text>}
-    </Flex>
+      ) : <Text fontSize='3xl' mt="10">Please connect</Text>
+      }
+    </Flex >
   )
 }

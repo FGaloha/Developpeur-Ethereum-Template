@@ -107,11 +107,11 @@ export default function Wallet() {
   // To get Morpheus NFTs owned by the wallet connected
   const getNfts = async () => {
 
-    // Contract Market to get NFTs on Sale
-    const contractMarket = new ethers.Contract(contractAddressMarket, ContractMarket.abi, provider)
-
     // Contract Factory to get collections list
     const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, provider);
+
+    // Contract Market to get NFTs on Sale
+    const contractMarket = new ethers.Contract(contractAddressMarket, ContractMarket.abi, provider)
 
     let createdCollectionsEvents = [];
     const startBlock = 0; // block number of the contract Factory
@@ -195,7 +195,7 @@ export default function Wallet() {
     // }
   }
 
-  // Put an NFT on Sale
+  // Delete NFT from list of On Sale items
   const deleteFromSale = async (collectionAddress, tokenId) => {
     setIsLoading(true);
     try {

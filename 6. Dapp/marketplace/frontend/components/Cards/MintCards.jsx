@@ -118,8 +118,7 @@ export const MintCards = () => {
               maxW="lg"
               borderWidth="1px"
               rounded="lg"
-              shadow="lg"
-              position="relative">
+              shadow="lg">
 
               <Image
                 src={collection.img}
@@ -127,37 +126,12 @@ export const MintCards = () => {
                 roundedTop="lg"
               />
 
-              <Box p="2">
-                <Box d="flex" alignItems="baseline">
-                  {/* {data.isNew && (
-              <Badge rounded="full" px="2" fontSize="0.8em" colorScheme="red">
-                New
-              </Badge>
-            )} */}
-                </Box>
-                <Flex mt="1" justifyContent="space-between" alignContent="center">
-                  <Box
-                    fontSize="2xl"
-                    fontWeight="semibold"
-                    as="h4"
-                    lineHeight="tight"
-                    isTruncated>
-                    {/* {data.name} */}
-                  </Box>
-                </Flex>
-
-                <Flex justifyContent="space-between" alignContent="center">
-
-                  <Box fontSize="2xl" color={useColorModeValue('gray.800', 'white')}>
-                    <Box as="span" color={'gray.600'} fontSize="lg">
-                      <Button onClick={() => router.push(`../../collection/mint?address=${collection.addressCollection}`)}>
-                        Mint
-                      </Button>
-                    </Box>
-                    {/* {data.price.toFixed(2)} */}
-                  </Box>
-                </Flex>
+              <Box p="2" fontSize="2xl" color={useColorModeValue('gray.800', 'white')}>
+                <Button colorScheme='purple' onClick={() => router.push(`../../collection/mint?address=${collection.addressCollection}`)}>
+                  Mint
+                </Button>
               </Box>
+
             </Box>
           ))}
 

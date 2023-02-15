@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useAccount, useProvider } from "wagmi";
 import ContractFactory from "../contracts/Factory"
 import { ethers } from 'ethers'
+import { MintCards } from "@/components/Cards/MintCards"
 import useMembersProvider from '@/hooks/useMembersProvider'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -67,7 +68,7 @@ export default function Home() {
     <Flex w="100%" m="0px" p="0px" border="2px" bg="black">
       {isConnected ? (
         <Flex direction="column" alignItems="center" justifyContent="top" w="100%">
-
+          <MintCards />
         </Flex >
       )
         : (

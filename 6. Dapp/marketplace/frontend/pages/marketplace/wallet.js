@@ -170,7 +170,7 @@ export default function Wallet() {
               name: name,
               img: image,
               tokenId: j,
-              price: getSale.price.toString(),
+              price: ethers.utils.formatEther(getSale.price).toString(),
               desc: desc,
               attributes: attributes,
               addressCollection: createdCollectionsEvents[i]['args'][1],
@@ -196,16 +196,17 @@ export default function Wallet() {
   }
 
   // Put an NFT on Sale
-  const putOnSale = async () => {
+  const deleteFromSale = async (collectionAddress, tokenId) => {
     setIsLoading(true);
     try {
-      const contract = new ethers.Contract(contractAddressCollection, ContractCollection.abi, signer)
-      const mintCollection = await contract.mint(quantity, { value: ethers.utils.parseEther(price) })
-      await mintCollection.wait()
-      console.log(contractAddressCollection)
+      // console.log(collectionAddress)
+      // console.log(tokenId)
+      const contract = new ethers.Contract(contractAddressMarket, ContractMarket.abi, signer)
+      const removeToken = await contract.deleteFromSale(collectionAddress, tokenId)
+      await removeToken.wait()
       toast({
-        title: 'NFT(s) minted',
-        description: `You successfully mint ${quantity} NFT(s)`,
+        title: 'NFT(s) removed',
+        description: `You successfully unlisted NFT ${tokenId}`,
         status: 'success',
         duration: 5000,
         isClosable: true,
@@ -214,7 +215,7 @@ export default function Wallet() {
     catch {
       toast({
         title: 'Error',
-        description: `The mint failed, please try again...`,
+        description: `The unlisting failed, please try again...`,
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -248,14 +249,16 @@ export default function Wallet() {
                       />
                       <Flex mt='2' direction="column">
                         <Heading size='md'>{nft.name}</Heading>
-                        <Flex alignItems="center">
-                          <Text fontSize='2xl'>
-                            {nft.price}
-                          </Text>
-                          <Text color='purple.500' fontSize='2xl' ms="2">
-                            ETH
-                          </Text>
-                        </Flex>
+                        {nft.price > 0 &&
+                          <Flex alignItems="center">
+                            <Text fontSize='2xl'>
+                              {nft.price}
+                            </Text>
+                            <Text color='purple.500' fontSize='2xl' ms="2">
+                              ETH
+                            </Text>
+                          </Flex>}
+
                       </Flex>
                     </CardBody>
                     <Divider />
@@ -263,10 +266,15 @@ export default function Wallet() {
                       {/* <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => putOnSale()}>
                         List
                       </Button> */}
-                      <Link colorScheme='purple' href={{
-                        pathname: './list',
-                        query: { address: nft.addressCollection, tokenId: nft.tokenId },
-                      }}>List</Link>
+                      {nft.price == 0 ? (
+                        <Link colorScheme='purple' href={{
+                          pathname: './list',
+                          query: { address: nft.addressCollection, tokenId: nft.tokenId },
+                        }}>List</Link>)
+                        : (
+                          <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' size='sm' colorScheme='purple' onClick={() => deleteFromSale(nft.addressCollection, nft.tokenId)}>
+                            Unlist
+                          </Button>)}
                     </CardFooter>
                   </Card>
                 ))}

@@ -21,7 +21,7 @@ export default function List() {
   const router = useRouter();
   const query = router.query;
   const contractAddressCollection = query.address;
-  const tokenID = query.tokenId;
+  const tokenId = query.tokenId;
 
   // Chakra
   const toast = useToast()
@@ -32,8 +32,6 @@ export default function List() {
   // State
   const [isLoading, setIsLoading] = useState(false)
   const [price, setPrice] = useState(null)
-  const [tokenId, setTokenId] = useState(tokenID)
-  const [isApproved, setIsApproved] = useState(false)
 
   useEffect(() => {
     if (isConnected) {
@@ -53,17 +51,12 @@ export default function List() {
   const addToSale = async () => {
     setIsLoading(true);
     try {
-      // Approve marketplace to manage sales of the collection
-      const isApprovedStatus = setApprovalStatus()
-      if (!isApproved) {
-        const contract = new ethers.Contract(contractAddressCollection, ContractCollection.abi, signer)
-        const setApprovalCollection = await contract.setApprovalForAll(contractAddressMarket, true);
-        await setApprovalCollection.wait()
-        console.log("was not approved")
-      }
-      //const isApproved = await contract.isApprovedForAll(address, contractAddressMarket)
-      //const isApproved = await contract.getApproved(tokenId)
-      //console.log(isApproved)
+      // Approve marketplace to manage sales of the token
+      const contract = new ethers.Contract(contractAddressCollection, ContractCollection.abi, signer)
+      // const setApprovalCollection = await contract.setApprovalForAll(contractAddressMarket, true);
+      // await setApprovalCollection.wait()
+      const approve = await contract.approve(contractAddressMarket, tokenId);
+      await approve.wait()
 
       // Put NFT on Sale
       const contractMarket = new ethers.Contract(contractAddressMarket, ContractMarket.abi, signer)
@@ -110,7 +103,7 @@ export default function List() {
       {isConnected ? (
         <Flex direction="column" alignItems="center" justifyContent="center" w="100%">
           <Heading as='h1' size='xl' noOfLines={1} color='white' mt='4' mb='50'>
-            List NFT {tokenId}
+            List NFT {parseInt(tokenId) + 1}
           </Heading>
 
 

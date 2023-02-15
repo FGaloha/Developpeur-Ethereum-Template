@@ -13,7 +13,7 @@ import ContractCollection from "../../contracts/Collection";
 import { ethers } from 'ethers'
 import axios from 'axios'
 
-export default function mintCollection() {
+export default function Mint() {
 
   // Wagmi
   const { isConnected, address } = useAccount()
@@ -126,17 +126,17 @@ export default function mintCollection() {
               </Stack>
             </CardBody>
           </Card>
-
-          <Flex spacing={4} w="30%" mt="10" alignItems="center">
-            <NumberInput onChange={(quantityString) => setQuantity(quantityString)} step={1} defaultValue={1} min={1} max={50} focusBorderColor='pink.600'>
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper bg='purple.200' />
-                <NumberDecrementStepper bg='purple.200' />
-              </NumberInputStepper>
-            </NumberInput>
-            <Button ms="4" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => mint()}>Mint</Button>
-          </Flex>
+          {remainingSupply > 0 ? (
+            <Flex spacing={4} w="30%" mt="10" alignItems="center">
+              <NumberInput onChange={(quantityString) => setQuantity(quantityString)} step={1} defaultValue={1} min={1} max={remainingSupply} focusBorderColor='pink.600'>
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper bg='purple.200' />
+                  <NumberDecrementStepper bg='purple.200' />
+                </NumberInputStepper>
+              </NumberInput>
+              <Button ms="4" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => mint()}>Mint</Button>
+            </Flex>) : (<Text fontSize='3xl' mt="10">Sold out</Text>)}
         </Flex>) : <Text fontSize='3xl' mt="10">Please connect</Text>}
     </Flex>
   )

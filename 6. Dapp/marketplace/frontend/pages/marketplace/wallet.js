@@ -11,9 +11,11 @@ import { useEffect, useState } from 'react'
 import { useRouter } from "next/router";
 import ContractCollection from "../../contracts/Collection";
 import ContractFactory from "../../contracts/Factory";
+import ContractMarket from "../../contracts/Market";
 import { ethers } from 'ethers'
 import axios from 'axios'
 import useMembersProvider from '@/hooks/useMembersProvider'
+import Link from 'next/link'
 
 export default function Wallet() {
 
@@ -47,63 +49,68 @@ export default function Wallet() {
   }, [isConnected])
 
   // Alchemy URL
-  const baseURL = "https://eth-goerli.g.alchemy.com/nft/v2/" + process.env.NEXT_PUBLIC_ALCHEMY_GOERLI_API_KEY;
-  const url = `${baseURL}/getNFTs/?owner=${address}`;
+  // const baseURL = "https://eth-goerli.g.alchemy.com/nft/v2/" + process.env.NEXT_PUBLIC_ALCHEMY_GOERLI_API_KEY;
+  // const url = `${baseURL}/getNFTs/?owner=${address}`;
 
-  const config = {
-    method: 'get',
-    url: url,
-  };
+  // const config = {
+  //   method: 'get',
+  //   url: url,
+  // };
 
   // Context
-  const { contractAddressFactory } = useMembersProvider()
+  const { contractAddressFactory, contractAddressMarket } = useMembersProvider()
 
   // To get wallet's NFTs using Alchemy API
-  const getNftsAlchemy = async () => {
+  // const getNftsAlchemy = async () => {
 
-    let collectionNfts = []
+  //   let collectionNfts = []
 
-    axios(config)
-      .then(response => {
-        const nftsWallet = response['data'];
-        //console.log(nfts.ownedNfts[0].metadata)
+  //   axios(config)
+  //     .then(response => {
+  //       const nftsWallet = response['data'];
+  //       //console.log(nfts.ownedNfts[0].metadata)
 
-        // Parse output
-        const numNfts = nftsWallet['totalCount'];
-        const nftList = nftsWallet['ownedNfts'];
-        console.log(nftList[0]['contract'].address)
+  //       // Parse output
+  //       const numNfts = nftsWallet['totalCount'];
+  //       const nftList = nftsWallet['ownedNfts'];
+  //       console.log(nftList[0]['contract'].address)
 
-        // console.log(`Total NFTs owned by ${address}: ${numNfts} \n`);
+  //       // console.log(`Total NFTs owned by ${address}: ${numNfts} \n`);
 
-        for (let i = 0; i < nftList.length; i++) {
-          // console.log(`${i + 1}. ${nftList[i]['metadata']['name']}`)
-          //let image = nftList[i]['metadata']['image']
-          //if (image) { image = image.replace('ipfs://', 'https://ipfs.io/ipfs/') }
-          let nft = {
-            name: nftList[i]['metadata']['name'],
-            img: nftList[i]['metadata']['image'],
-            tokenId: nftList[i]['metadata']['id'],
-            desc: nftList[i]['metadata']['description'],
-            attributes: nftList[i]['metadata']['attributes'],
-            // price
-          }
-          collectionNfts.push(nft)
-          //console.log(nftList[i]['metadata']['image'])
-        }
+  //       for (let i = 0; i < nftList.length; i++) {
+  //         // console.log(`${i + 1}. ${nftList[i]['metadata']['name']}`)
+  //         //let image = nftList[i]['metadata']['image']
+  //         //if (image) { image = image.replace('ipfs://', 'https://ipfs.io/ipfs/') }
+  //         let nft = {
+  //           name: nftList[i]['metadata']['name'],
+  //           img: nftList[i]['metadata']['image'],
+  //           tokenId: nftList[i]['metadata']['id'],
+  //           desc: nftList[i]['metadata']['description'],
+  //           attributes: nftList[i]['metadata']['attributes'],
+  //           // price
+  //         }
+  //         collectionNfts.push(nft)
+  //         //console.log(nftList[i]['metadata']['image'])
+  //       }
 
-        //await new Promise(r => setTimeout(r, 300));
-        setNfts(collectionNfts)
-        setNftLoaded(true);
-        //console.log(nfts);
-        //console.log(collectionNfts);
-      })
-      .catch(error => console.log('error', error));
+  //       //await new Promise(r => setTimeout(r, 300));
+  //       setNfts(collectionNfts)
+  //       setNftLoaded(true);
+  //       //console.log(nfts);
+  //       //console.log(collectionNfts);
+  //     })
+  //     .catch(error => console.log('error', error));
 
 
-  }
+  // }
 
   // To get Morpheus NFTs owned by the wallet connected
   const getNfts = async () => {
+
+    // Contract Market to get NFTs on Sale
+    const contractMarket = new ethers.Contract(contractAddressMarket, ContractMarket.abi, provider)
+
+    // Contract Factory to get collections list
     const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, provider);
 
     let createdCollectionsEvents = [];
@@ -116,7 +123,71 @@ export default function Wallet() {
       const data = await contract.queryFilter('CollectionCreated', _startBlock, _endBlock);
       createdCollectionsEvents = [...createdCollectionsEvents, ...data]
     }
-    console.log(createdCollectionsEvents)
+    //console.log(createdCollectionsEvents)
+
+    // boucle sur les adresses
+    let nftsOfWallet = []
+    for (let i = 0; i < createdCollectionsEvents.length; i++) {
+
+      // sur une adresse appel total supply
+      const contractCollection = new ethers.Contract(createdCollectionsEvents[i]['args'][1], ContractCollection.abi, provider);
+      // boucle sur total supply pour récupérer de 0 a supply - 1 le owner
+      const totalSupply = await contractCollection.totalSupply();
+
+      for (let j = 0; j < totalSupply.toNumber(); j++) {
+        // si owner = address appel tokenUri et construction data pour affichage nft
+        const tokenOwner = await contractCollection.ownerOf(j);
+        if (tokenOwner == address) {
+
+          const getSale = await contractMarket.getSale(createdCollectionsEvents[i]['args'][1], j)
+          //console.log(getSale.price.toString())
+
+          const tokenUri = await contractCollection.tokenURI(j);
+          const Uri = Promise.resolve(tokenUri)
+          const getUri = Uri.then(value => {
+            let str = value
+            let cleanUri = str.replace('ipfs://', 'https://ipfs.io/ipfs/')
+            let metadata = axios.get(cleanUri).catch(function (error) {
+              console.log(error.toJSON());
+            });
+            return metadata;
+          })
+          getUri.then(value => {
+            let rawImg = value.data.image
+            let name = value.data.name
+            let desc = value.data.description
+            let image = rawImg.replace('ipfs://', 'https://ipfs.io/ipfs/')
+            let attributes = value.data.attributes
+            // console.log(name)
+            // console.log(desc)
+            // console.log(image)
+            //console.log(attributes)
+            //console.log(attributes.length)
+            // for (let i = 0; i < attributes.length; i++) {
+            //   console.log(attributes[i].trait_type + ': ' + attributes[i].value)
+            // }
+            let nft = {
+              name: name,
+              img: image,
+              tokenId: j,
+              price: getSale.price.toString(),
+              desc: desc,
+              attributes: attributes,
+              addressCollection: createdCollectionsEvents[i]['args'][1],
+              // price
+            }
+            nftsOfWallet.push(nft)
+          })
+        }
+        // si on sale récupération prix
+      }
+    }
+
+    //console.log(nftsOfWallet)
+    await new Promise(r => setTimeout(r, 1000));
+    setNfts(nftsOfWallet)
+    setNftLoaded(true);
+    // console.log(nfts)
     //Filter to get only collections of the subsidiary
     // let nfts = [];
     // for (let i = 0; i < createdCollectionsEvents.length; i++) {
@@ -124,8 +195,8 @@ export default function Wallet() {
     // }
   }
 
-  // Buy an NFT of the collection
-  const buyNFT = async () => {
+  // Put an NFT on Sale
+  const putOnSale = async () => {
     setIsLoading(true);
     try {
       const contract = new ethers.Contract(contractAddressCollection, ContractCollection.abi, signer)
@@ -152,123 +223,56 @@ export default function Wallet() {
     setIsLoading(false);
   }
 
-  // To get infos & NFT of the collection
-  const getCollection = async () => {
-    const contract = new ethers.Contract(contractAddressCollection, ContractCollection.abi, provider);
-    const price = await contract.getPrice();
-    const maxSupply = await contract.getMaxSupply();
-    const currentSupply = await contract.totalSupply();
-    const name = await contract.name();
-
-    let collectionNfts = []
-    // change i= 1 to i = 0 when test(json/image) will be updated with 0.png/0.json
-    for (let i = 1; i < parseInt(currentSupply.toString()); i++) {
-      // console.log('token' + i);
-      const rawUri = await contract.tokenURI(i)
-      const Uri = Promise.resolve(rawUri)
-      const getUri = Uri.then(value => {
-        let str = value
-        let cleanUri = str.replace('ipfs://', 'https://ipfs.io/ipfs/')
-        let metadata = axios.get(cleanUri).catch(function (error) {
-          console.log(error.toJSON());
-        });
-        return metadata;
-      })
-      getUri.then(value => {
-        let rawImg = value.data.image
-        let name = value.data.name
-        let desc = value.data.description
-        let image = rawImg.replace('ipfs://', 'https://ipfs.io/ipfs/')
-        let attributes = value.data.attributes
-        // console.log(name)
-        // console.log(desc)
-        // console.log(image)
-        //console.log(attributes)
-        //console.log(attributes.length)
-        // for (let i = 0; i < attributes.length; i++) {
-        //   console.log(attributes[i].trait_type + ': ' + attributes[i].value)
-        // }
-        let nft = {
-          name: name,
-          img: image,
-          tokenId: i,
-          desc: desc,
-          attributes: attributes,
-          // price
-        }
-        collectionNfts.push(nft)
-      })
-      //
-
-    }
-    await new Promise(r => setTimeout(r, 300));
-    setNfts(collectionNfts)
-    console.log(nfts)
-    setNftLoaded(true);
-    setPrice(ethers.utils.formatEther(price).toString());
-    setMaxSupply(maxSupply.toString());
-    const remainingSupply = maxSupply.sub(currentSupply);
-    setRemainingSupply(remainingSupply.toString());
-    setName(name);
-  }
-
   return (
     <Flex direction="column" alignItems="center" w="100%" backgroundColor='black'>
       {isConnected ? (
         <Flex direction="column" alignItems="center" justifyContent="center" w="100%">
           <Heading as='h1' size='xl' noOfLines={1} color='white' mt='4' mb='50'>
-            Your NFTs {address}
+            Your NFTs
           </Heading>
 
-          {/* <Flex direction="column" w="100%" ms="10" color="white">
-            <Box fontSize='lg'>
-              <Text>Mint price: {price} ETH</Text>
-            </Box>
-            <Box fontSize='lg'>
-              Maximum supply: {maxSupply}
-            </Box>
-            <Box fontSize='lg'>
-              Remaining supply: {remainingSupply}
-            </Box>
-            <Box fontSize='lg'>
-              Description: {nftLoaded && nfts[0].desc}
-            </Box>
-          </Flex> */}
+          <Flex w="100%" ms="10" color="white">
+            <Text>Wallet: {address.substring(0, 5)}...{address.substring(address.length - 4)}</Text>
+          </Flex>
 
           <Flex w="100%" mt='5'>
             {nfts.length > 0 && nftLoaded ? (
-              <SimpleGrid columns={3} spacing={5}>
+              <SimpleGrid columns={5} spacing={5} m="5">
                 {nfts.map(nft => (
-                  <Card maxW='xs' key={nfts.indexOf(nft)} ms="5" mb="5">
+                  <Card maxW='xs' key={nfts.indexOf(nft)} >
                     <CardBody p="3">
                       <Image
-                        src=//'https://ipfs.io/ipfs/bafybeid7wtd3h5s6lgmjyccv2gbcvgyumkiwgql64mh34xruxyxe2ttzhe/2.png'
-                        {nft.img}
+                        src={nft.img}
                         alt='nft image'
                         borderRadius='lg'
                       />
                       <Flex mt='2' direction="column">
-                        <Heading size='md'>NFT #{nft.tokenId}</Heading>
+                        <Heading size='md'>{nft.name}</Heading>
                         <Flex alignItems="center">
                           <Text fontSize='2xl'>
-                            0.001
+                            {nft.price}
                           </Text>
                           <Text color='purple.500' fontSize='2xl' ms="2">
-                            ETH {nft.description}
+                            ETH
                           </Text>
                         </Flex>
                       </Flex>
                     </CardBody>
                     <Divider />
                     <CardFooter>
-                      <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => buy()}>
-                        Buy now
-                      </Button>
+                      {/* <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => putOnSale()}>
+                        List
+                      </Button> */}
+                      <Link colorScheme='purple' href={{
+                        pathname: './list',
+                        query: { address: nft.addressCollection, tokenId: nft.tokenId },
+                      }}>List</Link>
                     </CardFooter>
                   </Card>
                 ))}
               </SimpleGrid>
-            ) : <Text ms="5">Loading or no NFT for the moment</Text>}
+
+            ) : <Text ms="5">Loading or NFT in mint phase</Text>}
           </Flex>
         </Flex>
       ) : <Text fontSize='3xl' mt="10">Please connect</Text>}

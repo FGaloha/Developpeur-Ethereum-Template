@@ -1,5 +1,5 @@
 import {
-  Heading, Flex, NumberInput,
+  Heading, Flex, SimpleGrid, NumberInput,
   NumberInputField,
   NumberInputStepper,
   NumberIncrementStepper, Image,
@@ -88,7 +88,7 @@ export default function Collection() {
 
     let collectionNfts = []
     // change i= 1 to i = 0 when test(json/image) will be updated with 0.png/0.json
-    for (let i = 1; i < parseInt(currentSupply.toString()); i++) {
+    for (let i = 0; i < currentSupply.toNumber(); i++) {
       // console.log('token' + i);
       const rawUri = await contract.tokenURI(i)
       const Uri = Promise.resolve(rawUri)
@@ -125,7 +125,7 @@ export default function Collection() {
         collectionNfts.push(nft)
       })
     }
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 1000));
     setNfts(collectionNfts)
     console.log(nfts)
     setNftLoaded(true);
@@ -154,43 +154,44 @@ export default function Collection() {
             <Box fontSize='lg'>
               Remaining supply: {remainingSupply}
             </Box>
-            <Box fontSize='lg'>
-              Description: {nftLoaded && nfts[0].desc}
-            </Box>
+            {(nftLoaded && nfts.length > 0) &&
+              <Box fontSize='lg'>
+                Description: {(nftLoaded && nfts.length > 0) && nfts[0].desc}
+              </Box>}
           </Flex>
 
           <Flex w="100%" mt='5'>
             {nfts.length > 0 && nftLoaded ? (
-
-              nfts.map(nft => (
-                <Card maxW='xs' key={nfts.indexOf(nft)} ms="5" mb="5">
-                  <CardBody p="3">
-                    <Image
-                      src={nft.img}
-                      alt='nft image'
-                      borderRadius='lg'
-                    />
-                    <Flex mt='2' direction="column">
-                      <Heading size='md'>NFT #{nfts.indexOf(nft) + 1}</Heading>
-                      <Flex alignItems="center">
-                        <Text fontSize='2xl'>
-                          0.001
-                        </Text>
-                        <Text color='purple.500' fontSize='2xl' ms="2">
-                          ETH
-                        </Text>
+              <SimpleGrid columns={5} spacing={5} m="5">
+                {nfts.map(nft => (
+                  <Card maxW='xs' key={nfts.indexOf(nft)}>
+                    <CardBody p="3">
+                      <Image
+                        src={nft.img}
+                        alt='nft image'
+                        borderRadius='lg'
+                      />
+                      <Flex mt='2' direction="column">
+                        <Heading size='md'>{nft.name}</Heading>
+                        <Flex alignItems="center">
+                          <Text fontSize='2xl'>
+                            0.001
+                          </Text>
+                          <Text color='purple.500' fontSize='2xl' ms="2">
+                            ETH
+                          </Text>
+                        </Flex>
                       </Flex>
-                    </Flex>
-                  </CardBody>
-                  <Divider />
-                  <CardFooter>
-                    <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => buyNFT()}>
-                      Buy now
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))
-
+                    </CardBody>
+                    <Divider />
+                    <CardFooter>
+                      <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => buyNFT()}>
+                        Buy now
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </SimpleGrid>
             ) : <Text ms="5">Loading or NFT in mint phase</Text>}
           </Flex>
         </Flex>

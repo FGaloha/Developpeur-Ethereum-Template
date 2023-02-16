@@ -8,9 +8,6 @@ import { hardhat, goerli, mainnet } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import { Layout } from '@/components/Layout/Layout';
 import { MembersProvider } from '@/context/MembersProvider'
-import { Monoton } from '@next/font/google'
-
-const monoton = Monoton({ weight: '400', subsets: ['latin'], })
 
 const { chains, provider } = configureChains(
   [hardhat, goerli, mainnet],
@@ -36,14 +33,13 @@ export default function App({ Component, pageProps }) {
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider modalSize="compact" chains={chains}
         theme={lightTheme({
-          accentColor: '#E313DF', // CF44E9
+          accentColor: '#805AD5', // CF44E9 // '#E313DF'
           accentColorForeground: 'white',
           borderRadius: 'medium',
         })}>
 
         <ChakraProvider>
           <MembersProvider>
-
             <Layout>
               <Component {...pageProps} />
             </Layout>

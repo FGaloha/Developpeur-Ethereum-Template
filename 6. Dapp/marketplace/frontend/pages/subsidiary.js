@@ -59,7 +59,7 @@ export default function Subsidiary() {
 
   return (
     isConnected && isSubsidiary && (
-      < Flex direction='column' alignItems='center' w='100%' backgroundColor='black'>
+      < Flex direction='column' alignItems='center' w='100%' backgroundColor='black' rounded='xl'>
         <Heading as='h1' size='xl' noOfLines={1} color='white' mt='4' mb='100'>
           Create a new collection
         </Heading>

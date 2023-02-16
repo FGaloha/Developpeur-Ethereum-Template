@@ -70,27 +70,35 @@ export const Header = () => {
         <meta name="description" content="Oneiroi, marketplace powered by Morpheus" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet" />
       </Head>
       <Flex p='4' justifyContent="space-between" alignItems="center" border="2px" position="fixed" width="100%" bg="black">
 
         <Box>
 
-          <Heading size='lg' color='#E313DF'>Morpheus</Heading>
+          {/* #E313DF */}
+          <Heading id='logo' size='3xl' color='purple.700'>Morpheus</Heading>
 
         </Box>
 
         {isConnected &&
           <Flex>
-            <Flex me="4"><Link href="/">Home</Link></Flex>
-            <Flex me="4"><Link href="/marketplace/marketplace">Marketplace</Link></Flex>
-            {/* Test link */}
+            <Flex me="4">
+              <Link class='title' href="/" size="lg">Home</Link>
+            </Flex>
+            {/* <Flex me="4"><Link href="/marketplace/marketplace">Marketplace</Link></Flex> */}
+            {/* Test link
             <Flex me="4"><Link href={{
               pathname: '/collection/collection',
               query: { address: '0x0f6D22Ee4c19cf80A9F31e38c5A1bEe75A40c3A1' },
-            }}>Collection</Link></Flex>
-            <Flex me="4"><Link href="/marketplace/wallet">Wallet</Link></Flex>
-            {ownerFactory == address && (<Flex me="4"><Link href="/admin">Admin</Link></Flex>)}
-            {isSubsidiary && (<Flex me="4"><Link href="/subsidiary">Subsidiary</Link></Flex>)}
+            }}>Collection</Link></Flex> */}
+            <Flex me="4">
+              <Link class='title' href="/marketplace/wallet">Wallet</Link>
+            </Flex>
+            {ownerFactory == address && (<Flex me="4"><Link class='title' href="/admin">Admin</Link></Flex>)}
+            {isSubsidiary && (<Flex me="4"><Link class='title' href="/subsidiary">Subsidiary</Link></Flex>)}
           </Flex>
         }
 

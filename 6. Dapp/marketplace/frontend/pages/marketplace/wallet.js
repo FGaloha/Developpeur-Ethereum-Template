@@ -25,7 +25,7 @@ export default function Wallet() {
   const provider = useProvider()
 
   // Router
-  // const router = useRouter();
+  const router = useRouter();
   // const query = router.query;
   //const contractAddressCollection = query.address;
 
@@ -225,7 +225,7 @@ export default function Wallet() {
   }
 
   return (
-    <Flex direction="column" alignItems="center" w="100%" backgroundColor='black'>
+    <Flex direction="column" alignItems="center" w="100%" backgroundColor='black' rounded='xl'>
       {isConnected ? (
         <Flex direction="column" alignItems="center" justifyContent="center" w="100%">
           <Heading as='h1' size='xl' noOfLines={1} color='white' mt='4' mb='50'>
@@ -240,39 +240,42 @@ export default function Wallet() {
             {nfts.length > 0 && nftLoaded ? (
               <SimpleGrid columns={5} spacing={5} m="5">
                 {nfts.map(nft => (
-                  <Card maxW='xs' key={nfts.indexOf(nft)} >
-                    <CardBody p="3">
+                  <Card maxW='xs' key={nfts.indexOf(nft)}>
+                    <CardBody p="0" borderWidth="1px"
+                      rounded="lg">
                       <Image
                         src={nft.img}
                         alt='nft image'
-                        borderRadius='lg'
+                        roundedTop="lg"
                       />
-                      <Flex mt='2' direction="column">
-                        <Heading size='md'>{nft.name}</Heading>
-                        {nft.price > 0 &&
-                          <Flex alignItems="center">
-                            <Text fontSize='2xl'>
-                              {nft.price}
-                            </Text>
-                            <Text color='purple.500' fontSize='2xl' ms="2">
-                              ETH
-                            </Text>
-                          </Flex>}
 
+                      <Flex m='1' direction="column">
+                        <Text fontSize='xl'>{nft.name}
+                          {nft.price > 0 && (<>
+                            {' - ' + nft.price} ETH</>)
+                          }
+                        </Text>
                       </Flex>
+
                     </CardBody>
                     <Divider />
-                    <CardFooter>
+                    <CardFooter p="0">
                       {/* <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => putOnSale()}>
                         List
                       </Button> */}
                       {nft.price == 0 ? (
-                        <Link colorScheme='purple' href={{
-                          pathname: './list',
-                          query: { address: nft.addressCollection, tokenId: nft.tokenId },
-                        }}>List</Link>)
+                        // <Link colorScheme='purple' href={{
+                        //   pathname: './list',
+                        //   query: { address: nft.addressCollection, tokenId: nft.tokenId },
+                        // }}>List</Link>
+
+                        <Button m="2" colorScheme='purple' onClick={() => router.push(`./list/?address=${nft.addressCollection}&tokenId=${nft.tokenId}`)}>
+                          List
+                        </Button>
+
+                      )
                         : (
-                          <Button isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' size='sm' colorScheme='purple' onClick={() => deleteFromSale(nft.addressCollection, nft.tokenId)}>
+                          <Button m="2" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => deleteFromSale(nft.addressCollection, nft.tokenId)}>
                             Unlist
                           </Button>)}
                     </CardFooter>
@@ -283,7 +286,7 @@ export default function Wallet() {
             ) : <Text ms="5">Loading or NFT in mint phase</Text>}
           </Flex>
         </Flex>
-      ) : <Text fontSize='3xl' mt="10">Please connect</Text>}
+      ) : <Text fontSize='3xl' mt="10" color='#E313DF'>Please connect your wallet</Text>}
     </Flex>
   )
 }

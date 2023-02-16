@@ -50,7 +50,7 @@ export const SubsidiaryCollections = () => {
   return (
     <Flex bg="black">
       {collections.length > 0 ? (
-        <TableContainer mt='20'>
+        <TableContainer my='20'>
           <Table variant='simple'>
             <Thead>
               <Tr>
@@ -77,7 +77,7 @@ export const SubsidiaryCollections = () => {
             </Tbody>
           </Table>
         </TableContainer>
-      ) : (<Text mt="20" fontSize="3xl">No collection for the moment</Text>)}
+      ) : (<Text my="20" fontSize="3xl">No collection for the moment</Text>)}
     </Flex>
   )
 }

@@ -11,7 +11,6 @@ import { useEffect, useState } from 'react'
 import { useRouter } from "next/router";
 import ContractCollection from "../../contracts/Collection";
 import { ethers } from 'ethers'
-import axios from 'axios'
 
 export default function Mint() {
 
@@ -46,11 +45,9 @@ export default function Mint() {
   const mint = async () => {
     setIsLoading(true);
     try {
-      //console.log(contractAddressCollection)
       const contract = new ethers.Contract(contractAddressCollection, ContractCollection.abi, signer)
-      //console.log(ethers.utils.parseEther(price) * 3)
-      //console.log(price * 3)
-      const mintCollection = await contract.mint(quantity, { value: ethers.utils.parseEther(price) * 3 })
+      const totalPrice = (price * quantity).toString()
+      const mintCollection = await contract.mint(quantity, { value: ethers.utils.parseEther(totalPrice) })
       await mintCollection.wait()
       toast({
         title: 'NFT(s) minted',
@@ -70,6 +67,7 @@ export default function Mint() {
       })
     }
     setIsLoading(false);
+    router.push('../marketplace/wallet')
   }
 
   // To get infos of the collection
@@ -85,7 +83,7 @@ export default function Mint() {
   }
 
   return (
-    <Flex direction="column" alignItems="center" w="100%" backgroundColor='black'>
+    <Flex direction="column" alignItems="center" w="100%" backgroundColor='black' rounded='xl'>
       {isConnected ? (
         <Flex direction="column" alignItems="center" justifyContent="center" w="100%">
           <Heading as='h1' size='xl' noOfLines={1} color='white' mt='4' mb='50'>
@@ -137,7 +135,7 @@ export default function Mint() {
               </NumberInput>
               <Button ms="4" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => mint()}>Mint</Button>
             </Flex>) : (<Text fontSize='3xl' mt="10">Sold out</Text>)}
-        </Flex>) : <Text fontSize='3xl' mt="10">Please connect</Text>}
+        </Flex>) : <Text fontSize='3xl' mt="10" color='#E313DF'>Please connect your wallet</Text>}
     </Flex>
   )
 }

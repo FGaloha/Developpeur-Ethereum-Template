@@ -9,8 +9,7 @@ import ContractCollection from "../../contracts/Collection";
 import ContractFactory from "../../contracts/Factory";
 import { ethers } from 'ethers'
 import useMembersProvider from '@/hooks/useMembersProvider'
-
-
+import axios from 'axios'
 
 export const MintCards = () => {
   // Wagmi
@@ -60,14 +59,14 @@ export const MintCards = () => {
 
       // if remaining mints, card generation using token 0 or template
       if (totalSupply == 0 || (totalSupply.toNumber() < maxSupply.toNumber())) {
-        let nft = {}
         if (totalSupply == 0) {
-          nft = {
+          let nft = {
             // Warning : remplacer par une image start mint
             img: 'https://ipfs.io/ipfs/bafybeid7wtd3h5s6lgmjyccv2gbcvgyumkiwgql64mh34xruxyxe2ttzhe/2.png',
             desc: 'Be first minter',
             addressCollection: createdCollectionsEvents[i]['args'][1],
           }
+          collectionToMint.push(nft)
         }
         else {
           const tokenUri = await contractCollection.tokenURI(0);
@@ -83,22 +82,19 @@ export const MintCards = () => {
           getUri.then(value => {
             let rawImg = value.data.image
             let image = rawImg.replace('ipfs://', 'https://ipfs.io/ipfs/')
-            nft = {
+            let nft = {
               img: image,
               desc: value.data.description,
               addressCollection: createdCollectionsEvents[i]['args'][1],
             }
+            collectionToMint.push(nft)
           })
         }
-        // add to the list of collection
-        collectionToMint.push(nft)
       }
-
     }
     await new Promise(r => setTimeout(r, 1000));
     setCollections(collectionToMint)
     setCollectionsLoaded(true)
-    console.log(collections)
   }
   return (
 
@@ -134,13 +130,6 @@ export const MintCards = () => {
 
             </Box>
           ))}
-
-
-
-
-
-
-
 
         </SimpleGrid>
       </Flex>

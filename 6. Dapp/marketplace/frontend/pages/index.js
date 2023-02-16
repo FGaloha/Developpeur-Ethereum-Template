@@ -1,13 +1,11 @@
-import { Inter } from '@next/font/google'
-import { Heading, Flex, Text, Image } from '@chakra-ui/react';
+import { Heading, Flex, Text, Image, Box } from '@chakra-ui/react';
 import { useEffect } from 'react'
 import { useAccount, useProvider } from "wagmi";
 import ContractFactory from "../contracts/Factory"
 import { ethers } from 'ethers'
 import { MintCards } from "@/components/Cards/MintCards"
+import { CollectionsCards } from "@/components/Cards/CollectionsCards"
 import useMembersProvider from '@/hooks/useMembersProvider'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
 
@@ -65,10 +63,12 @@ export default function Home() {
   // }
 
   return (
-    <Flex w="100%" m="0px" p="0px" border="2px" bg="black">
+
+    <Flex w="100%" m="0px" border="2px" bg="black" rounded="xl" p="1">
       {isConnected ? (
         <Flex direction="column" alignItems="center" justifyContent="top" w="100%">
           <MintCards />
+          <CollectionsCards />
         </Flex >
       )
         : (
@@ -77,7 +77,7 @@ export default function Home() {
           </Flex>
         )
       }
-
     </Flex>
+
   )
 }

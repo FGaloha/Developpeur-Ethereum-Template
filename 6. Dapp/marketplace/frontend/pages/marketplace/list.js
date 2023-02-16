@@ -99,7 +99,7 @@ export default function List() {
   // }
 
   return (
-    <Flex direction="column" alignItems="center" w="100%" backgroundColor='black'>
+    <Flex direction="column" alignItems="center" w="100%" backgroundColor='black' rounded='xl'>
       {isConnected ? (
         <Flex direction="column" alignItems="center" justifyContent="center" w="100%">
           <Heading as='h1' size='xl' noOfLines={1} color='white' mt='4' mb='50'>
@@ -112,7 +112,7 @@ export default function List() {
             <Input placeholder='Price in ETH' focusBorderColor='pink.600' onChange={e => setPrice(e.target.value)} />
             <Button ms="4" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => addToSale()}>List</Button>
           </Flex>
-        </Flex>) : <Text fontSize='3xl' mt="10">Please connect</Text>}
+        </Flex>) : <Text fontSize='3xl' mt="10" color='#E313DF'>Please connect your wallet</Text>}
     </Flex>
   )
 }

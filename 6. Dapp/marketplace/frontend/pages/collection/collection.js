@@ -175,7 +175,7 @@ export default function Collection() {
   }
 
   return (
-    <Flex direction="column" alignItems="center" w="100%" backgroundColor='black'>
+    <Flex direction="column" alignItems="center" w="100%" backgroundColor='black' rounded='xl'>
       {isConnected ? (
         <Flex direction="column" alignItems="center" justifyContent="center" w="100%">
           <Heading as='h1' size='xl' noOfLines={1} color='white' mt='4' mb='50'>
@@ -203,28 +203,25 @@ export default function Collection() {
               <SimpleGrid columns={5} spacing={5} m="5">
                 {nfts.map(nft => (
                   <Card maxW='xs' key={nfts.indexOf(nft)}>
-                    <CardBody p="3">
+                    <CardBody p="0" borderWidth="1px"
+                      rounded="lg">
                       <Image
                         src={nft.img}
                         alt='nft image'
-                        borderRadius='lg'
+                        roundedTop="lg"
                       />
-                      <Flex mt='2' direction="column">
-                        <Heading size='md'>{nft.name}</Heading>
-                        {nft.price > 0 && (
-                          <Flex alignItems="center">
-                            <Text fontSize='2xl'>
-                              {nft.price}
-                            </Text>
-                            <Text color='purple.500' fontSize='2xl' ms="2">
-                              ETH
-                            </Text>
-                          </Flex>)}
 
+                      <Flex m='1' direction="column">
+                        <Text fontSize='xl'>{nft.name}
+                          {nft.price > 0 && (<>
+                            {' - ' + nft.price} ETH</>)
+                          }
+                        </Text>
                       </Flex>
+
                     </CardBody>
                     <Divider />
-                    <CardFooter p='1'>
+                    <CardFooter p='0'>
                       {nft.price > 0 ? (
 
                         nft.owner == address ? (
@@ -233,7 +230,7 @@ export default function Collection() {
                           </Button>
                         ) : (
                           <Button ms='2' my='2' isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => buyNFT(nft.tokenId, nft.price)}>
-                            Buy now
+                            Buy
                           </Button>)
 
                       ) : <Text ms='2' my='1' color='purple.600' fontSize='lg' as='b'>Not listed</Text>}
@@ -244,7 +241,7 @@ export default function Collection() {
             ) : <Text ms="5">Loading or NFT in mint phase</Text>}
           </Flex>
         </Flex>
-      ) : <Text fontSize='3xl' mt="10">Please connect</Text>
+      ) : <Text fontSize='3xl' mt="10" color='#E313DF'>Please connect your wallet</Text>
       }
     </Flex >
   )

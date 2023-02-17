@@ -71,7 +71,7 @@ contract Factory is Ownable {
 
     /// @notice Get the information of a Morpheus subsidiary
     /// @param _seller The address managing subsidiarie's collections
-    /// @return Subsidiary the table with name, symbol, if it is active and the number of the next collection
+    /// @return the table with information of the subsidiary including name, symbol, team members address if it is active and the number of the next collection
     function getSubsidiary(address _seller)
         external
         view

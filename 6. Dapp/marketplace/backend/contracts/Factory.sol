@@ -17,6 +17,7 @@ contract Factory is Ownable {
         address[] team;
         bool isActive;
         uint256 counter;
+        //address[] collections;
     }
 
     mapping(address => Subsidiary) internal subsidiaries;
@@ -141,6 +142,12 @@ contract Factory is Ownable {
             _baseURI
         );
 
+        // Collection address added in the subsidiary information
+        // subsidiaries[msg.sender].collections[
+        //     subsidiaries[msg.sender].counter - 1
+        // ] = collectionAddress;
+
+        // Counter updated to manage collection name properly
         ++subsidiaries[msg.sender].counter;
 
         emit CollectionCreated(
@@ -152,5 +159,6 @@ contract Factory is Ownable {
 
         // The factory transfer the newly created collection ownership to the subsidiary
         Collection(payable(collectionAddress)).transferOwnership(msg.sender);
+        return collectionAddress;
     }
 }

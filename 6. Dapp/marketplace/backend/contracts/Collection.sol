@@ -42,6 +42,14 @@ contract Collection is ERC721Enumerable, ERC2981, PaymentSplitter, Ownable {
         return maxSupply;
     }
 
+    function getMaxQuantity() public pure returns (uint256) {
+        return 50;
+    }
+
+    function getBaseURI() public view returns (string memory) {
+        return baseURI;
+    }
+
     function init(
         uint256 _maxSupply,
         uint256 _price,

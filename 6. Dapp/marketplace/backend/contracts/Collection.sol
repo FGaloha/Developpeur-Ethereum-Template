@@ -34,21 +34,7 @@ contract Collection is ERC721Enumerable, ERC2981, PaymentSplitter, Ownable {
 
     event Mint(address indexed minter, uint256 tokenId);
 
-    function getPrice() public view returns (uint256) {
-        return price;
-    }
-
-    function getMaxSupply() public view returns (uint256) {
-        return maxSupply;
-    }
-
-    function getMaxQuantity() public pure returns (uint256) {
-        return 50;
-    }
-
-    function getBaseURI() public view returns (string memory) {
-        return baseURI;
-    }
+    event BaseURIChanged(string newBaseURI, string oldBaseURI);
 
     function init(
         uint256 _maxSupply,
@@ -59,6 +45,22 @@ contract Collection is ERC721Enumerable, ERC2981, PaymentSplitter, Ownable {
         price = _price;
         baseURI = _baseURI;
         _setDefaultRoyalty(address(this), 500);
+    }
+
+    function getMaxSupply() public view returns (uint256) {
+        return maxSupply;
+    }
+
+    function getPrice() public view returns (uint256) {
+        return price;
+    }
+
+    function getBaseURI() public view returns (string memory) {
+        return baseURI;
+    }
+
+    function getMaxQuantity() public pure returns (uint256) {
+        return 50;
     }
 
     function mint(uint256 _quantity) external payable {
@@ -91,19 +93,19 @@ contract Collection is ERC721Enumerable, ERC2981, PaymentSplitter, Ownable {
         override(ERC721)
         returns (string memory)
     {
-        require(_exists(_tokenId), "URI query for nonexistent token");
+        require(_exists(_tokenId), "Non existing token");
         return string(abi.encodePacked(baseURI, _tokenId.toString(), ".json"));
     }
 
-    // return string(abi.encodePacked("ipfs://bafybeidmflwrfthqw5uzs2usbbxlir6mqpxuhmvddvprms63lojaxyckzi/", _tokenId.toString(), ".json"));
-
     function setBaseURI(string memory _baseURI) external onlyOwner {
+        string memory oldBaseURI = baseURI;
         baseURI = _baseURI;
+        emit BaseURIChanged(_baseURI, oldBaseURI);
     }
 
     function releaseAll() external {
         for (uint256 i = 0; i < 2; i++) {
-            //Pour chaque adresse, je fais un release les gains
+            // Each member receive the due % of revenues (owner 97% - factory owner 3 %)
             release(payable(payee(i)));
         }
     }

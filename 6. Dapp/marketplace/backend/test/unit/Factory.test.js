@@ -1,7 +1,6 @@
 const { assert, expect } = require("chai")
 const { network, deployments, ethers } = require("hardhat")
 const { developmentChains } = require("../../helper-hardhat-config")
-//const { ContractCollection } = require("../../artifacts/contracts/Collection")
 
 !developmentChains.includes(network.name)
   ? describe.skip
@@ -9,8 +8,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
     let accounts;
     let collection;
     let factory;
-
-    console.log(ethers.version);
 
     // DEFINITIONS
     // Owner is the address who deployed the contract
@@ -41,7 +38,8 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should not be possible for a seller of the Factory to create a subsidiary", async function () {
-        await expect(factory.connect(seller1).setSubsidiary(seller1.address, 'Paris', 'PAR'))
+        await factory.setSubsidiary(seller1.address, 'Paris', 'PAR')
+        await expect(factory.connect(seller1).setSubsidiary(seller2.address, 'Cannes', 'CAN'))
           .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
@@ -114,24 +112,29 @@ const { developmentChains } = require("../../helper-hardhat-config")
         await expect(factory.deactivateSubsidiary(seller1.address))
           .to.emit(factory, 'SubsidiaryDeactivated')
           .withArgs(seller1.address, 'Paris', 'PAR');
+        const getSubsidiary = await factory.getSubsidiary(seller1.address);
+        assert.equal(getSubsidiary.isActive, false);
       })
 
-      it("should not be possible for a seller of the Factory to create a subsidiary", async function () {
+      it("should not be possible for a subsidiary to deactivate a subsidiary", async function () {
         await expect(factory.connect(seller1).deactivateSubsidiary(seller1.address))
           .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
-      it("should not be possible for a simple user to create a subsidiary", async function () {
+      it("should not be possible for a simple user to deactivate a subsidiary", async function () {
         await expect(factory.connect(simple_user).deactivateSubsidiary(seller1.address))
           .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
       it("should be possible for the owner of the Factory to reactivate a subsidiary", async function () {
+        await factory.deactivateSubsidiary(seller1.address);
+        const getSubsidiaryBefore = await factory.getSubsidiary(seller1.address);
+        assert.equal(getSubsidiaryBefore.isActive, false);
         await expect(factory.setSubsidiary(seller1.address, 'Paris 1', 'PAR1'))
           .to.emit(factory, 'SubsidiaryAdded')
           .withArgs(seller1.address, 'Paris 1', 'PAR1');
-        const getSubsidiary = await factory.getSubsidiary(seller1.address);
-        assert.equal(getSubsidiary.isActive, true);
+        const getSubsidiaryAfter = await factory.getSubsidiary(seller1.address);
+        assert.equal(getSubsidiaryAfter.isActive, true);
       })
 
     })
@@ -193,36 +196,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
         await expect(factory.connect(simple_user).createNFTCollection(10, ethers.utils.parseEther('0.001'),
           'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/'))
           .to.be.revertedWith("Not a seller");
-      })
-
-    })
-
-    describe("SubsidiaryDeactivated", function () {
-
-      beforeEach(async () => {
-        await deployments.fixture(["collection"]);
-        collection = await ethers.getContract("Collection");
-        await deployments.fixture(["factory"]);
-        factory = await ethers.getContract("Factory");
-        await factory.setSubsidiary(seller1.address, 'Paris', 'PAR');
-      })
-
-      it("should be possible for the owner of the Factory to deactivate a subsidiary", async function () {
-        await expect(factory.deactivateSubsidiary(seller1.address))
-          .to.emit(factory, 'SubsidiaryDeactivated')
-          .withArgs(seller1.address, 'Paris', 'PAR');
-        const subsidiary = await factory.getSubsidiary(seller1.address);
-        assert.equal(subsidiary.isActive.toString(), 'false')
-      })
-
-      it("should not be possible for a subsidiary to deactivate a subsidiary", async function () {
-        await expect(factory.connect(seller1).deactivateSubsidiary(seller1.address))
-          .to.be.revertedWith("Ownable: caller is not the owner");
-      })
-
-      it("should not be possible for a simple user to deactivate a subsidiary", async function () {
-        await expect(factory.connect(simple_user).deactivateSubsidiary(seller1.address))
-          .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
     })

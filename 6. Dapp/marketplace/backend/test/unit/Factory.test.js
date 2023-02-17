@@ -5,84 +5,90 @@ const { developmentChains } = require("../../helper-hardhat-config")
 !developmentChains.includes(network.name)
   ? describe.skip
   : describe("Factory Smart Contract Unit Testing", function () {
-    // let accounts;
-    // let voting;
+    let accounts;
+    let collection;
+    let factory;
+
+    console.log(ethers.version);
 
     // DEFINITIONS
     // Owner is the address who deployed the contract
-    // A voter is a person who has been registered by the owner & is able to vote & access voter's features
-    // A simple user is a person who is a non registered voter, cannot vote but can check the winning proposal
+    // A seller is an address who has been registered by the owner & is able to create NFTs contract through the Factory contract
+    // A simple user is a non registered address & has no rights except to view the list of subsidiaries which are by fact public on etherscan
 
     before(async () => {
       accounts = await ethers.getSigners()
       owner = accounts[0]
-      // voter1 = accounts[1]
-      // voter2 = accounts[2]
+      seller1 = accounts[1]
+      seller2 = accounts[2]
       simple_user = accounts[3]
     })
 
-    // describe("addVoter", function () {
+    describe("setSubsidiary", function () {
+
+      beforeEach(async () => {
+        await deployments.fixture(["collection"]);
+        collection = await ethers.getContract("Collection");
+        await deployments.fixture(["factory"]);
+        factory = await ethers.getContract("Factory");
+      })
+
+      it("should be possible for the owner of the Factory to create a subsidiary", async function () {
+        await expect(factory.setSubsidiary(seller1.address, 'Paris', 'PAR'))
+          .to.emit(factory, 'SubsidiaryAdded')
+          .withArgs(seller1.address, 'Paris', 'PAR');
+      })
+
+      it("should not be possible for a seller of the Factory to create a subsidiary", async function () {
+        await expect(factory.connect(seller1).setSubsidiary(seller1.address, 'Paris', 'PAR'))
+          .to.be.revertedWith("Ownable: caller is not the owner");
+      })
+
+      it("should not be possible for a simple user to create a subsidiary", async function () {
+        await expect(factory.connect(simple_user).setSubsidiary(seller1.address, 'Paris', 'PAR'))
+          .to.be.revertedWith("Ownable: caller is not the owner");
+      })
+
+    })
+
+    // describe("getSubsidiary", function () {
 
     //   beforeEach(async () => {
-    //     await deployments.fixture(["voting"]);
-    //     voting = await ethers.getContract("Voting");
+    //     await deployments.fixture(["collection"]);
+    //     collection = await ethers.getContract("Collection");
+    //     await deployments.fixture(["factory"]);
+    //     factory = await ethers.getContract("Factory");
+    //     await factory.setSubsidiary(seller1.address, 'Paris', 'PAR');
     //   })
 
-    //   it("should not be possible for a simple user to add a voter", async function () {
-    //     await expect(voting.connect(simple_user).addVoter(simple_user.address))
-    //       .to.be.revertedWith("Ownable: caller is not the owner");
+    //   it("should be possible for the owner of the Factory contract to get the Subsidiary's information", async function () {
+    //     const getSubsidiary = await factory.connect(owner).getSubsidiary(seller1.address);
+    //     assert.equal(getSubsidiary.name, 'Paris');
+    //     assert.equal(getSubsidiary.symbol, 'PAR');
+    //     assert.equal(getSubsidiary.team[0], seller1.address);
+    //     assert.equal(getSubsidiary.team[1], owner.address);
+    //     assert.equal(getSubsidiary.isActive, true);
+    //     assert.equal(getSubsidiary.counter, 1);
     //   })
 
-    //   it("should not be possible for a voter to add a voter", async function () {
-    //     await expect(voting.connect(voter1).addVoter(voter2.address))
-    //       .to.be.revertedWith("Ownable: caller is not the owner");
+    //   it("should be possible for a seller of the Factory contract to get the Subsidiary's information", async function () {
+    //     const getSubsidiary = await factory.connect(seller1).getSubsidiary(seller1.address);
+    //     assert.equal(getSubsidiary.name, 'Paris');
+    //     assert.equal(getSubsidiary.symbol, 'PAR');
+    //     assert.equal(getSubsidiary.team[0], seller1.address);
+    //     assert.equal(getSubsidiary.team[1], owner.address);
+    //     assert.equal(getSubsidiary.isActive, true);
+    //     assert.equal(getSubsidiary.counter, 1);
     //   })
 
-    //   it("should be possible for the owner to register as a voter in phase (0)-RegisteringVoters", async function () {
-    //     // check we are in phase (0)-RegisteringVoters
-    //     assert.equal(await voting.workflowStatus(), 0);
-    //     await expect(voting.addVoter(owner.address))
-    //       .to.emit(voting, 'VoterRegistered')
-    //       .withArgs(owner.address);
-    //     // check owner registration worked
-    //     const myVoter = await voting.getVoter(owner.address);
-    //     assert.equal(myVoter.isRegistered, true);
-    //   })
-
-    //   it("should be possible for the owner to register another address as a voter in phase (0)-RegisteringVoters", async function () {
-    //     // starting by registering the owner to get access to getVoter who is limited to voters
-    //     await voting.addVoter(owner.address);
-    //     // check we are in phase (0)-RegisteringVoters
-    //     assert.equal(await voting.workflowStatus(), 0);
-    //     // adding another voter & check it emit the expected event
-    //     await expect(voting.addVoter(voter1.address))
-    //       .to.emit(voting, 'VoterRegistered')
-    //       .withArgs(voter1.address);
-    //     // check voter1 registration worked
-    //     const myVoter = await voting.getVoter(voter1.address);
-    //     assert.equal(myVoter.isRegistered, true);
-    //   })
-
-    //   it("should not be possible for the owner to register a voter twice", async function () {
-    //     // check we are in phase (0)-RegisteringVoters
-    //     assert.equal(await voting.workflowStatus(), 0);
-    //     // the owner register voter1 once
-    //     await voting.addVoter(voter1.address);
-    //     // the owner try to register again the voter1
-    //     await expect(voting.addVoter(voter1.address))
-    //       .to.be.revertedWith("Already registered");
-    //   })
-
-    //   it("Should not be possible for the owner to register a voter outside the (0)-RegisteringVoters phase", async function () {
-    //     // check the status is (0)-RegisteringVoters
-    //     assert.equal(await voting.workflowStatus(), 0);
-    //     // changing the workflowStatus (0) to status (1)-ProposalsRegistrationStarted
-    //     await voting.startProposalsRegistering();
-    //     // check the status is now (1)-ProposalsRegistrationStarted
-    //     assert.equal(await voting.workflowStatus(), 1);
-    //     // check the addVoter attempt in ProposalsRegistrationStarted trigger the expected revert
-    //     await expect(voting.addVoter(voter1.address))
-    //       .to.be.revertedWith("Voters registration not open");
+    //   it("should be possible for a simple user to get the Subsidiary's information", async function () {
+    //     const getSubsidiary = await factory.connect(simple_user).getSubsidiary(seller1.address);
+    //     assert.equal(getSubsidiary.name, 'Paris');
+    //     assert.equal(getSubsidiary.symbol, 'PAR');
+    //     assert.equal(getSubsidiary.team[0], seller1.address);
+    //     assert.equal(getSubsidiary.team[1], owner.address);
+    //     assert.equal(getSubsidiary.isActive, true);
+    //     assert.equal(getSubsidiary.counter, 1);
     //   })
 
     // })

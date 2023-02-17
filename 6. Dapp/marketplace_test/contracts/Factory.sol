@@ -38,11 +38,11 @@ contract Factory is Ownable {
         string _symbol
     );
 
-    // event SubsidiaryUpdated(
-    //     address indexed _seller,
-    //     string _name,
-    //     string _symbol
-    // );
+    event SubsidiaryUpdated(
+        address indexed _seller,
+        string _name,
+        string _symbol
+    );
 
     event CollectionCreated(
         string _name,
@@ -50,6 +50,17 @@ contract Factory is Ownable {
         uint256 _timestamp,
         address indexed _seller
     );
+
+    /// @notice Get the information of a Morpheus subsidiary
+    /// @param _seller The address managing subsidiarie's collections
+    /// @return Subsidiary the table with name, symbol, if it is active and the number of the next collection
+    function getSubsidiary(address _seller)
+        external
+        view
+        returns (Subsidiary memory)
+    {
+        return subsidiaries[_seller];
+    }
 
     /// @notice Add an address to the list of Morpheus subsidiaries
     /// @param _seller The address to add to the list of authorized subsidiaries
@@ -68,17 +79,6 @@ contract Factory is Ownable {
         emit SubsidiaryAdded(_seller, _name, _symbol);
     }
 
-    /// @notice Get the information of a Morpheus subsidiary
-    /// @param _seller The address managing subsidiarie's collections
-    /// @return Subsidiary the table with name, symbol, if it is active and the number of the next collection
-    function getSubsidiary(address _seller)
-        external
-        view
-        returns (Subsidiary memory)
-    {
-        return subsidiaries[_seller];
-    }
-
     /// @notice Remove an address from the list of subsidiaries
     /// @dev The address stays in charge of the collections created
     /// @param _seller The address to use to update the list of subsidiaries
@@ -91,19 +91,19 @@ contract Factory is Ownable {
         );
     }
 
-    // /// @notice Update the name and symbol of the subsidiary which is used to create collections name
-    // /// @param _seller The address to use to update the name of the right subsidiary
-    // /// @param _name The name to use to update the current subsidiary name
-    // /// @param _symbol The symbol to use to update the current subsidiary name
-    // function updateSubsidiary(
-    //     address _seller,
-    //     string calldata _name,
-    //     string calldata _symbol
-    // ) external onlyOwner {
-    //     subsidiaries[_seller].name = _name;
-    //     subsidiaries[_seller].symbol = _symbol;
-    //     emit SubsidiaryUpdated(_seller, _name, _symbol);
-    // }
+    /// @notice Update the name and symbol of the subsidiary which is used to create collections name
+    /// @param _seller The address to use to update the name of the right subsidiary
+    /// @param _name The name to use to update the current subsidiary name
+    /// @param _symbol The symbol to use to update the current subsidiary name
+    function updateSubsidiary(
+        address _seller,
+        string calldata _name,
+        string calldata _symbol
+    ) external onlyOwner {
+        subsidiaries[_seller].name = _name;
+        subsidiaries[_seller].symbol = _symbol;
+        emit SubsidiaryUpdated(_seller, _name, _symbol);
+    }
 
     /// @notice Deploy an ERC721 collection contract for the subsidiary calling, based on parameters
     /// @param _maxSupply The maximum of NFT that will be possibly minted

@@ -512,49 +512,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should be possible for the market contract owner to withdraw funds", async function () {
-
-        const price = 1000000000000000000;
-        const fixFee = 1000000000000000;
-        const percentFee = price * 250 / 10000;
-        const totalMarketFee = fixFee + percentFee;
-        console.log(totalMarketFee.toString());
-
-        // const balance = await owner.getBalance();
-        // console.log(balance.toString());
-
         market.releaseAll();
-
-        // const balanceA = await owner.getBalance();
-        // console.log(balanceA.toString());
-
-        const fundsEvent = await market.queryFilter('FundsReleased');
-        //const amount = fundsEvent[0]['args'][1];
-        console.log(fundsEvent);
-
-
-
-
-
-        // await expect(market.releaseAll())
-        //   .to.emit(market, 'FundsReleased')
-        //   .withArgs(owner.address, ethers.utils.parseEther('0.026'));
-        // const earningsWithRoyalties = price - fixFee - percentFee;
-        // 5% royalties for creators
-        // const royalties = earningsWithRoyalties * 500 / 10000;
-        // const earnings = earningsWithRoyalties - royalties;
-
-        // Earnings before withdraw
-        // const earningsBefore = await market.getEarnings(simple_user.address);
-        // assert.equal(earningsBefore.toNumber(), earnings);
-
-        // await expect(market.connect(simple_user).withdraw())
-        //   .to.emit(market, 'EarningsWithdraw')
-        //   .withArgs(simple_user.address, earnings);
-
-        // // Earnings after withdraw
-        // const earningsAfter = await market.getEarnings(simple_user.address);
-        // assert.equal(earningsAfter.toNumber(), 0);
-
       })
 
       it("should not be possible for a simple user to withdraw market contract funds", async function () {

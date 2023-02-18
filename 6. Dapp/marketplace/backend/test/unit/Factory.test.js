@@ -142,8 +142,8 @@ const { developmentChains } = require("../../helper-hardhat-config")
     describe("createNFTCollection", function () {
 
       beforeEach(async () => {
-        await deployments.fixture(["collection"]);
-        collection = await ethers.getContract("Collection");
+        // await deployments.fixture(["collection"]);
+        // collection = await ethers.getContract("Collection");
         await deployments.fixture(["factory"]);
         factory = await ethers.getContract("Factory");
         await factory.setSubsidiary(seller1.address, 'Paris', 'PAR');
@@ -197,6 +197,59 @@ const { developmentChains } = require("../../helper-hardhat-config")
           'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/'))
           .to.be.revertedWith("Not a seller");
       })
+
+    })
+
+    describe("releaseAll", function () {
+
+      beforeEach(async () => {
+        //await deployments.fixture(["collection"]);
+        //collection = await ethers.getContract("Collection");
+        await deployments.fixture(["factory"]);
+        factory = await ethers.getContract("Factory");
+        await factory.setSubsidiary(seller1.address, 'Paris', 'PAR');
+        const collection = await factory.connect(seller1)
+          .createNFTCollection(50, ethers.utils.parseEther('1'),
+            'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/')
+
+        // Get address of the NFT contract
+        const collectionCreationEventEnd = await factory.queryFilter('CollectionCreated');
+        const nftCollection = await ethers.getContractAt('Collection', collectionCreationEventEnd[0]['args'][1]);
+        await nftCollection.connect(simple_user).mint(10, { value: ethers.utils.parseEther('10') });
+        await nftCollection.releaseAll();
+        const payee1 = await nftCollection.payee(0);
+        const payee2 = await nftCollection.payee(0);
+        console.log(payee1)
+        console.log(payee2)
+      })
+
+      it("should be possible for the owner of the Factory to release funds", async function () {
+        // await expect(factory.releaseAll())
+        //   .to.emit(factory, 'FundsReleased')
+        //   .withArgs(owner.address, 30);
+        // console.log(factory.address)
+        //const provider = ethers.getDefaultProvider('hardhat');
+        // const factoryBalanceBefore = await owner.getBalance(factory.address);
+        // const balanceEther = ethers.utils.formatEther(factoryBalanceBefore);
+
+        // console.log(balanceEther);
+
+        // await expect(factory.deactivateSubsidiary(seller1.address))
+        //   .to.emit(factory, 'SubsidiaryDeactivated')
+        //   .withArgs(seller1.address, 'Paris', 'PAR');
+        // const getSubsidiary = await factory.getSubsidiary(seller1.address);
+        // assert.equal(getSubsidiary.isActive, false);
+      })
+
+      // it("should not be possible for a subsidiary to deactivate a subsidiary", async function () {
+      //   await expect(factory.connect(seller1).deactivateSubsidiary(seller1.address))
+      //     .to.be.revertedWith("Ownable: caller is not the owner");
+      // })
+
+      // it("should not be possible for a simple user to deactivate a subsidiary", async function () {
+      //   await expect(factory.connect(simple_user).deactivateSubsidiary(seller1.address))
+      //     .to.be.revertedWith("Ownable: caller is not the owner");
+      // })
 
     })
 

@@ -21,13 +21,16 @@ const { developmentChains } = require("../../helper-hardhat-config")
     describe("constructor", function () {
 
       beforeEach(async () => {
-        await deployments.fixture(["collection"]);
+        await deployments.fixture("collection");
         collection = await ethers.getContract("Collection");
       })
 
       it("should be possible to deploy the contract", async function () {
         const ownerContract = await collection.owner();
         assert.equal(ownerContract, owner.address);
+
+        const name = await collection.name();
+        assert.equal(name, '');
 
         const maxQuantity = await collection.getMaxQuantity();
         assert.equal(maxQuantity, 50);

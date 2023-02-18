@@ -46,7 +46,7 @@ contract Collection is ERC721Enumerable, ERC2981, PaymentSplitter, Ownable {
     event BaseURIChanged(string newBaseURI, string oldBaseURI);
 
     /// @notice To init the contract with the information provided by the subsidiary
-    /// @dev The function is called by the Factory contract during collection creation process
+    /// @dev The function is called by the Factory contract during collection creation process. The royalty fee is set to 5% for all contracts
     /// @param _maxSupply The max supply of the collection
     /// @param _price The price of each NFT token
     /// @param _baseURI The ipfs link pointing the folder where json/images files are available

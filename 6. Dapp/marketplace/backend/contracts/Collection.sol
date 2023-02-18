@@ -8,10 +8,10 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/finance/PaymentSplitter.sol";
 import "@openzeppelin/contracts/token/common/ERC2981.sol";
 
-/// @title Contract template used by Morpheus Inc factory to create collections for the group subsidiaries
+/// @title Contract template used by Morpheus Inc factory to create collections for the group's subsidiaries
 /// @author Flavia Gallois
-/// @notice Subsidiaries can ERC-721 NFTs contract collections deciding the total supply, price & baseURI location on ipfs
-/// @dev Morpheus use this contract only through the Factory contract designed by Morpheus Group. Ownership is set up through the factory contract. Royalties are managed from each child contracts.
+/// @notice Subsidiaries can create ERC-721 NFTs contract collections deciding the total supply, price & baseURI location on ipfs
+/// @dev Morpheus uses this contract only through the Factory contract designed by Morpheus Group. Ownership is set up through the factory contract. Royalties are managed from each child contract.
 contract Collection is ERC721Enumerable, ERC2981, PaymentSplitter, Ownable {
     using Strings for uint256;
     using Counters for Counters.Counter;
@@ -102,16 +102,16 @@ contract Collection is ERC721Enumerable, ERC2981, PaymentSplitter, Ownable {
     }
 
     /// @notice Get if the contract support an interface
-    /// @param interfaceId Code of the interface checked
+    /// @param _interfaceId Code of the interface checked
     /// @return A boolean to indicate if the interface is supported or not (false)
-    function supportsInterface(bytes4 interfaceId)
+    function supportsInterface(bytes4 _interfaceId)
         public
         view
         virtual
         override(ERC721Enumerable, ERC2981)
         returns (bool)
     {
-        return super.supportsInterface(interfaceId);
+        return super.supportsInterface(_interfaceId);
     }
 
     /// @notice Get the token URI of a specific NFT token

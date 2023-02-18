@@ -4,6 +4,8 @@ pragma solidity 0.8.17;
 // import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Collection.sol";
 
+error Factory_NotASubsidiary();
+
 /// @title Contract to set Morpheus Inc subsidiaries and to let them create and manage autonomously NFT collections
 /// @author Flavia Gallois
 /// @notice Give the possibility to Morpheus subsidiaries to generate ERC-721 NFTs contract collections
@@ -27,16 +29,12 @@ contract Factory is Ownable {
         _;
     }
 
-    event SubsidiaryAdded(
-        address indexed _seller,
-        string _name,
-        string _symbol
-    );
+    event SubsidiaryAdded(address indexed seller, string name, string symbol);
 
     event SubsidiaryDeactivated(
-        address indexed _seller,
-        string _name,
-        string _symbol
+        address indexed seller,
+        string name,
+        string symbol
     );
 
     // event SubsidiaryUpdated(
@@ -46,10 +44,10 @@ contract Factory is Ownable {
     // );
 
     event CollectionCreated(
-        string _name,
-        address indexed _address,
-        uint256 _timestamp,
-        address indexed _seller
+        string name,
+        address indexed addressCollection,
+        uint256 timestamp,
+        address indexed seller
     );
 
     /// @notice Add an address to the list of Morpheus subsidiaries

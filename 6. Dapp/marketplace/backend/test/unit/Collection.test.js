@@ -7,24 +7,16 @@ const { developmentChains } = require("../../helper-hardhat-config")
   : describe("Collection Smart Contract Unit Testing", function () {
     let accounts;
     let collection;
-    let factory;
-
-    // console.log(ethers.version);
 
     // DEFINITIONS
     // Owner is the address who deployed the contract
-    // A seller is an address who has been registered by the owner & is able to create NFTs contract through the Factory contract
-    // A simple user is a non registered address & has no rights except to view the list of subsidiaries which are by fact public on etherscan
+    // A simple user is the other type of contract user with limited rights to mint or view contract information
 
     before(async () => {
       accounts = await ethers.getSigners()
       owner = accounts[0]
-      seller1 = accounts[1]
-      seller2 = accounts[2]
-      simple_user = accounts[3]
+      simple_user = accounts[1]
     })
-
-    // arguments = ["Morpheus", "MOS", ['0x70997970C51812dc3A010C7d01b50e0d17dc79C8', '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266']]
 
     describe("constructor", function () {
 
@@ -43,15 +35,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
         const totalShares = await collection.totalShares();
         assert.equal(totalShares, 100);
 
-
-        // const maxSupply = await collection.getMaxSupply();
-        // const price = await collection.getPrice();
-        // const baseURI = await collection.getBaseURI();
-
-        // console.log(maxSupply.toString());
-        // console.log(price.toString());
-        // console.log(baseURI.toString());
-        // console.log(maxQuantity.toString());
       })
 
     })

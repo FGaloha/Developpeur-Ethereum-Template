@@ -20,6 +20,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
       owner = accounts[0]
       simple_user = accounts[1]
       simple_user2 = accounts[2]
+      seller1 = accounts[3]
     })
 
     describe("constructor", function () {
@@ -477,6 +478,88 @@ const { developmentChains } = require("../../helper-hardhat-config")
       it("should not be possible for a user to withdraw without having earnings", async function () {
         await expect(market.connect(simple_user2).withdraw())
           .to.be.revertedWithCustomError(market, 'Market_NoEarnings').withArgs();
+      })
+
+    })
+
+    describe("releaseAll", function () {
+
+      beforeEach(async () => {
+        await deployments.fixture(["factory"]);
+        factory = await ethers.getContract("Factory");
+        await factory.setSubsidiary(seller1.address, 'Paris', 'PAR');
+        await factory.connect(seller1)
+          .createNFTCollection(50, ethers.utils.parseEther('1'),
+            'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/')
+
+        // Get address of the NFT contract
+        const collectionCreationEvent = await factory.queryFilter('CollectionCreated');
+        const nftCollection = await ethers.getContractAt('Collection', collectionCreationEvent[0]['args'][1]);
+        await nftCollection.connect(simple_user).mint(10, { value: ethers.utils.parseEther('10') });
+        // await nftCollection.releaseAll();
+        // const payee1 = await nftCollection.payee(0);
+        // const payee2 = await nftCollection.payee(0);
+
+        // await collection.init(10, ethers.utils.parseEther('0.001'),
+        //   'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/');
+        await deployments.fixture("market", [2000000000000000, 1000000000000000, 250]);
+        market = await ethers.getContract("Market");
+        // // await collection.connect(simple_user).mint(5, { value: ethers.utils.parseEther('0.005') });
+
+        await nftCollection.connect(simple_user).approve(market.address, 0);
+        market.connect(simple_user).addToSale(nftCollection.address, 0, 1000000000000000000);
+        market.connect(simple_user2).buyItem(nftCollection.address, 0, { value: 1000000000000000000 });
+      })
+
+      it("should be possible for the market contract owner to withdraw funds", async function () {
+
+        const price = 1000000000000000000;
+        const fixFee = 1000000000000000;
+        const percentFee = price * 250 / 10000;
+        const totalMarketFee = fixFee + percentFee;
+        console.log(totalMarketFee.toString());
+
+        // const balance = await owner.getBalance();
+        // console.log(balance.toString());
+
+        market.releaseAll();
+
+        // const balanceA = await owner.getBalance();
+        // console.log(balanceA.toString());
+
+        const fundsEvent = await market.queryFilter('FundsReleased');
+        //const amount = fundsEvent[0]['args'][1];
+        console.log(fundsEvent);
+
+
+
+
+
+        // await expect(market.releaseAll())
+        //   .to.emit(market, 'FundsReleased')
+        //   .withArgs(owner.address, ethers.utils.parseEther('0.026'));
+        // const earningsWithRoyalties = price - fixFee - percentFee;
+        // 5% royalties for creators
+        // const royalties = earningsWithRoyalties * 500 / 10000;
+        // const earnings = earningsWithRoyalties - royalties;
+
+        // Earnings before withdraw
+        // const earningsBefore = await market.getEarnings(simple_user.address);
+        // assert.equal(earningsBefore.toNumber(), earnings);
+
+        // await expect(market.connect(simple_user).withdraw())
+        //   .to.emit(market, 'EarningsWithdraw')
+        //   .withArgs(simple_user.address, earnings);
+
+        // // Earnings after withdraw
+        // const earningsAfter = await market.getEarnings(simple_user.address);
+        // assert.equal(earningsAfter.toNumber(), 0);
+
+      })
+
+      it("should not be possible for a simple user to withdraw market contract funds", async function () {
+        await expect(market.connect(simple_user).releaseAll())
+          .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
     })

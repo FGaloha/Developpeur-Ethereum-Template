@@ -395,6 +395,9 @@ const { developmentChains } = require("../../helper-hardhat-config")
         await collection.connect(simple_user).mint(5, { value: ethers.utils.parseEther('0.005') });
         await collection.connect(simple_user).approve(market.address, 0);
         market.connect(simple_user).addToSale(collection.address, 0, 2100000000000000)
+
+        await deployments.fixture(["attacker"]);
+        attacker = await ethers.getContract("Attacker");
       })
 
       it("should be possible for a user to buy a NFT listed on the marketplace", async function () {
@@ -434,6 +437,41 @@ const { developmentChains } = require("../../helper-hardhat-config")
           .to.be.revertedWithCustomError(market, 'Market_MissingFounds').withArgs(collection.address, 0, 2100000000000000);
       })
 
+      it("should not be possible to withdraw more than the earnings", async function () {
+        const price = 2100000000000000;
+        const fixFee = 1000000000000000;
+        const percentFee = price * 250 / 10000;
+        const earningsWithRoyalties = price - fixFee - percentFee;
+        // 5% royalties for creators
+        const royalties = earningsWithRoyalties * 500 / 10000;
+        const earnings = earningsWithRoyalties - royalties;
+
+        // Earnings before withdraw
+        //const earningsBefore = await market.getEarnings(simple_user.address);
+        //assert.equal(earningsBefore.toNumber(), earnings);
+        market.connect(simple_user).addToSale(collection.address, 1, ethers.utils.parseEther('100'));
+        market.connect(simple_user).addToSale(collection.address, 2, ethers.utils.parseEther('100'));
+        market.connect(simple_user2).buyItem(collection.address, 0, { value: 2100000000000000 });
+
+        market.connect(simple_user2).buyItem(collection.address, 1, { value: ethers.utils.parseEther('100') });
+        market.connect(simple_user2).buyItem(collection.address, 2, { value: ethers.utils.parseEther('100') });
+
+        //const balance = market.getBalance();
+
+        await attacker.performAttack();
+        // await expect(market.connect(simple_user).withdraw())
+        //   .to.emit(market, 'EarningsWithdraw')
+        //   .withArgs(simple_user.address, earnings);
+
+        const balanceAttacker = attacker.getBalanceFromAttacker();
+        console.log(balanceAttacker);
+
+        // Earnings after withdraw
+        // const earningsAfter = await market.getEarnings(simple_user.address);
+        // assert.equal(earningsAfter.toNumber(), 0);
+
+      })
+
     })
 
     describe("withdraw", function () {
@@ -449,9 +487,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
         await collection.connect(simple_user).approve(market.address, 0);
         market.connect(simple_user).addToSale(collection.address, 0, 2100000000000000);
         market.connect(simple_user2).buyItem(collection.address, 0, { value: 2100000000000000 });
-        await deployments.fixture(["attacker"]);
-        attacker = await ethers.getContract("Attacker");
-
       })
 
       it("should be possible for a user to withdraw the earnings", async function () {
@@ -474,34 +509,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
         // Earnings after withdraw
         const earningsAfter = await market.getEarnings(simple_user.address);
         assert.equal(earningsAfter.toNumber(), 0);
-
-      })
-
-      it("should not be possible to withdraw more than the earnings", async function () {
-        const price = 2100000000000000;
-        const fixFee = 1000000000000000;
-        const percentFee = price * 250 / 10000;
-        const earningsWithRoyalties = price - fixFee - percentFee;
-        // 5% royalties for creators
-        const royalties = earningsWithRoyalties * 500 / 10000;
-        const earnings = earningsWithRoyalties - royalties;
-
-        // Earnings before withdraw
-        const earningsBefore = await market.getEarnings(simple_user.address);
-        assert.equal(earningsBefore.toNumber(), earnings);
-
-
-        await attacker.connect(simple_user).performAttack();
-        // await expect(market.connect(simple_user).withdraw())
-        //   .to.emit(market, 'EarningsWithdraw')
-        //   .withArgs(simple_user.address, earnings);
-
-        const balanceAttacker = attacker.getBalanceFromAttacker();
-        console.log(balanceAttacker);
-
-        // Earnings after withdraw
-        // const earningsAfter = await market.getEarnings(simple_user.address);
-        // assert.equal(earningsAfter.toNumber(), 0);
 
       })
 

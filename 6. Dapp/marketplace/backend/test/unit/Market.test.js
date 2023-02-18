@@ -219,7 +219,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
 
     })
 
-    // Fix when debugg buyItem
     describe("getEarnings", function () {
 
       beforeEach(async () => {
@@ -227,7 +226,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
         collection = await ethers.getContract("Collection");
         await collection.init(10, ethers.utils.parseEther('0.001'),
           'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/');
-        await deployments.fixture("market", [0, 0, 0]);
+        await deployments.fixture("market", [2000000000000000, 1000000000000000, 250]);
         market = await ethers.getContract("Market");
         await collection.connect(simple_user).mint(5, { value: ethers.utils.parseEther('0.005') });
         await collection.connect(simple_user).approve(market.address, 0);
@@ -236,19 +235,27 @@ const { developmentChains } = require("../../helper-hardhat-config")
       })
 
       it("should be possible for the owner to get the earnings of an address", async function () {
-        const royalties = 2100000000000000 * 5 / 100;
-        const earningsEvaluation = 2100000000000000 - royalties;
-        const earnings = await market.getEarnings(simple_user.address);
-        //assert.equal(earnings.toNumber(), earningsEvaluation);
-        console.log(earningsEvaluation)
-        console.log(earnings.toNumber())
+        const price = 2100000000000000;
+        const fixFee = 1000000000000000;
+        const percentFee = price * 250 / 10000;
+        const earningsWithRoyalties = price - fixFee - percentFee;
+        // 5% royalties for creators
+        const royalties = earningsWithRoyalties * 500 / 10000;
+        const earnings = earningsWithRoyalties - royalties;
+        const getEarnings = await market.getEarnings(simple_user.address);
+        assert.equal(getEarnings.toNumber(), earnings);
       })
 
       it("should be possible for a simple_user to get the earnings of an address", async function () {
-        const royalties = 2100000000000000 * 5 / 100;
-        const earningsEvaluation = 2100000000000000 - royalties;
-        const earnings = await market.connect(simple_user2).getEarnings(simple_user.address);
-        //assert.equal(earnings.toNumber(), earningsEvaluation);
+        const price = 2100000000000000;
+        const fixFee = 1000000000000000;
+        const percentFee = price * 250 / 10000
+        const earningsWithRoyalties = price - fixFee - percentFee;
+        // 5% royalties for creators
+        const royalties = earningsWithRoyalties * 500 / 10000;
+        const earnings = earningsWithRoyalties - royalties;
+        const getEarnings = await market.connect(simple_user2).getEarnings(simple_user.address);
+        assert.equal(getEarnings.toNumber(), earnings);
       })
 
     })
@@ -277,23 +284,232 @@ const { developmentChains } = require("../../helper-hardhat-config")
 
       it("should not be possible for a user to list a NFT with a price under the minimal price set by the marketplace", async function () {
         await collection.connect(simple_user).approve(market.address, 0);
+        await expect(market.connect(simple_user).addToSale(collection.address, 0, 1100000000000000))
+          .to.be.revertedWithCustomError(market, 'Market_PriceTooLow');
       })
 
       it("should not be possible for a user to list a NFT already listed", async function () {
         await collection.connect(simple_user).approve(market.address, 0);
+        await market.connect(simple_user).addToSale(collection.address, 0, 2100000000000000)
+        await expect(market.connect(simple_user).addToSale(collection.address, 0, 2100000000000000))
+          .to.be.revertedWithCustomError(market, 'Market_AlreadyOnSale').withArgs(collection.address, 0);
       })
 
       it("should not be possible for a user to list a NFT owned by another wallet", async function () {
         await collection.connect(simple_user).approve(market.address, 0);
+        await expect(market.connect(simple_user2).addToSale(collection.address, 0, 2100000000000000))
+          .to.be.revertedWithCustomError(market, 'Market_NotOwner');
       })
 
       it("should not be possible for a user to list a NFT if the marketplace is not approved", async function () {
-
+        await expect(market.connect(simple_user).addToSale(collection.address, 0, 2100000000000000))
+          .to.be.revertedWithCustomError(market, 'Market_MissingMarketApproval');
       })
 
     })
 
-    //await market.connect(simple_user2).buyItem(collection.address, 0, { value: 2100000000000000 });
+    describe("updateSalePrice", function () {
 
+      beforeEach(async () => {
+        await deployments.fixture(["collection"]);
+        collection = await ethers.getContract("Collection");
+        await collection.init(10, ethers.utils.parseEther('0.001'),
+          'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/');
+        await deployments.fixture("market", [2000000000000000, 1000000000000000, 250]);
+        market = await ethers.getContract("Market");
+        await collection.connect(simple_user).mint(5, { value: ethers.utils.parseEther('0.005') });
+        await collection.connect(simple_user).approve(market.address, 0);
+        market.connect(simple_user).addToSale(collection.address, 0, 2100000000000000)
+      })
+
+      it("should be possible for a user to update the price of a NFT listed on the marketplace", async function () {
+        await expect(market.connect(simple_user).updateSalePrice(3100000000000000, collection.address, 0))
+          .to.emit(market, 'NFTOnSale')
+          .withArgs(simple_user.address, collection.address, 0, 3100000000000000);
+        const sale = await market.getSale(collection.address, 0);
+        assert.equal(sale.seller, simple_user.address);
+        assert.equal(sale.price.toNumber(), 3100000000000000);
+      })
+
+      it("should not be possible for a user to update the price of a NFT listed on the marketplace with a price under the minimal price set by the marketplace", async function () {
+        await expect(market.connect(simple_user).updateSalePrice(1100000000000000, collection.address, 0))
+          .to.be.revertedWithCustomError(market, 'Market_PriceTooLow');
+      })
+
+      it("should not be possible for a user to update the price of a NFT not listed on the marketplace ", async function () {
+        await expect(market.connect(simple_user).updateSalePrice(3100000000000000, collection.address, 1))
+          .to.be.revertedWithCustomError(market, 'Market_NotOnSale').withArgs(collection.address, 1);
+      })
+
+      it("should not be possible for a user to update the price of a NFT owned by another wallet", async function () {
+        await expect(market.connect(simple_user2).updateSalePrice(3100000000000000, collection.address, 0))
+          .to.be.revertedWithCustomError(market, 'Market_NotOwner');
+      })
+
+    })
+
+    describe("deleteFromSale", function () {
+
+      beforeEach(async () => {
+        await deployments.fixture(["collection"]);
+        collection = await ethers.getContract("Collection");
+        await collection.init(10, ethers.utils.parseEther('0.001'),
+          'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/');
+        await deployments.fixture("market", [2000000000000000, 1000000000000000, 250]);
+        market = await ethers.getContract("Market");
+        await collection.connect(simple_user).mint(5, { value: ethers.utils.parseEther('0.005') });
+        await collection.connect(simple_user).approve(market.address, 0);
+        market.connect(simple_user).addToSale(collection.address, 0, 2100000000000000)
+      })
+
+      it("should be possible for a user to unlist a NFT on the marketplace", async function () {
+        await expect(market.connect(simple_user).deleteFromSale(collection.address, 0))
+          .to.emit(market, 'SaleDeleted')
+          .withArgs(simple_user.address, collection.address, 0);
+        const sale = await market.getSale(collection.address, 0);
+        assert.equal(sale.seller, '0x0000000000000000000000000000000000000000');
+        assert.equal(sale.price.toNumber(), 0);
+      })
+
+      it("should not be possible for a user to unlist a NFT not listed on the marketplace ", async function () {
+        await expect(market.connect(simple_user).deleteFromSale(collection.address, 1))
+          .to.be.revertedWithCustomError(market, 'Market_NotOnSale').withArgs(collection.address, 1);
+      })
+
+      it("should not be possible for a user to unlist a NFT owned by another wallet", async function () {
+        await expect(market.connect(simple_user2).deleteFromSale(collection.address, 0))
+          .to.be.revertedWithCustomError(market, 'Market_NotOwner');
+      })
+
+    })
+
+    describe("buyItem", function () {
+
+      beforeEach(async () => {
+        await deployments.fixture(["collection"]);
+        collection = await ethers.getContract("Collection");
+        await collection.init(10, ethers.utils.parseEther('0.001'),
+          'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/');
+        await deployments.fixture("market", [2000000000000000, 1000000000000000, 250]);
+        market = await ethers.getContract("Market");
+        await collection.connect(simple_user).mint(5, { value: ethers.utils.parseEther('0.005') });
+        await collection.connect(simple_user).approve(market.address, 0);
+        market.connect(simple_user).addToSale(collection.address, 0, 2100000000000000)
+      })
+
+      it("should be possible for a user to buy a NFT listed on the marketplace", async function () {
+        const price = 2100000000000000;
+        const fixFee = 1000000000000000;
+        const percentFee = price * 250 / 10000;
+        const earningsWithRoyalties = price - fixFee - percentFee;
+        // 5% royalties for creators
+        const royalties = earningsWithRoyalties * 500 / 10000;
+        const earnings = earningsWithRoyalties - royalties;
+
+        await expect(market.connect(simple_user2).buyItem(collection.address, 0, { value: price }))
+          .to.emit(market, 'NFTSold')
+          .withArgs(simple_user.address, simple_user2.address, collection.address, 0, price, royalties);
+
+        // The token is not anymore listed
+        const sale = await market.getSale(collection.address, 0);
+        assert.equal(sale.seller, '0x0000000000000000000000000000000000000000');
+        assert.equal(sale.price, 0);
+
+        // simple_user/seller earnings increased
+        const sellerEarnings = await market.getEarnings(simple_user.address);
+        assert.equal(sellerEarnings.toNumber(), earnings);
+
+        // simple_user2/buyer is now owner of the token
+        const tokenOwner = await collection.ownerOf(0);
+        assert.equal(tokenOwner, simple_user2.address);
+      })
+
+      it("should not be possible for a user to buy a NFT not listed on the marketplace ", async function () {
+        await expect(market.connect(simple_user2).buyItem(collection.address, 1, { value: 2100000000000000 }))
+          .to.be.revertedWithCustomError(market, 'Market_NotOnSale').withArgs(collection.address, 1);
+      })
+
+      it("should not be possible for a user to buy a NFT without the necessary funds", async function () {
+        await expect(market.connect(simple_user2).buyItem(collection.address, 0, { value: 1100000000000000 }))
+          .to.be.revertedWithCustomError(market, 'Market_MissingFounds').withArgs(collection.address, 0, 2100000000000000);
+      })
+
+    })
+
+    describe("withdraw", function () {
+
+      beforeEach(async () => {
+        await deployments.fixture(["collection"]);
+        collection = await ethers.getContract("Collection");
+        await collection.init(10, ethers.utils.parseEther('0.001'),
+          'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/');
+        await deployments.fixture("market", [2000000000000000, 1000000000000000, 250]);
+        market = await ethers.getContract("Market");
+        await collection.connect(simple_user).mint(5, { value: ethers.utils.parseEther('0.005') });
+        await collection.connect(simple_user).approve(market.address, 0);
+        market.connect(simple_user).addToSale(collection.address, 0, 2100000000000000);
+        market.connect(simple_user2).buyItem(collection.address, 0, { value: 2100000000000000 });
+        await deployments.fixture(["attacker"]);
+        attacker = await ethers.getContract("Attacker");
+
+      })
+
+      it("should be possible for a user to withdraw the earnings", async function () {
+        const price = 2100000000000000;
+        const fixFee = 1000000000000000;
+        const percentFee = price * 250 / 10000;
+        const earningsWithRoyalties = price - fixFee - percentFee;
+        // 5% royalties for creators
+        const royalties = earningsWithRoyalties * 500 / 10000;
+        const earnings = earningsWithRoyalties - royalties;
+
+        // Earnings before withdraw
+        const earningsBefore = await market.getEarnings(simple_user.address);
+        assert.equal(earningsBefore.toNumber(), earnings);
+
+        await expect(market.connect(simple_user).withdraw())
+          .to.emit(market, 'EarningsWithdraw')
+          .withArgs(simple_user.address, earnings);
+
+        // Earnings after withdraw
+        const earningsAfter = await market.getEarnings(simple_user.address);
+        assert.equal(earningsAfter.toNumber(), 0);
+
+      })
+
+      it("should not be possible to withdraw more than the earnings", async function () {
+        const price = 2100000000000000;
+        const fixFee = 1000000000000000;
+        const percentFee = price * 250 / 10000;
+        const earningsWithRoyalties = price - fixFee - percentFee;
+        // 5% royalties for creators
+        const royalties = earningsWithRoyalties * 500 / 10000;
+        const earnings = earningsWithRoyalties - royalties;
+
+        // Earnings before withdraw
+        const earningsBefore = await market.getEarnings(simple_user.address);
+        assert.equal(earningsBefore.toNumber(), earnings);
+
+
+        await attacker.connect(simple_user).performAttack();
+        // await expect(market.connect(simple_user).withdraw())
+        //   .to.emit(market, 'EarningsWithdraw')
+        //   .withArgs(simple_user.address, earnings);
+
+        const balanceAttacker = attacker.getBalanceFromAttacker();
+        console.log(balanceAttacker);
+
+        // Earnings after withdraw
+        // const earningsAfter = await market.getEarnings(simple_user.address);
+        // assert.equal(earningsAfter.toNumber(), 0);
+
+      })
+
+      it("should not be possible for a user to withdraw without having earnings", async function () {
+        await expect(market.connect(simple_user2).withdraw())
+          .to.be.revertedWithCustomError(market, 'Market_NoEarnings').withArgs();
+      })
+
+    })
 
   })

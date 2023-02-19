@@ -20,7 +20,7 @@ export const MintCards = () => {
   const router = useRouter();
 
   // Context
-  const { contractAddressFactory } = useMembersProvider()
+  const { contractAddressFactory, blockNumberFactory } = useMembersProvider()
 
   // State
   const [collectionsLoaded, setCollectionsLoaded] = useState(false)
@@ -39,7 +39,7 @@ export const MintCards = () => {
     const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, provider);
 
     let createdCollectionsEvents = [];
-    const startBlock = 0; // block number of the contract Factory
+    const startBlock = blockNumberFactory; // block number of the contract Factory
     const endBlock = await provider.getBlockNumber();
 
     for (let i = startBlock; i < endBlock; i += 3000) {

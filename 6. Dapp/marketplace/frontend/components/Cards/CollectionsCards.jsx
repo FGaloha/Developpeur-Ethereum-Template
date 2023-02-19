@@ -20,7 +20,7 @@ export const CollectionsCards = () => {
   const router = useRouter();
 
   // Context
-  const { contractAddressFactory } = useMembersProvider()
+  const { contractAddressFactory, blockNumberFactory } = useMembersProvider()
 
   // State
   const [collectionsLoaded, setCollectionsLoaded] = useState(false)
@@ -42,7 +42,7 @@ export const CollectionsCards = () => {
 
     // Subsidiaries
     let addedSubsidiariesEvents = [];
-    let startBlock = 0; // block number of the contract Factory
+    let startBlock = blockNumberFactory; // block number of the contract Factory
     let endBlock = await provider.getBlockNumber();
 
     for (let i = startBlock; i < endBlock; i += 3000) {
@@ -53,7 +53,7 @@ export const CollectionsCards = () => {
     }
 
     let createdCollectionsEvents = [];
-    startBlock = 0; // block number of the contract Factory
+    startBlock = blockNumberFactory; // block number of the contract Factory
     endBlock = await provider.getBlockNumber();
 
     for (let i = startBlock; i < endBlock; i += 3000) {

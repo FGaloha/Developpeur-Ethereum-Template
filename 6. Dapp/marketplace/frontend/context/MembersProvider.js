@@ -11,8 +11,12 @@ export const MembersProvider = ({ children }) => {
   // Smart Contract address
   const env = process.env.NODE_ENV
   const contractAddressFactory = (env == 'production') ? process.env.NEXT_PUBLIC_NETWORK_GOERLI_FACTORY : process.env.NEXT_PUBLIC_NETWORK_HARDHAT_FACTORY
-  // const contractFactoryAddress = process.env.NEXT_PUBLIC_NETWORK_GOERLI_FACTORY
   const contractAddressMarket = (env == 'production') ? process.env.NEXT_PUBLIC_NETWORK_GOERLI_MARKET : process.env.NEXT_PUBLIC_NETWORK_HARDHAT_MARKET
+
+  // Deployment BlockNumber
+  const blockNumberFactory = (env == 'production') ? 8518736 : 0
+  const blockNumberMarket = (env == 'production') ? 8518744 : 0
+
   // Wagmi
   const { address, isConnected } = useAccount()
   const provider = useProvider()
@@ -47,8 +51,10 @@ export const MembersProvider = ({ children }) => {
       value={{
         ownerFactory,
         contractAddressFactory,
+        blockNumberFactory,
         ownerMarket,
         contractAddressMarket,
+        blockNumberMarket,
         isSubsidiary,
         setIsSubsidiary,
         subsidiaries,

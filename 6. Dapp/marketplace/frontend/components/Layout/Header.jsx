@@ -15,7 +15,8 @@ export const Header = () => {
   const provider = useProvider()
 
   // Context
-  const { ownerFactory, isSubsidiary, contractAddressFactory, setSubsidiaries, subsidiaries, setIsSubsidiary } = useMembersProvider()
+  const { ownerFactory, isSubsidiary, contractAddressFactory, setSubsidiaries,
+    subsidiaries, setIsSubsidiary, blockNumberFactory } = useMembersProvider()
 
   useEffect(() => {
     if (isConnected) {
@@ -37,7 +38,7 @@ export const Header = () => {
 
     // Production: to get events by 3000 blocks from contract block number 84?????
     let registeredSubsidiariesEvents = [];
-    const startBlock = 0; // change with block number address addiction for production
+    const startBlock = blockNumberFactory; // change with block number address addiction for production
     const endBlock = await provider.getBlockNumber();
 
     for (let i = startBlock; i < endBlock; i += 3000) {

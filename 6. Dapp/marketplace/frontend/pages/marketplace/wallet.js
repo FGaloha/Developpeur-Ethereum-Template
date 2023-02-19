@@ -114,7 +114,7 @@ export default function Wallet() {
     const contractMarket = new ethers.Contract(contractAddressMarket, ContractMarket.abi, provider)
 
     let createdCollectionsEvents = [];
-    const startBlock = 0; // block number of the contract Factory
+    const startBlock = blockNumberFactory; // block number of the contract Factory
     const endBlock = await provider.getBlockNumber();
 
     for (let i = startBlock; i < endBlock; i += 3000) {

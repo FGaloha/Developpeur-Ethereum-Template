@@ -12,7 +12,7 @@ export const Subsidiaries = () => {
   const provider = useProvider()
 
   // Context
-  const { subsidiaries, setSubsidiaries, contractAddressFactory } = useMembersProvider()
+  const { subsidiaries, setSubsidiaries, contractAddressFactory, blockNumberFactory } = useMembersProvider()
 
   useEffect(() => {
     if (isConnected) {
@@ -25,7 +25,7 @@ export const Subsidiaries = () => {
     const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, provider)
 
     let registeredSubsidiariesEvents = [];
-    const startBlock = 0; // block number of the contract Factory
+    const startBlock = blockNumberFactory; // block number of the contract Factory
     const endBlock = await provider.getBlockNumber();
 
     for (let i = startBlock; i < endBlock; i += 3000) {

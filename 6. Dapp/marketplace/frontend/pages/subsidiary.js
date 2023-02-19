@@ -1,4 +1,11 @@
-import { Heading, Flex, Input, Stack, Button, useToast, Text } from '@chakra-ui/react';
+import {
+  Heading, Flex, Input, Stack, Button, useToast,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper
+} from '@chakra-ui/react';
 import { useAccount, useSigner, useProvider } from 'wagmi'
 import { useState, useEffect } from "react";
 import useMembersProvider from '@/hooks/useMembersProvider'
@@ -14,29 +21,59 @@ export default function Subsidiary() {
   const provider = useProvider()
 
   // Context
-  const { isSubsidiary, contractAddressFactory } = useMembersProvider()
+  const { isSubsidiary, contractAddressFactory, collections, setCollections, blockNumberFactory } = useMembersProvider()
 
   // Chakra
   const toast = useToast()
 
   // State
   const [isLoading, setIsLoading] = useState(false)
-  const [maxSupply, setMaxSupply] = useState(null)
-  const [price, setPrice] = useState(null)
-  const [baseURI, setBaseURI] = useState(null)
+  const [maxSupply, setMaxSupply] = useState(1)
+  const [price, setPrice] = useState("")
+  const [baseURI, setBaseURI] = useState("")
 
   useEffect(() => {
-    // getSubsidiaries()
+    getCollections();
   }, [isConnected, address])
+
+  // To get existing collections owned by the subsidiary connected
+  const getCollections = async () => {
+    const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, provider)
+
+    let createdCollectionsEvents = [];
+    const startBlock = blockNumberFactory; // block number of the contract Factory
+    const endBlock = await provider.getBlockNumber();
+
+    for (let i = startBlock; i < endBlock; i += 3000) {
+      const _startBlock = i;
+      const _endBlock = Math.min(endBlock, i + 2999);
+      const data = await contract.queryFilter('CollectionCreated', _startBlock, _endBlock);
+      createdCollectionsEvents = [...createdCollectionsEvents, ...data]
+    }
+
+    //Filter to get only collections of the subsidiary
+    let subsidiaryCollections = [];
+    for (let i = 0; i < createdCollectionsEvents.length; i++) {
+      if (createdCollectionsEvents[i].args[3] == address) {
+        subsidiaryCollections.push([createdCollectionsEvents[i].args[0], createdCollectionsEvents[i].args[1], createdCollectionsEvents[i].args[2], createdCollectionsEvents[i].args[3]]);
+      }
+    }
+    setCollections(subsidiaryCollections)
+    console.log(subsidiaryCollections)
+  }
 
   // To add a collection
   const addCollection = async () => {
     setIsLoading(true);
     try {
-      const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, signer)
-      console.log(contractAddressFactory)
-      const collectionCreation = await contract.createNFTCollection(maxSupply, ethers.utils.parseEther(price), baseURI)
-      await collectionCreation.wait()
+      const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, signer);
+      console.log(contractAddressFactory);
+      const collectionCreation = await contract.createNFTCollection(maxSupply, ethers.utils.parseEther(price), baseURI);
+      await collectionCreation.wait();
+      getCollections();
+      setMaxSupply(1);
+      setPrice("");
+      setBaseURI("");
       toast({
         title: 'Collection added',
         description: `You successfully added a new collection`,
@@ -65,16 +102,22 @@ export default function Subsidiary() {
         </Heading>
         <Stack spacing={4} w="30%">
 
-          <Input placeholder='Max supply' focusBorderColor='pink.600' onChange={e => setMaxSupply(e.target.value)} />
+          <NumberInput value={maxSupply} onChange={(maxSupplyString) => setMaxSupply(maxSupplyString)} step={1} defaultValue={1} min={1} focusBorderColor='pink.600'>
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper bg='purple.200' />
+              <NumberDecrementStepper bg='purple.200' />
+            </NumberInputStepper>
+          </NumberInput>
 
-          <Input placeholder='Price per NFT' focusBorderColor='pink.600' onChange={e => setPrice(e.target.value)} />
+          <Input placeholder='Price per NFT' value={price} focusBorderColor='pink.600' onChange={e => setPrice(e.target.value)} />
 
-          <Input placeholder='Base URI ipfs://CID/' focusBorderColor='pink.600' onChange={e => setBaseURI(e.target.value)} />
+          <Input placeholder='Base URI ipfs://CID/' value={baseURI} focusBorderColor='pink.600' onChange={e => setBaseURI(e.target.value)} />
 
           <Button ms="2" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => addCollection()}>Add</Button>
 
         </Stack>
-        <SubsidiaryCollections />
+        <SubsidiaryCollections collections={collections} />
       </Flex >)
   )
 }

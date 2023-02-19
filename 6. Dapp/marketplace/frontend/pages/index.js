@@ -13,54 +13,11 @@ export default function Home() {
   const { address, isConnected } = useAccount()
   const provider = useProvider()
 
-  // Context
-  const { contractAddressFactory, setSubsidiaries, subsidiaries, isSubsidiary, setIsSubsidiary } = useMembersProvider()
-
   useEffect(() => {
     if (isConnected) {
       //getData()
     }
   }, [isConnected, address])
-
-  // const getData = async () => {
-  //   // const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
-  //   // const worflowStatus = await contract.workflowStatus()
-  //   getSubsidiaries();
-  //   checkIsSubsidiary();
-  //   //console.log(isSubsidiary);
-  // }
-
-  // To get existing subsidiaries
-  // const getSubsidiaries = async () => {
-  //   const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, provider)
-
-  //   // Production: to get events by 3000 blocks from contract block number 84?????
-  //   let registeredSubsidiariesEvents = [];
-  //   const startBlock = 0; // change with block number address addiction for production
-  //   const endBlock = await provider.getBlockNumber();
-
-  //   for (let i = startBlock; i < endBlock; i += 3000) {
-  //     const _startBlock = i;
-  //     const _endBlock = Math.min(endBlock, i + 2999);
-  //     const data = await contract.queryFilter('SubsidiaryAdded', _startBlock, _endBlock);
-  //     registeredSubsidiariesEvents = [...registeredSubsidiariesEvents, ...data]
-  //   }
-  //   setSubsidiaries(registeredSubsidiariesEvents)
-  //   // console.log(subsidiaries)
-  // }
-
-  // Check if address isSubsidiary
-  // const checkIsSubsidiary = async () => {
-  //   let subsidiaryList = []
-  //   subsidiaries.forEach(subsidiary => {
-  //     subsidiaryList.push(subsidiary.args[0])
-  //   })
-
-  //   // Boolean true if address is registered
-  //   setIsSubsidiary(subsidiaryList.includes(address))
-  //   //console.log(subsidiaryList);
-  //   //console.log(address);
-  // }
 
   return (
 
@@ -76,7 +33,14 @@ export default function Home() {
             <Flex w="60%" alignItems="start" justifyContent="start">
               <Image boxSize="100%" src='https://bafybeicmcpfedaimwgwtfzlxzy7uy5ru4dsybyz7ymy5e7waef7ayxpozq.ipfs.nftstorage.link/' alt='Morpheus Inc Oneiroi homepage' />
             </Flex>
-            <Flex alignItems="center" justifyContent="center" width="40%">Test</Flex>
+            <Flex direction="column" alignItems="center" justifyContent="center" width="40%">
+              <Flex ></Flex>
+              <Flex direction="column" alignItems="center" justifyContent="center" bg="purple.600" p="30" color="black" rounded="lg">
+                <Text fontSize='6xl' >Live The Magic</Text>
+                <Text fontSize='6xl'>Join the Club</Text>
+              </Flex>
+              <Flex></Flex>
+            </Flex>
           </Flex>
         )
       }

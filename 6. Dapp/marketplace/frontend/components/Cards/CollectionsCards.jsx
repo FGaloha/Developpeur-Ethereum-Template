@@ -69,7 +69,7 @@ export const CollectionsCards = () => {
     // For each subsidiary get the collections
     for (let i = 0; i < addedSubsidiariesEvents.length; i++) {
       let collectionsSubsidiary = [];
-      let image = 'https://ipfs.io/ipfs/bafybeid7wtd3h5s6lgmjyccv2gbcvgyumkiwgql64mh34xruxyxe2ttzhe/2.png'
+      let image = 'https://bafybeicflyu7beqkaelzvce4jp44ubm77dmpzf7rvxgw2eqsgmlp4eqesq.ipfs.nftstorage.link/'
 
       for (let j = 0; j < createdCollectionsEvents.length; j++) {
         if (addedSubsidiariesEvents[i]['args'][0] == createdCollectionsEvents[j]['args'][3]) {

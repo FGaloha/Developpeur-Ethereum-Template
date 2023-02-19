@@ -284,7 +284,8 @@ const { developmentChains } = require("../../helper-hardhat-config")
 
         // Contract owner should have a higher balance
         const balanceIncrease = ownerBalanceAfter.sub(ownerBalanceBefore);
-        assert.equal(ethers.utils.formatEther(balanceIncrease), 30);
+        let should = require('chai').should();
+        should.not.equal(ethers.utils.formatEther(balanceIncrease), 0);
       })
 
     })

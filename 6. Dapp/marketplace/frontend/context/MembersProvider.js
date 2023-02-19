@@ -25,7 +25,7 @@ export const MembersProvider = ({ children }) => {
   const [ownerFactory, setOwnerFactory] = useState(null)
   const [ownerMarket, setOwnerMarket] = useState(null)
   const [isSubsidiary, setIsSubsidiary] = useState(false)
-  const [subsidiaries, setSubsidiaries] = useState([])
+  //const [subsidiaries, setSubsidiaries] = useState([])
   const [collections, setCollections] = useState([])
 
   useEffect(() => {
@@ -57,8 +57,8 @@ export const MembersProvider = ({ children }) => {
         blockNumberMarket,
         isSubsidiary,
         setIsSubsidiary,
-        subsidiaries,
-        setSubsidiaries,
+        //subsidiaries,
+        //setSubsidiaries,
         collections,
         setCollections
       }}

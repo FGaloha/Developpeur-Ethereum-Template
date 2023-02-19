@@ -62,7 +62,7 @@ export const MintCards = () => {
         if (totalSupply == 0) {
           let nft = {
             // Warning : remplacer par une image start mint
-            img: 'https://ipfs.io/ipfs/bafybeid7wtd3h5s6lgmjyccv2gbcvgyumkiwgql64mh34xruxyxe2ttzhe/2.png',
+            img: 'https://bafybeicflyu7beqkaelzvce4jp44ubm77dmpzf7rvxgw2eqsgmlp4eqesq.ipfs.nftstorage.link/',
             desc: 'Be first minter',
             addressCollection: createdCollectionsEvents[i]['args'][1],
           }

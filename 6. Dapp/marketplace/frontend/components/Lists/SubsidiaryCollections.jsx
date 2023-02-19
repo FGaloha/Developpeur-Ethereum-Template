@@ -1,51 +1,7 @@
 import { Flex, Text, Thead, Table, Tbody, Tr, Th, Td, TableContainer } from '@chakra-ui/react'
-import { useEffect } from 'react'
-import { useAccount, useProvider } from 'wagmi'
-import ContractFactory from '../../contracts/Factory';
-import { ethers } from 'ethers'
-import useMembersProvider from '@/hooks/useMembersProvider'
 import Link from 'next/link'
 
-export const SubsidiaryCollections = () => {
-
-  // Wagmi
-  const { isConnected, address } = useAccount()
-  const provider = useProvider()
-
-  // Context
-  const { collections, setCollections, contractAddressFactory } = useMembersProvider()
-
-  useEffect(() => {
-    if (isConnected) {
-      getCollections();
-    }
-  }, [isConnected])
-
-  // To get existing collections owned by the subsidiary connected
-  const getCollections = async () => {
-    const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, provider)
-
-    let createdCollectionsEvents = [];
-    const startBlock = blockNumberFactory; // block number of the contract Factory
-    const endBlock = await provider.getBlockNumber();
-
-    for (let i = startBlock; i < endBlock; i += 3000) {
-      const _startBlock = i;
-      const _endBlock = Math.min(endBlock, i + 2999);
-      const data = await contract.queryFilter('CollectionCreated', _startBlock, _endBlock);
-      createdCollectionsEvents = [...createdCollectionsEvents, ...data]
-    }
-
-    //Filter to get only collections of the subsidiary
-    let subsidiaryCollections = [];
-    for (let i = 0; i < createdCollectionsEvents.length; i++) {
-      if (createdCollectionsEvents[i].args[3] == address) {
-        subsidiaryCollections.push([createdCollectionsEvents[i].args[0], createdCollectionsEvents[i].args[1], createdCollectionsEvents[i].args[2], createdCollectionsEvents[i].args[3]]);
-      }
-    }
-    setCollections(subsidiaryCollections)
-    console.log(subsidiaryCollections)
-  }
+export const SubsidiaryCollections = ({ collections }) => {
 
   return (
     <Flex bg="black">

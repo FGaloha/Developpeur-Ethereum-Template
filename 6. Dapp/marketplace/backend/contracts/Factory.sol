@@ -37,11 +37,11 @@ contract Factory is Ownable {
         string symbol
     );
 
-    // event SubsidiaryUpdated(
-    //     address indexed _seller,
-    //     string _name,
-    //     string _symbol
-    // );
+    event SubsidiaryUpdated(
+        address indexed _seller,
+        string _name,
+        string _symbol
+    );
 
     event CollectionCreated(
         string name,
@@ -60,6 +60,7 @@ contract Factory is Ownable {
         string calldata _name,
         string calldata _symbol
     ) external onlyOwner {
+        require(subsidiaries[_seller].counter <= 0, "Already a subsidiary");
         subsidiaries[_seller].name = _name;
         subsidiaries[_seller].symbol = _symbol;
         subsidiaries[_seller].isActive = true;
@@ -95,15 +96,15 @@ contract Factory is Ownable {
     // /// @param _seller The address to use to update the name of the right subsidiary
     // /// @param _name The name to use to update the current subsidiary name
     // /// @param _symbol The symbol to use to update the current subsidiary name
-    // function updateSubsidiary(
-    //     address _seller,
-    //     string calldata _name,
-    //     string calldata _symbol
-    // ) external onlyOwner {
-    //     subsidiaries[_seller].name = _name;
-    //     subsidiaries[_seller].symbol = _symbol;
-    //     emit SubsidiaryUpdated(_seller, _name, _symbol);
-    // }
+    function updateSubsidiary(
+        address _seller,
+        string calldata _name,
+        string calldata _symbol
+    ) external onlyOwner {
+        subsidiaries[_seller].name = _name;
+        subsidiaries[_seller].symbol = _symbol;
+        emit SubsidiaryUpdated(_seller, _name, _symbol);
+    }
 
     /// @notice Deploy an ERC721 collection contract for the subsidiary calling, based on parameters
     /// @param _maxSupply The maximum of NFT that will be possibly minted

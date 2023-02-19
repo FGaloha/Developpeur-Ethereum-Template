@@ -47,7 +47,7 @@ export default function List() {
     console.log(isApproved)
   }
 
-  // Mint a new NFT of the collection
+  // List a NFT
   const addToSale = async () => {
     setIsLoading(true);
     try {

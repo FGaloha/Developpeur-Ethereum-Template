@@ -4,7 +4,7 @@ import { Box, Flex, Heading } from '@chakra-ui/react'
 import Head from 'next/head'
 import Link from 'next/link'
 import useMembersProvider from '@/hooks/useMembersProvider'
-import { useEffect } from 'react'
+import React, { useState, useEffect } from "react";
 import { ethers } from 'ethers'
 import ContractFactory from "../../contracts/Factory"
 
@@ -15,8 +15,10 @@ export const Header = () => {
   const provider = useProvider()
 
   // Context
-  const { ownerFactory, isSubsidiary, contractAddressFactory, setSubsidiaries,
-    subsidiaries, setIsSubsidiary, blockNumberFactory } = useMembersProvider()
+  const { ownerFactory, isSubsidiary, contractAddressFactory, setIsSubsidiary, blockNumberFactory } = useMembersProvider()
+
+  // State
+  const [subsidiaries, setSubsidiaries] = useState([])
 
   useEffect(() => {
     if (isConnected) {

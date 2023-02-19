@@ -14,18 +14,20 @@ export default function Admin() {
   const provider = useProvider()
 
   // Context
-  const { ownerFactory, contractAddressFactory } = useMembersProvider()
+  const { ownerFactory, contractAddressFactory, blockNumberFactory } = useMembersProvider()
 
   // State
   const [isLoading, setIsLoading] = useState(false)
-  const [name, setName] = useState(null)
-  const [symbol, setSymbol] = useState(null)
-  const [addressSeller, setAddressSeller] = useState(null)
+  const [name, setName] = useState("")
+  const [symbol, setSymbol] = useState("")
+  const [addressSeller, setAddressSeller] = useState("")
+  const [subsidiaries, setSubsidiaries] = useState([])
 
   // Chakra
   const toast = useToast()
 
   useEffect(() => {
+    getSubsidiaries();
   }, [isConnected, address])
 
   // To add a subsidiary
@@ -35,6 +37,10 @@ export default function Admin() {
       const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, signer)
       const subsidiaryCreation = await contract.setSubsidiary(addressSeller, name, symbol)
       await subsidiaryCreation.wait()
+      getSubsidiaries();
+      setName("");
+      setSymbol("");
+      setAddressSeller("");
       toast({
         title: 'Subsidiary added',
         description: `You successfully added subsidiary ${name}`,
@@ -55,6 +61,24 @@ export default function Admin() {
     setIsLoading(false);
   }
 
+  // To get existing subsidiaries
+  const getSubsidiaries = async () => {
+    const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, provider)
+
+    let registeredSubsidiariesEvents = [];
+    const startBlock = blockNumberFactory; // block number of the contract Factory
+    const endBlock = await provider.getBlockNumber();
+
+    for (let i = startBlock; i < endBlock; i += 3000) {
+      const _startBlock = i;
+      const _endBlock = Math.min(endBlock, i + 2999);
+      const data = await contract.queryFilter('SubsidiaryAdded', _startBlock, _endBlock);
+      registeredSubsidiariesEvents = [...registeredSubsidiariesEvents, ...data]
+    }
+    setSubsidiaries(registeredSubsidiariesEvents)
+    //console.log(subsidiaries[0].address)
+  }
+
   return (
     isConnected && ownerFactory && (
       < Flex direction='column' alignItems='center' w='100%' backgroundColor='black' rounded='xl'>
@@ -63,16 +87,16 @@ export default function Admin() {
         </Heading>
         <Stack spacing={4} w="30%">
 
-          <Input placeholder='Name' focusBorderColor='pink.600' onChange={e => setName(e.target.value)} />
+          <Input placeholder='Name' value={name} focusBorderColor='pink.600' onChange={e => setName(e.target.value)} />
 
-          <Input placeholder='Symbol' focusBorderColor='pink.600' onChange={e => setSymbol(e.target.value)} />
+          <Input placeholder='Symbol' value={symbol} focusBorderColor='pink.600' onChange={e => setSymbol(e.target.value)} />
 
-          <Input placeholder='Seller Address 0x12A...B21' focusBorderColor='pink.600' onChange={e => setAddressSeller(e.target.value)} />
+          <Input placeholder='Seller Address 0x12A...B21' value={addressSeller} focusBorderColor='pink.600' onChange={e => setAddressSeller(e.target.value)} />
 
           <Button ms="2" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => addSubsidiary()}>Add</Button>
 
         </Stack>
-        <Subsidiaries />
+        <Subsidiaries subsidiaries={subsidiaries} />
       </Flex >)
   )
 }

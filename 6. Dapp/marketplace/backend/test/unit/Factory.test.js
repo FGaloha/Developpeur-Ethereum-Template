@@ -25,8 +25,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
     describe("setSubsidiary", function () {
 
       beforeEach(async () => {
-        await deployments.fixture(["collection"]);
-        collection = await ethers.getContract("Collection");
         await deployments.fixture(["factory"]);
         factory = await ethers.getContract("Factory");
       })
@@ -35,6 +33,12 @@ const { developmentChains } = require("../../helper-hardhat-config")
         await expect(factory.setSubsidiary(seller1.address, 'Paris', 'PAR'))
           .to.emit(factory, 'SubsidiaryAdded')
           .withArgs(seller1.address, 'Paris', 'PAR');
+      })
+
+      it("should not be possible for the owner of the Factory to create several subsidiaries with the same address", async function () {
+        factory.setSubsidiary(seller1.address, 'Paris', 'PAR')
+        await expect(factory.setSubsidiary(seller1.address, 'Cannes', 'CAN'))
+          .to.be.revertedWith("Already a subsidiary");
       })
 
       it("should not be possible for a seller of the Factory to create a subsidiary", async function () {
@@ -59,8 +63,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
     describe("getSubsidiary", function () {
 
       beforeEach(async () => {
-        await deployments.fixture(["collection"]);
-        collection = await ethers.getContract("Collection");
         await deployments.fixture(["factory"]);
         factory = await ethers.getContract("Factory");
         await factory.setSubsidiary(seller1.address, 'Paris', 'PAR');
@@ -101,8 +103,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
     describe("deactivateSubsidiary", function () {
 
       beforeEach(async () => {
-        await deployments.fixture(["collection"]);
-        collection = await ethers.getContract("Collection");
         await deployments.fixture(["factory"]);
         factory = await ethers.getContract("Factory");
         await factory.setSubsidiary(seller1.address, 'Paris', 'PAR');
@@ -126,17 +126,45 @@ const { developmentChains } = require("../../helper-hardhat-config")
           .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
-      it("should be possible for the owner of the Factory to reactivate a subsidiary", async function () {
-        await factory.deactivateSubsidiary(seller1.address);
-        const getSubsidiaryBefore = await factory.getSubsidiary(seller1.address);
-        assert.equal(getSubsidiaryBefore.isActive, false);
-        await expect(factory.setSubsidiary(seller1.address, 'Paris 1', 'PAR1'))
-          .to.emit(factory, 'SubsidiaryAdded')
-          .withArgs(seller1.address, 'Paris 1', 'PAR1');
-        const getSubsidiaryAfter = await factory.getSubsidiary(seller1.address);
-        assert.equal(getSubsidiaryAfter.isActive, true);
+      // it("should be possible for the owner of the Factory to reactivate a subsidiary", async function () {
+      //   await factory.deactivateSubsidiary(seller1.address);
+      //   const getSubsidiaryBefore = await factory.getSubsidiary(seller1.address);
+      //   assert.equal(getSubsidiaryBefore.isActive, false);
+      //   await expect(factory.setSubsidiary(seller1.address, 'Paris 1', 'PAR1'))
+      //     .to.emit(factory, 'SubsidiaryAdded')
+      //     .withArgs(seller1.address, 'Paris 1', 'PAR1');
+      //   const getSubsidiaryAfter = await factory.getSubsidiary(seller1.address);
+      //   assert.equal(getSubsidiaryAfter.isActive, true);
+      // })
+
+    })
+
+    describe("updateSubsidiary", function () {
+
+      beforeEach(async () => {
+        await deployments.fixture(["factory"]);
+        factory = await ethers.getContract("Factory");
+        await factory.setSubsidiary(seller1.address, 'Paris', 'PAR');
       })
 
+      it("should be possible for the owner of the Factory to update the name & symbol of the subsidiary", async function () {
+        await expect(factory.updateSubsidiary(seller1.address, 'Paris 1', 'PAR1'))
+          .to.emit(factory, 'SubsidiaryUpdated')
+          .withArgs(seller1.address, 'Paris 1', 'PAR1');
+        const getSubsidiary = await factory.getSubsidiary(seller1.address);
+        assert.equal(getSubsidiary.name, 'Paris 1');
+        assert.equal(getSubsidiary.symbol, 'PAR1');
+      })
+
+      it("should not be possible for a subsidiary to update a subsidiary", async function () {
+        await expect(factory.connect(seller1).updateSubsidiary(seller1.address, 'Paris 1', 'PAR1'))
+          .to.be.revertedWith("Ownable: caller is not the owner");
+      })
+
+      it("should not be possible for a simple user to update a subsidiary", async function () {
+        await expect(factory.connect(simple_user).updateSubsidiary(seller1.address, 'Paris 1', 'PAR1'))
+          .to.be.revertedWith("Ownable: caller is not the owner");
+      })
     })
 
     describe("createNFTCollection", function () {

@@ -40,6 +40,8 @@ export const CollectionsCards = () => {
 
     // Contract Collection to get the informations to diplay on the grid
 
+    console.log(blockNumberFactory);
+
     // Subsidiaries
     let addedSubsidiariesEvents = [];
     let startBlock = blockNumberFactory; // block number of the contract Factory

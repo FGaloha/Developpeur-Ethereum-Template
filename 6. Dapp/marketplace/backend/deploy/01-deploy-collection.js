@@ -7,7 +7,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deployer } = await getNamedAccounts()
 
   log("--------------------------------------")
-  arguments = ["Morpheus", "MOS", ['0x70997970C51812dc3A010C7d01b50e0d17dc79C8', '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266']]
+  arguments = ["Morpheus", "MOS", ['0xFC7CEEB77a94EAbB99d0DD55f99784F29aBfb401', '0xA770487d72Baad096729965011b90FFEDfecB1b4']]
   const Collection = await deploy("Collection", {
     from: deployer,
     args: arguments,

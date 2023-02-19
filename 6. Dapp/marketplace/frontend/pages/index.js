@@ -72,8 +72,11 @@ export default function Home() {
         </Flex >
       )
         : (
-          <Flex direction="column" width="100%" alignItems="center" justifyContent="center">
-            <Image boxSize="100%" src='https://bafybeicmcpfedaimwgwtfzlxzy7uy5ru4dsybyz7ymy5e7waef7ayxpozq.ipfs.nftstorage.link/' alt='Morpheus Inc Oneiroi homepage' />
+          <Flex w="100%">
+            <Flex w="60%" alignItems="start" justifyContent="start">
+              <Image boxSize="100%" src='https://bafybeicmcpfedaimwgwtfzlxzy7uy5ru4dsybyz7ymy5e7waef7ayxpozq.ipfs.nftstorage.link/' alt='Morpheus Inc Oneiroi homepage' />
+            </Flex>
+            <Flex alignItems="center" justifyContent="center" width="40%">Test</Flex>
           </Flex>
         )
       }

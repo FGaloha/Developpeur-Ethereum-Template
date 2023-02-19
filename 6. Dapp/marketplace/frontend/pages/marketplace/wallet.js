@@ -58,7 +58,7 @@ export default function Wallet() {
   // };
 
   // Context
-  const { contractAddressFactory, contractAddressMarket } = useMembersProvider()
+  const { contractAddressFactory, contractAddressMarket, blockNumberFactory } = useMembersProvider()
 
   // To get wallet's NFTs using Alchemy API
   // const getNftsAlchemy = async () => {

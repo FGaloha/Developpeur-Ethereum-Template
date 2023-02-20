@@ -68,9 +68,6 @@ export const Header = () => {
         <meta name="description" content="Oneiroi, marketplace powered by Morpheus" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet" />
       </Head>
       <Flex p='4' justifyContent="space-between" alignItems="center" border="2px" position="fixed" width="100%" bg="black">
 
@@ -83,13 +80,13 @@ export const Header = () => {
         {isConnected &&
           <Flex>
             <Flex me="4">
-              <Link class='title' href="/" >Home</Link>
+              <Link className='title' href="/" >Home</Link>
             </Flex>
             <Flex me="4">
-              <Link class='title' href="/marketplace/wallet">Wallet</Link>
+              <Link className='title' href="/marketplace/wallet">Wallet</Link>
             </Flex>
-            {ownerFactory == address && (<Flex me="4"><Link class='title' href="/admin">Admin</Link></Flex>)}
-            {isSubsidiary && (<Flex me="4"><Link class='title' href="/subsidiary">Subsidiary</Link></Flex>)}
+            {ownerFactory == address && (<Flex me="4"><Link className='title' href="/admin">Admin</Link></Flex>)}
+            {isSubsidiary && (<Flex me="4"><Link className='title' href="/subsidiary">Subsidiary</Link></Flex>)}
           </Flex>
         }
 

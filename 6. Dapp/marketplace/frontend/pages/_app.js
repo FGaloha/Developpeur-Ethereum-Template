@@ -33,11 +33,10 @@ export default function App({ Component, pageProps }) {
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider modalSize="compact" chains={chains}
         theme={lightTheme({
-          accentColor: '#805AD5', // CF44E9 // '#E313DF'
+          accentColor: '#805AD5',
           accentColorForeground: 'white',
           borderRadius: 'medium',
         })}>
-
         <ChakraProvider>
           <MembersProvider>
             <Layout>

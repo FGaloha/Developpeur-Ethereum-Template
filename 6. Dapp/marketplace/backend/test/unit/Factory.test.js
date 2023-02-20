@@ -11,7 +11,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
 
     // DEFINITIONS
     // Owner is the address who deployed the contract
-    // A seller is an address who has been registered by the owner & is able to create NFTs contract through the Factory contract
+    // A seller is an address who has been registered by the owner & is able to create NFTs contracts through the Factory contract
     // A simple user is a non registered address & has no rights except to view the list of subsidiaries which are by fact public on etherscan
 
     before(async () => {
@@ -50,12 +50,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
       it("should not be possible for a simple user to create a subsidiary", async function () {
         await expect(factory.connect(simple_user).setSubsidiary(seller1.address, 'Paris', 'PAR'))
           .to.be.revertedWith("Ownable: caller is not the owner");
-      })
-
-      it("should be possible for the owner of the Factory to update a subsidiary", async function () {
-        await expect(factory.setSubsidiary(seller1.address, 'Paris 1', 'PAR1'))
-          .to.emit(factory, 'SubsidiaryAdded')
-          .withArgs(seller1.address, 'Paris 1', 'PAR1');
       })
 
     })

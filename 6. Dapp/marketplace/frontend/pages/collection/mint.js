@@ -1,8 +1,6 @@
 import {
-  Heading, Flex, NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
+  Heading, Flex, NumberInput, NumberInputField,
+  NumberInputStepper, NumberIncrementStepper,
   NumberDecrementStepper, Button, useToast, Text,
   Card, CardHeader, CardBody, Box, Stack, StackDivider
 } from '@chakra-ui/react';

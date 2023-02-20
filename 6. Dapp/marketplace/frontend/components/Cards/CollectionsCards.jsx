@@ -117,7 +117,7 @@ export const CollectionsCards = () => {
             <Heading w="100%" ms="5" as='h1' textAlign="start" size='lg' noOfLines={1} color='white' mt='4' key={collection.name}>
               Subsidiary {collection.name}
             </Heading>
-            <SimpleGrid columns={5} spacing={5} p="5" w="100%">
+            <SimpleGrid columns={3} spacing={5} p="5" w="100%">
               {collection.collections.map(
                 cards => (
                   <Box

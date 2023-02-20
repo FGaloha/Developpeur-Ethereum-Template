@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-// import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Collection.sol";
 
 error Factory_NotASubsidiary();
@@ -19,7 +18,6 @@ contract Factory is Ownable {
         address[] team;
         bool isActive;
         uint256 counter;
-        //address[] collections;
     }
 
     mapping(address => Subsidiary) internal subsidiaries;
@@ -141,11 +139,6 @@ contract Factory is Ownable {
             _price,
             _baseURI
         );
-
-        // Collection address added in the subsidiary information
-        // subsidiaries[msg.sender].collections[
-        //     subsidiaries[msg.sender].counter - 1
-        // ] = collectionAddress;
 
         // Counter updated to manage collection name properly
         ++subsidiaries[msg.sender].counter;

@@ -1,11 +1,7 @@
-import {
-  Heading, Flex, Button, useToast, Text,
-  Input, Box, Stack, StackDivider
-} from '@chakra-ui/react';
-import { useAccount, useSigner, useProvider } from 'wagmi'
+import { Heading, Flex, Button, useToast, Text, Input } from '@chakra-ui/react';
+import { useAccount, useSigner } from 'wagmi'
 import { useEffect, useState } from 'react'
 import { useRouter } from "next/router";
-import ContractCollection from "../../contracts/Collection";
 import ContractMarket from "../../contracts/Market";
 import { ethers } from 'ethers'
 import useMembersProvider from '@/hooks/useMembersProvider'
@@ -15,7 +11,6 @@ export default function List() {
   // Wagmi
   const { isConnected, address } = useAccount()
   const { data: signer } = useSigner()
-  const provider = useProvider()
 
   // Router
   const router = useRouter();

@@ -1,10 +1,7 @@
 import {
-  Heading, Flex, SimpleGrid, NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper, Image,
-  NumberDecrementStepper, Button, ButtonGroup, useToast, Text, Divider,
-  Card, CardHeader, CardBody, CardFooter, Box, Stack, StackDivider
+  Heading, Flex, SimpleGrid, Image,
+  Button, useToast, Text, Divider,
+  Card, CardBody, CardFooter, Box
 } from '@chakra-ui/react';
 import { useAccount, useSigner, useProvider } from 'wagmi'
 import { useEffect, useState } from 'react'
@@ -35,7 +32,6 @@ export default function Collection() {
 
   // State
   const [isLoading, setIsLoading] = useState(false)
-  const [quantity, setQuantity] = useState(1)
   const [price, setPrice] = useState(null)
   const [maxSupply, setMaxSupply] = useState(null)
   const [remainingSupply, setRemainingSupply] = useState(null)
@@ -191,9 +187,9 @@ export default function Collection() {
 
           <Flex w="100%" mt='5'>
             {nfts.length > 0 && nftLoaded ? (
-              <SimpleGrid columns={5} spacing={5} m="5">
+              <SimpleGrid columns={3} spacing={5} m="5">
                 {nfts.map(nft => (
-                  <Card maxW='xs' key={nfts.indexOf(nft)}>
+                  <Card maxW='md' key={nfts.indexOf(nft)}>
                     <CardBody p="0" borderWidth="1px"
                       rounded="lg">
                       <Image

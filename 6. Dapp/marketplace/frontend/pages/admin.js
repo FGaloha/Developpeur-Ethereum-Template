@@ -28,13 +28,14 @@ export default function Admin() {
   const [symbol, setSymbol] = useState("")
   const [addressSeller, setAddressSeller] = useState("")
   const [subsidiaries, setSubsidiaries] = useState([])
+  const [balance, setBalance] = useState(0)
   const [earnings, setEarnings] = useState(0)
 
   // Chakra
   const toast = useToast()
 
   useEffect(() => {
-    getBalance();
+    getFinance();
     getSubsidiaries();
   }, [isConnected, address])
 
@@ -45,7 +46,7 @@ export default function Admin() {
       const contract = new ethers.Contract(contractAddressMarket, ContractMarket.abi, signer)
       const withdrawFunds = await contract.releaseAll()
       await withdrawFunds.wait()
-      getBalance();
+      getFinance();
       toast({
         title: 'Funds withdrawed',
         description: `You successfully withdraw ${earnings}`,
@@ -98,10 +99,13 @@ export default function Admin() {
     setIsLoading(false);
   }
 
-  // Get Market balance
-  const getBalance = async () => {
+  // Get Market contract balance & Market earnings
+  const getFinance = async () => {
     const marketBalance = await provider.getBalance(contractAddressMarket);
-    setEarnings(ethers.utils.formatEther(marketBalance));
+    setBalance(ethers.utils.formatEther(marketBalance));
+    const contract = new ethers.Contract(contractAddressMarket, ContractMarket.abi, provider)
+    const marketEarings = await contract.getEarnings(contractAddressMarket);
+    setEarnings(ethers.utils.formatEther(marketEarings));
   }
 
   // To get existing subsidiaries
@@ -128,9 +132,12 @@ export default function Admin() {
           <Heading as='h1' noOfLines={1} color='white' mt='4' mb='10'>
             Admin
           </Heading>
-          <Flex w="100%" color="gray.500">
-            <Text ms="5">Contract balance: {earnings} ETH</Text>
-            {earnings > 0 && <Button ms="4" size='xs' isLoading={isLoadingWithdraw ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => withdraw()}>Withdraw</Button>}
+          <Flex direction="column" w="100%" color="gray.500">
+            <Text ms="5">Contract balance: {balance} ETH</Text>
+            <Flex mt="2">
+              <Text ms="5">Market earnings: {earnings} ETH</Text>
+              {earnings > 0 && <Button ms="4" size='xs' isLoading={isLoadingWithdraw ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => withdraw()}>Withdraw</Button>}
+            </Flex>
           </Flex>
         </Flex>
         <Flex direction='column' w="100%" ms="10">

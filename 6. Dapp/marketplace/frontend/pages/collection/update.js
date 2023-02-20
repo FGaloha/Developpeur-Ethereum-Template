@@ -1,4 +1,4 @@
-import { Heading, Flex, Text, Button } from '@chakra-ui/react';
+import { Heading, Flex, Text, Button, useToast } from '@chakra-ui/react';
 import { useAccount, useSigner, useProvider, useBalance } from 'wagmi'
 import { useEffect, useState } from 'react'
 import { useRouter } from "next/router";
@@ -15,6 +15,9 @@ export default function updateCollection() {
     address: address,
     watch: true
   })
+
+  // Chakra
+  const toast = useToast()
 
   // Router
   const router = useRouter();

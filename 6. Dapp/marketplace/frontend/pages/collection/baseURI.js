@@ -1,14 +1,9 @@
-import {
-  Heading, Flex, Button, useToast, Text,
-  Input, Box, Stack, StackDivider
-} from '@chakra-ui/react';
+import { Heading, Flex, Button, useToast, Text, Input } from '@chakra-ui/react';
 import { useAccount, useSigner, useProvider } from 'wagmi'
 import { useEffect, useState } from 'react'
 import { useRouter } from "next/router";
 import ContractCollection from "../../contracts/Collection";
-import ContractMarket from "../../contracts/Market";
 import { ethers } from 'ethers'
-import useMembersProvider from '@/hooks/useMembersProvider'
 
 export default function List() {
 
@@ -28,13 +23,7 @@ export default function List() {
   const [isLoading, setIsLoading] = useState(false)
   const [baseURI, setBaseURI] = useState(null)
 
-  useEffect(() => {
-    if (isConnected) {
-      //setApprovalStatus();
-    }
-  }, [isConnected])
-
-  // Withdraw funds
+  // Update Base URI collection
   const updateBaseURI = async () => {
     setIsLoading(true);
     try {

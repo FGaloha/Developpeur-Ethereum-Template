@@ -1,6 +1,5 @@
 import {
-  Heading, Flex, Image,
-  SimpleGrid, Button, useToast, Text, Divider,
+  Heading, Flex, Image, SimpleGrid, Button, useToast, Text, Divider,
   Card, CardBody, CardFooter, ButtonGroup
 } from '@chakra-ui/react';
 import { useAccount, useSigner, useProvider, useBalance } from 'wagmi'
@@ -12,7 +11,6 @@ import ContractMarket from "../../contracts/Market";
 import { ethers } from 'ethers'
 import axios from 'axios'
 import useMembersProvider from '@/hooks/useMembersProvider'
-import Link from 'next/link'
 
 export default function Wallet() {
 
@@ -112,7 +110,6 @@ export default function Wallet() {
             addressCollection: createdCollectionsEvents[i]['args'][1],
           }
           nftsOfWallet.push(nft)
-
         }
       }
     }
@@ -196,7 +193,7 @@ export default function Wallet() {
 
           <Flex w="100%" mt='5'>
             {nfts.length > 0 && nftLoaded ? (
-              <SimpleGrid columns={5} spacing={5} p="5" w="100%">
+              <SimpleGrid columns={4} spacing={5} p="5" w="100%">
                 {nfts.map(nft => (
                   <Card maxW='xs' key={nfts.indexOf(nft)}>
                     <CardBody p="0" borderWidth="1px"

@@ -43,7 +43,7 @@ export default function updateCollection() {
   //       subsidiaryCollections.push([createdCollectionsEvents[i].args[0], createdCollectionsEvents[i].args[1], createdCollectionsEvents[i].args[2], createdCollectionsEvents[i].args[3]]);
   //     }
   //   }
-  //   setCollections(subsidiaryCollections)
+  //   (subsidiaryCollections)
   // }
 
   return (

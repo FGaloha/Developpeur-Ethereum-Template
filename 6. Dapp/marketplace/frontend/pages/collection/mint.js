@@ -31,7 +31,7 @@ export default function Mint() {
   // State
   const [isLoading, setIsLoading] = useState(false)
   const [quantity, setQuantity] = useState(1)
-  const [price, setPrice] = useState(null)
+  const [price, setPrice] = useState(0)
   const [maxSupply, setMaxSupply] = useState(null)
   const [remainingSupply, setRemainingSupply] = useState(null)
 
@@ -46,8 +46,8 @@ export default function Mint() {
     setIsLoading(true);
     try {
       const contract = new ethers.Contract(contractAddressCollection, ContractCollection.abi, signer)
-      const totalPrice = (price * quantity).toString()
-      const mintCollection = await contract.mint(quantity, { value: ethers.utils.parseEther(totalPrice) })
+      const totalPrice = price * quantity
+      const mintCollection = await contract.mint(quantity, { value: ethers.utils.parseEther(totalPrice.toString()) })
       await mintCollection.wait()
       toast({
         title: 'NFT(s) minted',

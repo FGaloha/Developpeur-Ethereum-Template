@@ -59,9 +59,9 @@ export const MintCards = () => {
 
       // if remaining mints, card generation using token 0 or template
       if (totalSupply == 0 || (totalSupply.toNumber() < maxSupply.toNumber())) {
+
         if (totalSupply == 0) {
           let nft = {
-            // Warning : remplacer par une image start mint
             img: 'https://bafybeicflyu7beqkaelzvce4jp44ubm77dmpzf7rvxgw2eqsgmlp4eqesq.ipfs.nftstorage.link/',
             desc: 'Be first minter',
             addressCollection: createdCollectionsEvents[i]['args'][1],
@@ -71,24 +71,22 @@ export const MintCards = () => {
         else {
           const tokenUri = await contractCollection.tokenURI(0);
           const Uri = Promise.resolve(tokenUri)
-          const getUri = Uri.then(value => {
-            let str = value
-            let cleanUri = str.replace('ipfs://', 'https://ipfs.io/ipfs/')
-            let metadata = axios.get(cleanUri).catch(function (error) {
+          const getUri = await Uri.then(value => {
+            const str = value
+            const cleanUri = str.replace('ipfs://', 'https://ipfs.io/ipfs/')
+            const metadata = axios.get(cleanUri).catch(function (error) {
               console.log(error.toJSON());
             });
             return metadata;
           })
-          getUri.then(value => {
-            let rawImg = value.data.image
-            let image = rawImg.replace('ipfs://', 'https://ipfs.io/ipfs/')
-            let nft = {
-              img: image,
-              desc: value.data.description,
-              addressCollection: createdCollectionsEvents[i]['args'][1],
-            }
-            collectionToMint.push(nft)
-          })
+          const rawImg = getUri.data.image
+          const image = rawImg.replace('ipfs://', 'https://ipfs.io/ipfs/')
+          const nft = {
+            img: image,
+            desc: getUri.data.description,
+            addressCollection: createdCollectionsEvents[i]['args'][1],
+          }
+          collectionToMint.push(nft)
         }
       }
     }

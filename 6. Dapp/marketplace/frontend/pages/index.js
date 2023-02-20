@@ -1,23 +1,12 @@
-import { Heading, Flex, Text, Image, Box } from '@chakra-ui/react';
-import { useEffect } from 'react'
-import { useAccount, useProvider } from "wagmi";
-import ContractFactory from "../contracts/Factory"
-import { ethers } from 'ethers'
+import { Flex, Text, Image } from '@chakra-ui/react';
+import { useAccount } from "wagmi";
 import { MintCards } from "@/components/Cards/MintCards"
 import { CollectionsCards } from "@/components/Cards/CollectionsCards"
-import useMembersProvider from '@/hooks/useMembersProvider'
 
 export default function Home() {
 
   // Wagmi
-  const { address, isConnected } = useAccount()
-  const provider = useProvider()
-
-  useEffect(() => {
-    if (isConnected) {
-      //getData()
-    }
-  }, [isConnected, address])
+  const { isConnected } = useAccount()
 
   return (
 

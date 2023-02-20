@@ -1,6 +1,6 @@
 import {
-  Heading, Flex, Button, Text,
-  Input, Box, useColorModeValue, SimpleGrid, Image
+  Heading, Flex, Button, Text, Box,
+  useColorModeValue, SimpleGrid, Image
 } from '@chakra-ui/react';
 import { useAccount, useProvider } from 'wagmi'
 import { useEffect, useState } from 'react'
@@ -38,10 +38,6 @@ export const CollectionsCards = () => {
     // Contract Factory to get subsidiaries and their collections list
     const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, provider);
 
-    // Contract Collection to get the informations to diplay on the grid
-
-    console.log(blockNumberFactory);
-
     // Subsidiaries
     let addedSubsidiariesEvents = [];
     let startBlock = blockNumberFactory; // block number of the contract Factory
@@ -69,20 +65,21 @@ export const CollectionsCards = () => {
     // For each subsidiary get the collections
     for (let i = 0; i < addedSubsidiariesEvents.length; i++) {
       let collectionsSubsidiary = [];
-      let image = 'https://bafybeicflyu7beqkaelzvce4jp44ubm77dmpzf7rvxgw2eqsgmlp4eqesq.ipfs.nftstorage.link/'
 
       for (let j = 0; j < createdCollectionsEvents.length; j++) {
         if (addedSubsidiariesEvents[i]['args'][0] == createdCollectionsEvents[j]['args'][3]) {
 
-          // Get image of 1st token (or mint template if 0 token) to illustrate collection
-          const contractCollection = new ethers.Contract(createdCollectionsEvents[i]['args'][1], ContractCollection.abi, provider);
+          const contractCollection = new ethers.Contract(createdCollectionsEvents[j]['args'][1], ContractCollection.abi, provider);
           const totalSupply = await contractCollection.totalSupply();
 
-          // if existing token card generation using token 0 or template
-          if (totalSupply != 0) {
-            const tokenUri = await contractCollection.tokenURI(0);
-            const Uri = Promise.resolve(tokenUri)
-            const getUri = Uri.then(value => {
+          // Deault image
+          let image = 'https://bafybeicflyu7beqkaelzvce4jp44ubm77dmpzf7rvxgw2eqsgmlp4eqesq.ipfs.nftstorage.link/'
+
+          // If existing token card generation using token 0 instead of default image
+          if (totalSupply.toNumber() != 0) {
+            let tokenUri = await contractCollection.tokenURI(0);
+            let Uri = Promise.resolve(tokenUri)
+            let getUri = await Uri.then(value => {
               let str = value
               let cleanUri = str.replace('ipfs://', 'https://ipfs.io/ipfs/')
               let metadata = axios.get(cleanUri).catch(function (error) {
@@ -90,11 +87,8 @@ export const CollectionsCards = () => {
               });
               return metadata;
             })
-            getUri.then(value => {
-              let rawImg = value.data.image
-              image = rawImg.replace('ipfs://', 'https://ipfs.io/ipfs/')
-            })
-
+            let rawImg = getUri.data.image
+            image = rawImg.replace('ipfs://', 'https://ipfs.io/ipfs/')
           }
 
           // Information construction to be displayed in a grid
@@ -111,7 +105,6 @@ export const CollectionsCards = () => {
     await new Promise(r => setTimeout(r, 1000));
     setCollections(collectionsBySubsidiaries)
     setCollectionsLoaded(true)
-    // console.log(collections)
   }
 
   return (

@@ -47,7 +47,7 @@ export default function Collection() {
     if (isConnected) {
       getCollection();
     }
-  }, [isConnected])
+  }, [isConnected, address])
 
   // To get infos & NFT of the collection
   const getCollection = async () => {
@@ -108,7 +108,6 @@ export default function Collection() {
     }
     await new Promise(r => setTimeout(r, 1000));
     setNfts(collectionNfts)
-    console.log(nfts)
     setNftLoaded(true);
     setPrice(ethers.utils.formatEther(price).toString());
     setMaxSupply(maxSupply.toString());
@@ -126,7 +125,7 @@ export default function Collection() {
       await removeToken.wait()
       toast({
         title: 'NFT(s) removed',
-        description: `You successfully unlisted NFT ${tokenId}`,
+        description: `You successfully your unlisted NFT`,
         status: 'success',
         duration: 5000,
         isClosable: true,
@@ -154,9 +153,10 @@ export default function Collection() {
 
       const buy = await contract.buyItem(contractAddressCollection, tokenId, { value: ethers.utils.parseEther(price) })
       await buy.wait()
+      getCollection();
       toast({
         title: 'NFT(s) bought',
-        description: `You successfully bought NFT #${tokenId}`,
+        description: `You successfully bought the NFT`,
         status: 'success',
         duration: 5000,
         isClosable: true,
@@ -165,7 +165,7 @@ export default function Collection() {
     catch {
       toast({
         title: 'Error',
-        description: `The transaction to buy NFT #${tokenId} failed, please try again...`,
+        description: `The transaction to buy the NFT failed, please try again...`,
         status: 'error',
         duration: 5000,
         isClosable: true,

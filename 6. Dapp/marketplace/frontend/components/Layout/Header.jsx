@@ -15,10 +15,11 @@ export const Header = () => {
   const provider = useProvider()
 
   // Context
-  const { ownerFactory, isSubsidiary, contractAddressFactory, setIsSubsidiary, blockNumberFactory } = useMembersProvider()
+  const { ownerFactory, contractAddressFactory, blockNumberFactory } = useMembersProvider()
 
   // State
   const [subsidiaries, setSubsidiaries] = useState([])
+  const [isSubsidiary, setIsSubsidiary] = useState(false)
 
   useEffect(() => {
     if (isConnected) {
@@ -27,11 +28,8 @@ export const Header = () => {
   }, [isConnected, address])
 
   const getData = async () => {
-    // const contract = new ethers.Contract(contractAddress, Contract.abi, provider)
-    // const worflowStatus = await contract.workflowStatus()
     getSubsidiaries();
     checkIsSubsidiary();
-    //console.log(isSubsidiary);
   }
 
   // To get existing subsidiaries
@@ -50,7 +48,6 @@ export const Header = () => {
       registeredSubsidiariesEvents = [...registeredSubsidiariesEvents, ...data]
     }
     setSubsidiaries(registeredSubsidiariesEvents)
-    // console.log(subsidiaries)
   }
 
   // Check if address isSubsidiary
@@ -62,8 +59,6 @@ export const Header = () => {
 
     // Boolean true if address is registered
     setIsSubsidiary(subsidiaryList.includes(address))
-    //console.log(subsidiaryList);
-    //console.log(address);
   }
 
   return (
@@ -81,7 +76,6 @@ export const Header = () => {
 
         <Box>
 
-          {/* #E313DF */}
           <Heading id='logo' size='3xl' color='purple.700'>Morpheus</Heading>
 
         </Box>
@@ -89,14 +83,8 @@ export const Header = () => {
         {isConnected &&
           <Flex>
             <Flex me="4">
-              <Link class='title' href="/" size="lg">Home</Link>
+              <Link class='title' href="/" >Home</Link>
             </Flex>
-            {/* <Flex me="4"><Link href="/marketplace/marketplace">Marketplace</Link></Flex> */}
-            {/* Test link
-            <Flex me="4"><Link href={{
-              pathname: '/collection/collection',
-              query: { address: '0x0f6D22Ee4c19cf80A9F31e38c5A1bEe75A40c3A1' },
-            }}>Collection</Link></Flex> */}
             <Flex me="4">
               <Link class='title' href="/marketplace/wallet">Wallet</Link>
             </Flex>

@@ -6,7 +6,7 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper
 } from '@chakra-ui/react';
-import { useAccount, useSigner, useProvider } from 'wagmi'
+import { useAccount, useSigner, useProvider, useBalance } from 'wagmi'
 import { useState, useEffect } from "react";
 import useMembersProvider from '@/hooks/useMembersProvider'
 import ContractFactory from "../contracts/Factory";
@@ -19,9 +19,13 @@ export default function Subsidiary() {
   const { isConnected, address } = useAccount()
   const { data: signer } = useSigner()
   const provider = useProvider()
+  const { data } = useBalance({
+    address: address,
+    watch: true
+  })
 
   // Context
-  const { isSubsidiary, contractAddressFactory, collections, setCollections, blockNumberFactory } = useMembersProvider()
+  const { contractAddressFactory, blockNumberFactory } = useMembersProvider()
 
   // Chakra
   const toast = useToast()
@@ -31,9 +35,12 @@ export default function Subsidiary() {
   const [maxSupply, setMaxSupply] = useState(1)
   const [price, setPrice] = useState("")
   const [baseURI, setBaseURI] = useState("")
+  const [collections, setCollections] = useState([])
 
   useEffect(() => {
-    getCollections();
+    if (isConnected) {
+      getCollections();
+    }
   }, [isConnected, address])
 
   // To get existing collections owned by the subsidiary connected
@@ -59,7 +66,6 @@ export default function Subsidiary() {
       }
     }
     setCollections(subsidiaryCollections)
-    console.log(subsidiaryCollections)
   }
 
   // To add a collection
@@ -95,7 +101,7 @@ export default function Subsidiary() {
   }
 
   return (
-    isConnected && isSubsidiary && (
+    isConnected && (
       < Flex direction='column' alignItems='center' w='100%' backgroundColor='black' rounded='xl'>
         <Heading as='h1' size='xl' noOfLines={1} color='white' mt='4' mb='100'>
           Create a new collection

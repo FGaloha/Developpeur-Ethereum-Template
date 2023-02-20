@@ -24,9 +24,6 @@ export const MembersProvider = ({ children }) => {
   // State
   const [ownerFactory, setOwnerFactory] = useState(null)
   const [ownerMarket, setOwnerMarket] = useState(null)
-  const [isSubsidiary, setIsSubsidiary] = useState(false)
-  //const [subsidiaries, setSubsidiaries] = useState([])
-  const [collections, setCollections] = useState([])
 
   useEffect(() => {
     if (isConnected) {
@@ -54,13 +51,7 @@ export const MembersProvider = ({ children }) => {
         blockNumberFactory,
         ownerMarket,
         contractAddressMarket,
-        blockNumberMarket,
-        isSubsidiary,
-        setIsSubsidiary,
-        //subsidiaries,
-        //setSubsidiaries,
-        collections,
-        setCollections
+        // blockNumberMarket,
       }}
     >
       {children}

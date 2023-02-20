@@ -1,5 +1,5 @@
 import { Heading, Flex, Input, Stack, Button, useToast } from '@chakra-ui/react';
-import { useAccount, useSigner, useProvider } from 'wagmi'
+import { useAccount, useSigner, useProvider, useBalance } from 'wagmi'
 import { useState, useEffect } from "react";
 import useMembersProvider from '@/hooks/useMembersProvider'
 import ContractFactory from "../contracts/Factory";
@@ -12,6 +12,10 @@ export default function Admin() {
   const { isConnected, address } = useAccount()
   const { data: signer } = useSigner()
   const provider = useProvider()
+  const { data } = useBalance({
+    address: address,
+    watch: true
+  })
 
   // Context
   const { ownerFactory, contractAddressFactory, blockNumberFactory } = useMembersProvider()

@@ -3,7 +3,7 @@ import { Flex, Text, Thead, Table, Tbody, Tr, Th, Td, TableContainer } from '@ch
 export const Subsidiaries = ({ subsidiaries }) => {
 
   return (
-    <Flex bg="black" my="10">
+    <Flex bg="black" my="10" w="90%">
       {subsidiaries.length > 0 ? (
         <TableContainer>
           <Table variant='simple'>
@@ -27,7 +27,7 @@ export const Subsidiaries = ({ subsidiaries }) => {
             </Tbody>
           </Table>
         </TableContainer>
-      ) : (<Text mt="20" fontSize="3xl">No subsidiary for the moment</Text>)}
+      ) : (<Text mt="10" fontSize="3xl">No subsidiary for the moment</Text>)}
     </Flex>
   )
 }

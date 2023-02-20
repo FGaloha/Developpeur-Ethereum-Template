@@ -407,7 +407,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
         const royalties = earningsWithRoyalties * 500 / 10000;
         const earnings = earningsWithRoyalties - royalties;
         const marketFee = fixFee + percentFee;
-        console.log(marketFee)
 
         await expect(market.connect(simple_user2).buyItem(collection.address, 0, { value: price }))
           .to.emit(market, 'NFTSold')

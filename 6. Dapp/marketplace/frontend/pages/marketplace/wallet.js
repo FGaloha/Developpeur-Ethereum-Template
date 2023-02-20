@@ -88,7 +88,8 @@ export default function Wallet() {
           const Uri = Promise.resolve(tokenUri)
           const getUri = await Uri.then(value => {
             let str = value
-            let cleanUri = str.replace('ipfs://', 'https://ipfs.io/ipfs/')
+            //let cleanUri = str.replace('ipfs://', 'https://ipfs.io/ipfs/')
+            let cleanUri = str.replace('ipfs://', 'https://nftstorage.link/ipfs/')
             let metadata = axios.get(cleanUri).catch(function (error) {
               console.log(error.toJSON());
             });
@@ -97,7 +98,8 @@ export default function Wallet() {
           let rawImg = getUri.data.image
           let name = getUri.data.name
           let desc = getUri.data.description
-          let image = rawImg.replace('ipfs://', 'https://ipfs.io/ipfs/')
+          // let image = rawImg.replace('ipfs://', 'https://ipfs.io/ipfs/')
+          let image = rawImg.replace('ipfs://', 'https://nftstorage.link/ipfs/')
           let attributes = getUri.data.attributes
 
           let nft = {
@@ -236,7 +238,7 @@ export default function Wallet() {
                 ))}
               </SimpleGrid>
 
-            ) : <Text ms="5">Loading or NFT in mint phase</Text>}
+            ) : <Text ms="5">Loading or no NFT</Text>}
           </Flex>
         </Flex>
       ) : <Text fontSize='3xl' mt="10" color='#E313DF'>Please connect your wallet</Text>}

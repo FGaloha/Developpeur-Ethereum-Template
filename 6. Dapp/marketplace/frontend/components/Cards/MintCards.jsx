@@ -73,14 +73,14 @@ export const MintCards = () => {
           const Uri = Promise.resolve(tokenUri)
           const getUri = await Uri.then(value => {
             const str = value
-            const cleanUri = str.replace('ipfs://', 'https://ipfs.io/ipfs/')
+            let cleanUri = str.replace('ipfs://', 'https://nftstorage.link/ipfs/')
             const metadata = axios.get(cleanUri).catch(function (error) {
               console.log(error.toJSON());
             });
             return metadata;
           })
           const rawImg = getUri.data.image
-          const image = rawImg.replace('ipfs://', 'https://ipfs.io/ipfs/')
+          const image = rawImg.replace('ipfs://', 'https://nftstorage.link/ipfs/')
           const nft = {
             img: image,
             desc: getUri.data.description,
@@ -97,43 +97,40 @@ export const MintCards = () => {
   return (
 
 
-    (collections.length > 0 && collectionsLoaded) ? (
+    (collections.length > 0 && collectionsLoaded) &&
 
-      < Flex direction='column' alignItems='center' w='100%' backgroundColor='black'>
-        <Heading w="100%" ms="10" as='h1' textAlign="start" size='lg' noOfLines={1} color='white' mt='4'>
-          Mint Live !
-        </Heading>
+    < Flex direction='column' alignItems='center' w='100%' backgroundColor='black'>
+      <Heading w="100%" ms="10" as='h1' textAlign="start" size='lg' noOfLines={1} color='white' mt='4'>
+        Mint Live !
+      </Heading>
 
-        <SimpleGrid columns={5} spacing={5} p="5" w="100%">
+      <SimpleGrid columns={5} spacing={5} p="5" w="100%">
 
-          {collections.map(collection => (
-            <Box
-              bg={useColorModeValue('white', 'gray.800')}
-              maxW="lg"
-              borderWidth="1px"
-              rounded="lg"
-              shadow="lg">
+        {collections.map(collection => (
+          <Box
+            bg={useColorModeValue('white', 'gray.800')}
+            maxW="lg"
+            borderWidth="1px"
+            rounded="lg"
+            shadow="lg">
 
-              <Image
-                src={collection.img}
-                alt={`Picture of 1st token or mint template`}
-                roundedTop="lg"
-              />
+            <Image
+              src={collection.img}
+              alt={`Picture of 1st token or mint template`}
+              roundedTop="lg"
+            />
 
-              <Box p="2" fontSize="2xl" color={useColorModeValue('gray.800', 'white')}>
-                <Button colorScheme='purple' onClick={() => router.push(`../../collection/mint?address=${collection.addressCollection}`)}>
-                  Mint
-                </Button>
-              </Box>
-
+            <Box p="2" fontSize="2xl" color={useColorModeValue('gray.800', 'white')}>
+              <Button colorScheme='purple' onClick={() => router.push(`../../collection/mint?address=${collection.addressCollection}`)}>
+                Mint
+              </Button>
             </Box>
-          ))}
 
-        </SimpleGrid>
-      </Flex>
+          </Box>
+        ))}
 
-    ) : <Text ms="5">Loading or no NFT collections in mint phase</Text>
-
+      </SimpleGrid>
+    </Flex>
 
   )
 }

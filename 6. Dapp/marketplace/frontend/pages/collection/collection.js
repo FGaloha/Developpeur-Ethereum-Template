@@ -73,7 +73,7 @@ export default function Collection() {
       const Uri = Promise.resolve(rawUri)
       const getUri = Uri.then(value => {
         let str = value
-        let cleanUri = str.replace('ipfs://', 'https://ipfs.io/ipfs/')
+        let cleanUri = str.replace('ipfs://', 'https://nftstorage.link/ipfs/')
         let metadata = axios.get(cleanUri).catch(function (error) {
           console.log(error.toJSON());
         });
@@ -83,16 +83,8 @@ export default function Collection() {
         let rawImg = value.data.image
         let name = value.data.name
         let desc = value.data.description
-        let image = rawImg.replace('ipfs://', 'https://ipfs.io/ipfs/')
+        let image = rawImg.replace('ipfs://', 'https://nftstorage.link/ipfs/')
         let attributes = value.data.attributes
-        // console.log(name)
-        // console.log(desc)
-        // console.log(image)
-        //console.log(attributes)
-        //console.log(attributes.length)
-        // for (let i = 0; i < attributes.length; i++) {
-        //   console.log(attributes[i].trait_type + ': ' + attributes[i].value)
-        // }
         let nft = {
           name: name,
           img: image,
@@ -101,7 +93,6 @@ export default function Collection() {
           owner: owner.toString(),
           desc: desc,
           attributes: attributes,
-          // price
         }
         collectionNfts.push(nft)
       })

@@ -81,14 +81,14 @@ export const CollectionsCards = () => {
             let Uri = Promise.resolve(tokenUri)
             let getUri = await Uri.then(value => {
               let str = value
-              let cleanUri = str.replace('ipfs://', 'https://ipfs.io/ipfs/')
+              let cleanUri = str.replace('ipfs://', 'https://nftstorage.link/ipfs/')
               let metadata = axios.get(cleanUri).catch(function (error) {
                 console.log(error.toJSON());
               });
               return metadata;
             })
             let rawImg = getUri.data.image
-            image = rawImg.replace('ipfs://', 'https://ipfs.io/ipfs/')
+            image = rawImg.replace('ipfs://', 'https://nftstorage.link/ipfs/')
           }
 
           // Information construction to be displayed in a grid
@@ -114,7 +114,7 @@ export const CollectionsCards = () => {
       < Flex direction='column' alignItems='center' w='100%' backgroundColor='black'>
         {collections.map(collection => (
           <Flex w="100%" direction='column'>
-            <Heading w="100%" ms="5" as='h1' textAlign="start" size='lg' noOfLines={1} color='white' mt='4'>
+            <Heading w="100%" ms="5" as='h1' textAlign="start" size='lg' noOfLines={1} color='white' mt='4' key={collection.name}>
               Subsidiary {collection.name}
             </Heading>
             <SimpleGrid columns={5} spacing={5} p="5" w="100%">
@@ -125,7 +125,8 @@ export const CollectionsCards = () => {
                     maxW="lg"
                     borderWidth="1px"
                     rounded="lg"
-                    shadow="lg">
+                    shadow="lg"
+                    key={cards.index}>
 
                     <Image
                       src={cards.image}

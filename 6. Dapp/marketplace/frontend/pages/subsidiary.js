@@ -73,7 +73,6 @@ export default function Subsidiary() {
     setIsLoading(true);
     try {
       const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, signer);
-      console.log(contractAddressFactory);
       const collectionCreation = await contract.createNFTCollection(maxSupply, ethers.utils.parseEther(price), baseURI);
       await collectionCreation.wait();
       getCollections();

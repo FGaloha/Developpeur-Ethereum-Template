@@ -126,17 +126,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
           .to.be.revertedWith("Ownable: caller is not the owner");
       })
 
-      // it("should be possible for the owner of the Factory to reactivate a subsidiary", async function () {
-      //   await factory.deactivateSubsidiary(seller1.address);
-      //   const getSubsidiaryBefore = await factory.getSubsidiary(seller1.address);
-      //   assert.equal(getSubsidiaryBefore.isActive, false);
-      //   await expect(factory.setSubsidiary(seller1.address, 'Paris 1', 'PAR1'))
-      //     .to.emit(factory, 'SubsidiaryAdded')
-      //     .withArgs(seller1.address, 'Paris 1', 'PAR1');
-      //   const getSubsidiaryAfter = await factory.getSubsidiary(seller1.address);
-      //   assert.equal(getSubsidiaryAfter.isActive, true);
-      // })
-
     })
 
     describe("updateSubsidiary", function () {
@@ -170,8 +159,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
     describe("createNFTCollection", function () {
 
       beforeEach(async () => {
-        // await deployments.fixture(["collection"]);
-        // collection = await ethers.getContract("Collection");
         await deployments.fixture(["factory"]);
         factory = await ethers.getContract("Factory");
         await factory.setSubsidiary(seller1.address, 'Paris', 'PAR');

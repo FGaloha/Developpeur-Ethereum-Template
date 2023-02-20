@@ -1,57 +1,108 @@
-import { Heading, Flex } from '@chakra-ui/react';
-import { useAccount } from 'wagmi'
-import { useEffect } from 'react'
+import { Heading, Flex, Text, Button } from '@chakra-ui/react';
+import { useAccount, useSigner, useProvider, useBalance } from 'wagmi'
+import { useEffect, useState } from 'react'
 import { useRouter } from "next/router";
+import { ethers } from 'ethers'
+import ContractCollection from "../../contracts/Collection";
 
 export default function updateCollection() {
 
   // Wagmi
-  const { isConnected } = useAccount()
+  const { isConnected, address } = useAccount()
+  const { data: signer } = useSigner()
+  const provider = useProvider()
+  const { data } = useBalance({
+    address: address,
+    watch: true
+  })
 
   // Router
   const router = useRouter();
-  const addressCollection = router.query;
+  const query = router.query;
+  const contractAddressCollection = query.address;
+
+  // State
+  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingWithdraw, setIsLoadingWithdraw] = useState(false)
+  const [price, setPrice] = useState(null)
+  const [maxSupply, setMaxSupply] = useState(null)
+  const [totalSupply, setTotalSupply] = useState(null)
+  const [baseURI, setBaseURI] = useState(null)
+  const [earnings, setEarnings] = useState(0)
 
   useEffect(() => {
     if (isConnected) {
-      //console.log(addressCollection)
-      //get collection info
+      getBalance();
+      getCollection();
     }
-  }, [isConnected])
+  }, [isConnected, address])
 
-  // To get collection info
+  // Get collection balance
+  const getBalance = async () => {
+    const collectionBalance = await provider.getBalance(contractAddressCollection);
+    setEarnings(ethers.utils.formatEther(collectionBalance));
+  }
 
-  // To update the collection
-  // const updateCollection = async () => {
-  //   const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, provider)
+  // To get infos of the collection
+  const getCollection = async () => {
+    const contract = new ethers.Contract(contractAddressCollection, ContractCollection.abi, provider)
+    const priceCollect = await contract.getPrice();
+    const maxSupply = await contract.getMaxSupply();
+    const currentSupply = await contract.totalSupply();
+    const baseURI = await contract.getBaseURI();
 
-  //   let createdCollectionsEvents = [];
-  //   const startBlock = 0; // block number of the contract Factory
-  //   const endBlock = await provider.getBlockNumber();
+    const price = ethers.utils.formatEther(priceCollect).toString()
+    setPrice(price)
+    setMaxSupply(maxSupply.toString())
+    setTotalSupply(currentSupply.toString())
+    setBaseURI(baseURI.toString())
+  }
 
-  //   for (let i = startBlock; i < endBlock; i += 3000) {
-  //     const _startBlock = i;
-  //     const _endBlock = Math.min(endBlock, i + 2999);
-  //     const data = await contract.queryFilter('CollectionCreated', _startBlock, _endBlock);
-  //     createdCollectionsEvents = [...createdCollectionsEvents, ...data]
-  //   }
+  // Withdraw funds
+  const withdraw = async () => {
+    setIsLoadingWithdraw(true);
+    try {
+      const contract = new ethers.Contract(contractAddressCollection, ContractCollection.abi, signer)
+      const withdrawFunds = await contract.releaseAll()
+      await withdrawFunds.wait()
+      getBalance();
+      toast({
+        title: 'Funds withdrawed',
+        description: `You successfully withdraw ${earnings}`,
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+    catch {
+      toast({
+        title: 'Error',
+        description: `The withdrawal of ${earnings} failed, please try again...`,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+    setIsLoadingWithdraw(false);
 
-  //   //Filter to get only collections of the subsidiary
-  //   let subsidiaryCollections = [];
-  //   for (let i = 0; i < createdCollectionsEvents.length; i++) {
-  //     if (createdCollectionsEvents[i].args[3] == address) {
-  //       subsidiaryCollections.push([createdCollectionsEvents[i].args[0], createdCollectionsEvents[i].args[1], createdCollectionsEvents[i].args[2], createdCollectionsEvents[i].args[3]]);
-  //     }
-  //   }
-  //   (subsidiaryCollections)
-  // }
+  }
 
   return (
-    //isConnected &&
-    <Flex direction="column" alignItems="center" w="100%">
-      <Heading as='h1' size='xl' noOfLines={1} color="black">
-        Update collection
-      </Heading>
-    </Flex>
+    isConnected && (
+      <Flex direction="column" alignItems="center" w="100%" backgroundColor='black' rounded='xl'>
+        <Heading as='h1' noOfLines={1} color='white' mt='4' mb='10'>
+          Update collection
+        </Heading>
+        <Flex direction="column" color="gray.500" w="100%" ms="10">
+          <Text>Address: {contractAddressCollection}</Text>
+          <Text>Max supply: {maxSupply}</Text>
+          <Text>Mint price: {price} ETH</Text>
+          <Text>Total supply: {totalSupply} - {Math.round(totalSupply / maxSupply * 100)}%</Text>
+          <Text>Base URI: {baseURI} <Button ms="4" size='xs' colorScheme='purple' onClick={() => router.push(`./baseURI/?address=${contractAddressCollection}`)}>Update</Button></Text>
+          <Text>Contract balance: {earnings} ETH
+            {earnings > 0 && <Button ms="4" size='xs' isLoading={isLoadingWithdraw ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => withdraw()}>Withdraw</Button>}
+          </Text>
+        </Flex>
+      </Flex>)
   )
 }

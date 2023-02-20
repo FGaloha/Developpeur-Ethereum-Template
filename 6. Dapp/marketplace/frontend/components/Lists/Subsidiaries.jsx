@@ -3,9 +3,9 @@ import { Flex, Text, Thead, Table, Tbody, Tr, Th, Td, TableContainer } from '@ch
 export const Subsidiaries = ({ subsidiaries }) => {
 
   return (
-    <Flex bg="black">
+    <Flex bg="black" my="10">
       {subsidiaries.length > 0 ? (
-        <TableContainer mt='20'>
+        <TableContainer>
           <Table variant='simple'>
             <Thead>
               <Tr>

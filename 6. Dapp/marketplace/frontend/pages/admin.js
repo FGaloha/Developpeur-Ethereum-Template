@@ -1,8 +1,9 @@
-import { Heading, Flex, Input, Stack, Button, useToast } from '@chakra-ui/react';
+import { Heading, Flex, Input, Stack, Button, useToast, Text } from '@chakra-ui/react';
 import { useAccount, useSigner, useProvider, useBalance } from 'wagmi'
 import { useState, useEffect } from "react";
 import useMembersProvider from '@/hooks/useMembersProvider'
 import ContractFactory from "../contracts/Factory";
+import ContractMarket from "../contracts/Market";
 import { ethers } from 'ethers'
 import { Subsidiaries } from '@/components/Lists/Subsidiaries';
 
@@ -18,21 +19,53 @@ export default function Admin() {
   })
 
   // Context
-  const { ownerFactory, contractAddressFactory, blockNumberFactory } = useMembersProvider()
+  const { ownerFactory, contractAddressFactory, contractAddressMarket, blockNumberFactory } = useMembersProvider()
 
   // State
   const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingWithdraw, setIsLoadingWithdraw] = useState(false)
   const [name, setName] = useState("")
   const [symbol, setSymbol] = useState("")
   const [addressSeller, setAddressSeller] = useState("")
   const [subsidiaries, setSubsidiaries] = useState([])
+  const [earnings, setEarnings] = useState(0)
 
   // Chakra
   const toast = useToast()
 
   useEffect(() => {
+    getBalance();
     getSubsidiaries();
   }, [isConnected, address])
+
+  // Withdraw funds
+  const withdraw = async () => {
+    setIsLoadingWithdraw(true);
+    try {
+      const contract = new ethers.Contract(contractAddressMarket, ContractMarket.abi, signer)
+      const withdrawFunds = await contract.releaseAll()
+      await withdrawFunds.wait()
+      getBalance();
+      toast({
+        title: 'Funds withdrawed',
+        description: `You successfully withdraw ${earnings}`,
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+    catch {
+      toast({
+        title: 'Error',
+        description: `The withdrawal of ${earnings} failed, please try again...`,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+    setIsLoadingWithdraw(false);
+
+  }
 
   // To add a subsidiary
   const addSubsidiary = async () => {
@@ -65,6 +98,12 @@ export default function Admin() {
     setIsLoading(false);
   }
 
+  // Get Market balance
+  const getBalance = async () => {
+    const marketBalance = await provider.getBalance(contractAddressMarket);
+    setEarnings(ethers.utils.formatEther(marketBalance));
+  }
+
   // To get existing subsidiaries
   const getSubsidiaries = async () => {
     const contract = new ethers.Contract(contractAddressFactory, ContractFactory.abi, provider)
@@ -80,27 +119,37 @@ export default function Admin() {
       registeredSubsidiariesEvents = [...registeredSubsidiariesEvents, ...data]
     }
     setSubsidiaries(registeredSubsidiariesEvents)
-    //console.log(subsidiaries[0].address)
   }
 
   return (
     isConnected && ownerFactory && (
       < Flex direction='column' alignItems='center' w='100%' backgroundColor='black' rounded='xl'>
-        <Heading as='h1' size='xl' noOfLines={1} color='white' mt='4' mb='100'>
-          Create a subsidiary
-        </Heading>
-        <Stack spacing={4} w="30%">
+        <Flex w="100%" direction='column' alignItems='center'>
+          <Heading as='h1' noOfLines={1} color='white' mt='4' mb='10'>
+            Admin
+          </Heading>
+          <Flex w="100%" color="gray.500">
+            <Text ms="5">Contract balance: {earnings} ETH</Text>
+            {earnings > 0 && <Button ms="4" size='xs' isLoading={isLoadingWithdraw ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => withdraw()}>Withdraw</Button>}
+          </Flex>
+        </Flex>
+        <Flex direction='column' w="100%" ms="10">
+          <Heading size='lg' noOfLines={1} color='white' mt='4' mb='10'>
+            Create a subsidiary
+          </Heading>
+          <Stack spacing={4} w="30%">
 
-          <Input placeholder='Name' value={name} focusBorderColor='pink.600' onChange={e => setName(e.target.value)} />
+            <Input placeholder='Name' value={name} focusBorderColor='pink.600' onChange={e => setName(e.target.value)} />
 
-          <Input placeholder='Symbol' value={symbol} focusBorderColor='pink.600' onChange={e => setSymbol(e.target.value)} />
+            <Input placeholder='Symbol' value={symbol} focusBorderColor='pink.600' onChange={e => setSymbol(e.target.value)} />
 
-          <Input placeholder='Seller Address 0x12A...B21' value={addressSeller} focusBorderColor='pink.600' onChange={e => setAddressSeller(e.target.value)} />
+            <Input placeholder='Seller Address 0x12A...B21' value={addressSeller} focusBorderColor='pink.600' onChange={e => setAddressSeller(e.target.value)} />
 
-          <Button ms="2" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => addSubsidiary()}>Add</Button>
+            <Button ms="2" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => addSubsidiary()}>Add</Button>
 
-        </Stack>
-        <Subsidiaries subsidiaries={subsidiaries} />
+          </Stack>
+          <Subsidiaries subsidiaries={subsidiaries} />
+        </Flex>
       </Flex >)
   )
 }

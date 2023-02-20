@@ -23,7 +23,6 @@ export default function Mint() {
   const router = useRouter();
   const query = router.query;
   const contractAddressCollection = query.address;
-  //console.log(contractAddressCollection)
 
   // Chakra
   const toast = useToast()

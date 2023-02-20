@@ -406,10 +406,12 @@ const { developmentChains } = require("../../helper-hardhat-config")
         // 5% royalties for creators
         const royalties = earningsWithRoyalties * 500 / 10000;
         const earnings = earningsWithRoyalties - royalties;
+        const marketFee = fixFee + percentFee;
+        console.log(marketFee)
 
         await expect(market.connect(simple_user2).buyItem(collection.address, 0, { value: price }))
           .to.emit(market, 'NFTSold')
-          .withArgs(simple_user.address, simple_user2.address, collection.address, 0, price, royalties);
+          .withArgs(simple_user.address, simple_user2.address, collection.address, 0, price, royalties, marketFee);
 
         // The token is not anymore listed
         const sale = await market.getSale(collection.address, 0);
@@ -419,6 +421,10 @@ const { developmentChains } = require("../../helper-hardhat-config")
         // simple_user/seller earnings increased
         const sellerEarnings = await market.getEarnings(simple_user.address);
         assert.equal(sellerEarnings.toNumber(), earnings);
+
+        // marketplace earnings increased
+        const marketEarnings = await market.getEarnings(market.address);
+        assert.equal(marketEarnings.toNumber(), marketFee);
 
         // simple_user2/buyer is now owner of the token
         const tokenOwner = await collection.ownerOf(0);
@@ -446,10 +452,12 @@ const { developmentChains } = require("../../helper-hardhat-config")
           'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/');
         await deployments.fixture("market", [2000000000000000, 1000000000000000, 250]);
         market = await ethers.getContract("Market");
+
         await collection.connect(simple_user).mint(5, { value: ethers.utils.parseEther('0.005') });
         await collection.connect(simple_user).approve(market.address, 0);
         market.connect(simple_user).addToSale(collection.address, 0, 2100000000000000);
         market.connect(simple_user2).buyItem(collection.address, 0, { value: 2100000000000000 });
+
       })
 
       it("should be possible for a user to withdraw the earnings", async function () {
@@ -485,34 +493,29 @@ const { developmentChains } = require("../../helper-hardhat-config")
     describe("releaseAll", function () {
 
       beforeEach(async () => {
-        await deployments.fixture(["factory"]);
-        factory = await ethers.getContract("Factory");
-        await factory.setSubsidiary(seller1.address, 'Paris', 'PAR');
-        await factory.connect(seller1)
-          .createNFTCollection(50, ethers.utils.parseEther('1'),
-            'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/')
-
-        // Get address of the NFT contract
-        const collectionCreationEvent = await factory.queryFilter('CollectionCreated');
-        const nftCollection = await ethers.getContractAt('Collection', collectionCreationEvent[0]['args'][1]);
-        await nftCollection.connect(simple_user).mint(10, { value: ethers.utils.parseEther('10') });
-        // await nftCollection.releaseAll();
-        // const payee1 = await nftCollection.payee(0);
-        // const payee2 = await nftCollection.payee(0);
-
-        // await collection.init(10, ethers.utils.parseEther('0.001'),
-        //   'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/');
+        await deployments.fixture(["collection"]);
+        collection = await ethers.getContract("Collection");
+        await collection.init(10, ethers.utils.parseEther('0.001'),
+          'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/');
         await deployments.fixture("market", [2000000000000000, 1000000000000000, 250]);
         market = await ethers.getContract("Market");
-        // // await collection.connect(simple_user).mint(5, { value: ethers.utils.parseEther('0.005') });
-
-        await nftCollection.connect(simple_user).approve(market.address, 0);
-        market.connect(simple_user).addToSale(nftCollection.address, 0, 1000000000000000000);
-        market.connect(simple_user2).buyItem(nftCollection.address, 0, { value: 1000000000000000000 });
+        await collection.connect(simple_user).mint(5, { value: ethers.utils.parseEther('0.005') });
+        await collection.connect(simple_user).approve(market.address, 0);
+        market.connect(simple_user).addToSale(collection.address, 0, 2100000000000000)
+        market.connect(simple_user2).buyItem(collection.address, 0, { value: 2100000000000000 });
       })
 
       it("should be possible for the market contract owner to withdraw funds", async function () {
+        const marketEarnings = await market.getEarnings(market.address);
+        await expect(market.releaseAll())
+          .to.emit(market, 'FundsReleased')
+          .withArgs(owner.address, marketEarnings);
+      })
+
+      it("should not be possible for the market contract owner to withdraw funds if earnings are 0", async function () {
         market.releaseAll();
+        await expect(market.releaseAll())
+          .to.be.revertedWithCustomError(market, 'Market_NoEarnings').withArgs();
       })
 
       it("should not be possible for a simple user to withdraw market contract funds", async function () {

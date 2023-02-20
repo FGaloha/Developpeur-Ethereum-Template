@@ -186,7 +186,7 @@ export default function Wallet() {
           <Flex direction="column" w="100%" ms="10" color="white">
             <Text>Wallet: {address.substring(0, 5)}...{address.substring(address.length - 4)}</Text>
             <Flex mt="2">
-              <Text>Earnings : {earnings}</Text>
+              <Text>Earnings : {earnings} ETH</Text>
               {earnings > 0 && <Button ms="4" size='xs' isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => withdraw()}>Withdraw</Button>}
             </Flex>
 

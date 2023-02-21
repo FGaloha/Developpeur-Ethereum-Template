@@ -85,4 +85,10 @@ All files        |      100 |    93.24 |      100 |      100 |        0       |
 
 <br>
 
+## Documentation
+
+Available in docgen folder.
+
+<br>
+
 ![Morpheus Dapp](https://bafybeicmcpfedaimwgwtfzlxzy7uy5ru4dsybyz7ymy5e7waef7ayxpozq.ipfs.nftstorage.link/)

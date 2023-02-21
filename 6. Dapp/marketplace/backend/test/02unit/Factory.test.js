@@ -6,7 +6,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
   ? describe.skip
   : describe("Factory Smart Contract Unit Testing", function () {
     let accounts;
-    let collection;
     let factory;
 
     // DEFINITIONS

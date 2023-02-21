@@ -9,13 +9,15 @@ const { developmentChains } = require("../../helper-hardhat-config")
     let collection;
 
     // DEFINITIONS
-    // Owner is the address who deployed the contract
+    // Owner is the address who deployed the Factory or Collection contract
+    // Seller is an address who deployed a Collection contract
     // A simple user is the other type of contract user with limited rights to mint or view contract information
 
     before(async () => {
       accounts = await ethers.getSigners()
       owner = accounts[0]
       simple_user = accounts[1]
+      seller1 = accounts[2]
     })
 
     describe("constructor", function () {
@@ -249,40 +251,49 @@ const { developmentChains } = require("../../helper-hardhat-config")
     describe("releaseAll", function () {
 
       beforeEach(async () => {
-        await deployments.fixture(["collection"]);
-        collection = await ethers.getContract("Collection");
-        await collection.init(60, ethers.utils.parseEther('100'),
-          'ipfs://bafybeiez6ssotxfjpeiasxtxa2rk2y53tpqhhkmeuxs335wpj7ptztkud4/');
-        await collection.connect(simple_user).mint(10, { value: ethers.utils.parseEther('1000') })
+        await deployments.fixture(["factory"]);
+        factory = await ethers.getContract("Factory");
+        await factory.setSubsidiary(seller1.address, 'Paris', 'PAR');
+        await factory.connect(seller1)
+          .createNFTCollection(60, ethers.utils.parseEther('100'),
+            'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/');
       })
 
-      it("should be possible for the owner to request the transfer of funds to the team's members", async function () {
-        // Balance before the release
-        const ownerBalanceBefore = await owner.getBalance();
+      it("should be possible for the factory owner to request the transfer of funds to the team's members", async function () {
+        const collectionCreationEventEnd = await factory.queryFilter('CollectionCreated');
+        const collection = await ethers.getContractAt('Collection', collectionCreationEventEnd[0]['args'][1])
+        await collection.connect(simple_user).mint(10, { value: ethers.utils.parseEther('1000') })
+
+        // Balance seller factory before the release
+        const sellerBalanceBefore = await seller1.getBalance();
 
         // Release of revenues
         await collection.releaseAll();
 
         // Balance after the release
-        const ownerBalanceAfter = await owner.getBalance();
+        const sellerBalanceAfter = await seller1.getBalance();
 
-        // Contract owner should have a higher balance
-        const balanceIncrease = ownerBalanceAfter.sub(ownerBalanceBefore);
+        // Contract seller should have a higher balance (no impact gas fee as it is on owner account)
+        const balanceIncrease = sellerBalanceAfter.sub(sellerBalanceBefore);
         let should = require('chai').should();
         should.not.equal(ethers.utils.formatEther(balanceIncrease), 0);
       })
 
       it("should be possible for a nice simple user to request the transfer of funds to the team's members to pay the gas fees", async function () {
-        // Balance before the release
+        const collectionCreationEventEnd = await factory.queryFilter('CollectionCreated');
+        const collection = await ethers.getContractAt('Collection', collectionCreationEventEnd[0]['args'][1])
+        await collection.connect(simple_user).mint(10, { value: ethers.utils.parseEther('1000') })
+
+        // Balance owner before the release
         const ownerBalanceBefore = await owner.getBalance();
 
         // Release of revenues
         await collection.connect(simple_user).releaseAll();
 
-        // Balance after the release
+        // Balance owner after the release
         const ownerBalanceAfter = await owner.getBalance();
 
-        // Contract owner should have a higher balance
+        // Contract owner should have a higher balance (no impact gas fee as it is on user account)
         const balanceIncrease = ownerBalanceAfter.sub(ownerBalanceBefore);
         let should = require('chai').should();
         should.not.equal(ethers.utils.formatEther(balanceIncrease), 0);

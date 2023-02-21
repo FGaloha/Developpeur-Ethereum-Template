@@ -1,38 +1,86 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Morpheus Marketplace
 
-## Getting Started
+## Summary
 
-First, run the development server:
+This project is the last phase of the Voting dapp. Here are the steps followed:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+- improve security Smart contract
+- update tests files to take into account modifications
+- gaz optimization
+- create a front dapp
+- deployment of smart contract on Goerli & front on Vercel
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Conclusion : with the new contract we avoid a DOS gas limit, we save 64440 gas compare to Alyra version & the tests remains at 100% coverage.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+The following video show how the platform will be used by the Morpheus Group & users: [DEMO](https://www.loom.com/share/400ed797f4784cd7acfa2b808a372c49)
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+The smart contracts are here :
+- [Collection](https://goerli.etherscan.io/address/0x3c5C0AD32375e8973e35E0eF2CDaD9490F0B4330#code)
+- [Factory](https://goerli.etherscan.io/address/0x3c5C0AD32375e8973e35E0eF2CDaD9490F0B4330#code)
+- [Market](https://goerli.etherscan.io/address/0x3c5C0AD32375e8973e35E0eF2CDaD9490F0B4330#code)
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+The deployed platform (Vercel) is here : [Morpheus Dapp](https://morpheus-bice.vercel.app/)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+<br>
+Home
 
-## Learn More
+<img src="https://bafybeicbpvsugvsbry5xjg5zivtw5lkyyvp67zxinkxa7frxzqbccyr3ym.ipfs.nftstorage.link/" width="50%"  alt="High Jedi Council Home">
 
-To learn more about Next.js, take a look at the following resources:
+<br>
+Admin Factory & Market: admin actions (voting actions & detailed results if whitelisted)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<img src="https://bafkreiamki45pr3lhywkueprohcbx7loothmqc4angkz55lwyzzkris2zi.ipfs.nftstorage.link/" width="50%"  alt="Admin page">
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+<br>
+Subsidiary: collections admin actions
 
-## Deploy on Vercel
+<img src="https://bafkreiglpqwoxlergdjprl6axfduujhtps7bbf5ql53jh6dkwvez4k72aa.ipfs.nftstorage.link/" width="50%"  alt="Subsidiary page">
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<br>
+Users: minters, sellers & buyers
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+<img src="https://bafkreify6vukzikddfs6nflke6txxxoij7lo4whiydvj4zxfoypa5x4eae.ipfs.nftstorage.link/" width="50%"  alt="Wallet owner page">
+
+<br>
+
+Happy discovery !
+
+## Security actions
+
+ - Use of a maximum optimized & verified SM : Openzeppelin erc721, ReentrancyGuard, paymensplitter, ownable smart contract
+ - Mint quantity limited to 50 to avoir DOS gas & answer client request of limitating ownership
+
+## Gas & other optimized actions
+
+- all strings are used at the minimum
+- always use ++i instead of i++
+- Solidity Compiler Optimizer has been activated
+- proposals array limited to 255 to be aligned with a proposalId uint8
+- uint8 for maxQuantity when it was saving gas. It stayed at uint256 when the modification was costing more but all cases has been tested (example winningProposalId).
+- packing struct possibilities has been tested: it showed increases (4849053 vs 4848441) in the gas costs so the contract has been remained without
+- Linting code: visibility has been added were it was mising to improve lisibility (internal variables)
+
+## Test & coverage
+
+- 119 tests
+- 4 files are provided:
+  - A dedicated test file for unit test for each smart contract
+  - A file involving all 3 smart contracts at the same time and running a complete workflow using all functions
+- Each smart contract has been fully checked (all lines).
+- In Market smart contract case % branch is 90% due to the nonReentrant modifier of ReentrancyGuard Openzeppelin.
+
+- yarn hardhat coverage: it should show a 100% coverage as followed:
+
+-----------------|----------|----------|----------|----------|----------------|
+File             |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+-----------------|----------|----------|----------|----------|----------------|
+ contracts/      |      100 |    93.24 |      100 |      100 |        _       |
+  Collection.sol |      100 |      100 |      100 |      100 |        _       |
+  Factory.sol    |      100 |      100 |      100 |      100 |        _       |
+  Market.sol     |      100 |       90 |      100 |      100 |        _       |
+-----------------|----------|----------|----------|----------|----------------|
+All files        |      100 |    93.24 |      100 |      100 |        0       |
+-----------------|----------|----------|----------|----------|----------------|
+
+
+![Morpheus Dapp](https://bafybeicmcpfedaimwgwtfzlxzy7uy5ru4dsybyz7ymy5e7waef7ayxpozq.ipfs.nftstorage.link/)

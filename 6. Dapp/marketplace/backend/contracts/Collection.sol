@@ -16,10 +16,10 @@ contract Collection is ERC721Enumerable, ERC2981, PaymentSplitter, Ownable {
     using Strings for uint256;
     using Counters for Counters.Counter;
 
-    uint8 private immutable maxQuantity;
-    uint256 private maxSupply;
-    string private baseURI;
     Counters.Counter private _tokenIds;
+    uint256 private immutable maxQuantity;
+    string private baseURI;
+    uint256 private maxSupply;
     uint256 private price;
     uint256[] private _teamShares = [97, 3];
 
@@ -33,9 +33,6 @@ contract Collection is ERC721Enumerable, ERC2981, PaymentSplitter, Ownable {
         string memory symbol_,
         address[] memory _team
     ) payable ERC721("", "") PaymentSplitter(_team, _teamShares) {
-        // work on remix but not on hardhat - goeli to test
-        // _name = name_;
-        // _symbol = symbol_;
         name_ = name_;
         symbol_ = symbol_;
         maxQuantity = 50;
@@ -140,7 +137,7 @@ contract Collection is ERC721Enumerable, ERC2981, PaymentSplitter, Ownable {
     /// @notice Release the funds of both subsidiary & factory (Group Morpheus)
     /// @dev The revenues are splitted the same for all contracts: subsidiary/owner 97% - Group/factory 3 %)
     function releaseAll() external {
-        for (uint256 i = 0; i < 2; i++) {
+        for (uint256 i = 0; i < 2; ++i) {
             release(payable(payee(i)));
         }
     }

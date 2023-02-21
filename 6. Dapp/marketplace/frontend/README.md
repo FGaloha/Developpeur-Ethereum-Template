@@ -71,6 +71,7 @@ Happy discovery !
 
 - yarn hardhat coverage: it should show a 100% coverage as followed:
 
+<br>
 
 File             |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 -----------------|----------|----------|----------|----------|----------------|
@@ -80,6 +81,6 @@ File             |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 -----------------|----------|----------|----------|----------|----------------|
 All files        |      100 |    93.24 |      100 |      100 |        0       |
 
-
+<br>
 
 ![Morpheus Dapp](https://bafybeicmcpfedaimwgwtfzlxzy7uy5ru4dsybyz7ymy5e7waef7ayxpozq.ipfs.nftstorage.link/)

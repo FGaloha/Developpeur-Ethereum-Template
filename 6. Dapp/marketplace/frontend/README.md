@@ -22,7 +22,7 @@ The smart contracts are here :
 The deployed platform (Vercel) is here : [Morpheus Dapp](https://morpheus-bice.vercel.app/)
 
 <br>
-Home
+Home (click on the image to view it real size)
 <br><br>
 <img src="https://bafybeichgjhpcrwzys2rai7dx5hwbnez4qo3xfr44q6k4buwk7qlxmvrwa.ipfs.nftstorage.link/" width="50%"  alt="High Jedi Council Home">
 

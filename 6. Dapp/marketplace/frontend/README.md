@@ -71,16 +71,15 @@ Happy discovery !
 
 - yarn hardhat coverage: it should show a 100% coverage as followed:
 
------------------|----------|----------|----------|----------|----------------|
+
 File             |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 -----------------|----------|----------|----------|----------|----------------|
- contracts/      |      100 |    93.24 |      100 |      100 |        _       |
   Collection.sol |      100 |      100 |      100 |      100 |        _       |
   Factory.sol    |      100 |      100 |      100 |      100 |        _       |
   Market.sol     |      100 |       90 |      100 |      100 |        _       |
 -----------------|----------|----------|----------|----------|----------------|
 All files        |      100 |    93.24 |      100 |      100 |        0       |
------------------|----------|----------|----------|----------|----------------|
+
 
 
 ![Morpheus Dapp](https://bafybeicmcpfedaimwgwtfzlxzy7uy5ru4dsybyz7ymy5e7waef7ayxpozq.ipfs.nftstorage.link/)

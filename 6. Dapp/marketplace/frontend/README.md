@@ -12,7 +12,7 @@ What have been prioritized:
 - usability for subsidiaries & clients
 - financial meaning for the Group & subsidiaries
 
-The following video show how the platform will be used by the Morpheus Group & clients: [DEMO](https://www.loom.com/share/400ed797f4784cd7acfa2b808a372c49)
+The following video show how the platform will be used by the Morpheus Group & clients: [DEMO](https://www.loom.com/share/56857226e9e34ce6b7e102cffaf2c118)
 
 The smart contracts are here :
 - [Collection](https://goerli.etherscan.io/address/0x36aD8d2DcE8dCcb1526367B2308bcc6a7bbA572D#code)

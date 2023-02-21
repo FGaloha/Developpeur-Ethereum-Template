@@ -23,23 +23,23 @@ The deployed platform (Vercel) is here : [Morpheus Dapp](https://morpheus-bice.v
 
 <br>
 Home
-
-<img src="https://bafybeicbpvsugvsbry5xjg5zivtw5lkyyvp67zxinkxa7frxzqbccyr3ym.ipfs.nftstorage.link/" width="50%"  alt="High Jedi Council Home">
+<br><br>
+<img src="https://bafybeichgjhpcrwzys2rai7dx5hwbnez4qo3xfr44q6k4buwk7qlxmvrwa.ipfs.nftstorage.link/" width="50%"  alt="High Jedi Council Home">
 
 <br>
 Admin Factory & Market: admin actions (voting actions & detailed results if whitelisted)
-
-<img src="https://bafkreiamki45pr3lhywkueprohcbx7loothmqc4angkz55lwyzzkris2zi.ipfs.nftstorage.link/" width="50%"  alt="Admin page">
+<br><br>
+<img src="https://bafybeieyf4dbkzj4dembzs2praf5m4im6hvmtir2kj5n44lwmaa6ywr4lu.ipfs.nftstorage.link/" width="50%"  alt="Admin page">
 
 <br>
 Subsidiary: collections admin actions
-
-<img src="https://bafkreiglpqwoxlergdjprl6axfduujhtps7bbf5ql53jh6dkwvez4k72aa.ipfs.nftstorage.link/" width="50%"  alt="Subsidiary page">
+<br><br>
+<img src="https://bafybeiagrynjjwevss6zythlupegsqkp7by33diajwxjmzroqmhks75xim.ipfs.nftstorage.link/" width="50%"  alt="Subsidiary page">
 
 <br>
-Users: minters, sellers & buyers
-
-<img src="https://bafkreify6vukzikddfs6nflke6txxxoij7lo4whiydvj4zxfoypa5x4eae.ipfs.nftstorage.link/" width="50%"  alt="Wallet owner page">
+Client: minters, sellers & buyers
+<br><br>
+<img src="https://bafybeibqgh27zqaqgugdqtldnz2nl52eosraha2c74nxayg64dtab2gk3a.ipfs.nftstorage.link/" width="50%"  alt="Wallet owner page">
 
 <br>
 

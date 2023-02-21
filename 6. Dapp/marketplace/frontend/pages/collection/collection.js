@@ -187,7 +187,7 @@ export default function Collection() {
 
           <Flex w="100%" mt='5'>
             {nfts.length > 0 && nftLoaded ? (
-              <SimpleGrid columns={3} spacing={5} m="5">
+              <SimpleGrid columns={4} spacing={5} m="5">
                 {nfts.map(nft => (
                   <Card maxW='md' key={nfts.indexOf(nft)}>
                     <CardBody p="0" borderWidth="1px"

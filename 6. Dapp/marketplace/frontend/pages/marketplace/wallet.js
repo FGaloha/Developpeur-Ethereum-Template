@@ -193,7 +193,7 @@ export default function Wallet() {
 
           <Flex w="100%" mt='5'>
             {nfts.length > 0 && nftLoaded ? (
-              <SimpleGrid columns={4} spacing={5} p="5" w="100%">
+              <SimpleGrid columns={6} spacing={5} p="5" w="100%">
                 {nfts.map(nft => (
                   <Card maxW='xs' key={nfts.indexOf(nft)}>
                     <CardBody p="0" borderWidth="1px"

@@ -132,16 +132,17 @@ export default function Admin() {
           <Heading as='h1' noOfLines={1} color='white' mt='4' mb='10'>
             Admin
           </Heading>
-          <Flex direction="column" w="100%" color="gray.500">
-            <Text ms="5">Contract balance: {balance} ETH</Text>
+          <Flex direction="column" w="100%" color="gray.500" ms="20">
+            <Text>Contract balance: {balance} ETH</Text>
             <Flex mt="2">
-              <Text ms="5">Market earnings: {earnings} ETH</Text>
+              <Text>Market earnings: {earnings} ETH</Text>
               {earnings > 0 && <Button ms="4" size='xs' isLoading={isLoadingWithdraw ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => withdraw()}>Withdraw</Button>}
             </Flex>
           </Flex>
         </Flex>
-        <Flex direction='column' w="100%" ms="10">
-          <Heading size='lg' noOfLines={1} color='white' mt='4' mb='10'>
+
+        <Flex direction='column' w="100%" ms="20">
+          <Heading textAlign="center" size='lg' noOfLines={1} color='white' mt='4' mb='10'>
             Create a subsidiary
           </Heading>
           <Stack spacing={4} w="30%">
@@ -155,7 +156,9 @@ export default function Admin() {
             <Button ms="2" isLoading={isLoading ? 'isLoading' : ''} loadingText='Loading' colorScheme='purple' onClick={() => addSubsidiary()}>Add</Button>
 
           </Stack>
-          <Subsidiaries subsidiaries={subsidiaries} />
+          <Flex>
+            <Subsidiaries subsidiaries={subsidiaries} getSubsidiaries={getSubsidiaries} />
+          </Flex>
         </Flex>
       </Flex >)
   )

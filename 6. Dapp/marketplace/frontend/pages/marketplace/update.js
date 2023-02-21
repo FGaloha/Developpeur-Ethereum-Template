@@ -6,7 +6,7 @@ import ContractMarket from "../../contracts/Market";
 import { ethers } from 'ethers'
 import useMembersProvider from '@/hooks/useMembersProvider'
 
-export default function List() {
+export default function UpdateSalePrice() {
 
   // Wagmi
   const { isConnected, address } = useAccount()
@@ -34,7 +34,7 @@ export default function List() {
     }
   }, [isConnected])
 
-  // List a NFT
+  // Update NFT price
   const updateSalePrice = async () => {
     setIsLoading(true);
     try {

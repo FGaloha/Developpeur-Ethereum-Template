@@ -113,16 +113,16 @@ export const CollectionsCards = () => {
 
       < Flex direction='column' alignItems='center' w='100%' backgroundColor='black'>
         {collections.map(collection => (
-          <Flex w="100%" direction='column'>
+          <Flex w="100%" direction='column' alignItems='center'>
             <Heading w="100%" ms="5" as='h1' textAlign="start" size='lg' noOfLines={1} color='white' mt='4' key={collection.name}>
               Subsidiary {collection.name}
             </Heading>
-            <SimpleGrid columns={3} spacing={5} p="5" w="100%">
+            <SimpleGrid columns={4} spacing={5} p="5" w="100%">
               {collection.collections.map(
                 cards => (
                   <Box
                     bg={useColorModeValue('white', 'gray.800')}
-                    maxW="lg"
+                    maxW="md"
                     borderWidth="1px"
                     rounded="lg"
                     shadow="lg"

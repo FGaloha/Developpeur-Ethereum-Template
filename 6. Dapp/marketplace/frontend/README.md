@@ -15,9 +15,9 @@ Conclusion : with the new contract we avoid a DOS gas limit, we save 64440 gas c
 The following video show how the platform will be used by the Morpheus Group & users: [DEMO](https://www.loom.com/share/400ed797f4784cd7acfa2b808a372c49)
 
 The smart contracts are here :
-- [Collection](https://goerli.etherscan.io/address/0x3c5C0AD32375e8973e35E0eF2CDaD9490F0B4330#code)
-- [Factory](https://goerli.etherscan.io/address/0x3c5C0AD32375e8973e35E0eF2CDaD9490F0B4330#code)
-- [Market](https://goerli.etherscan.io/address/0x3c5C0AD32375e8973e35E0eF2CDaD9490F0B4330#code)
+- [Collection](https://goerli.etherscan.io/address/0x36aD8d2DcE8dCcb1526367B2308bcc6a7bbA572D#code)
+- [Factory](https://goerli.etherscan.io/address/0x445d4427d0748e32932232CeC48db0920f38a1Ce#code)
+- [Market](https://goerli.etherscan.io/address/0x8875508C3E4ab9df8193E05Df3b266E65D27113e#code)
 
 The deployed platform (Vercel) is here : [Morpheus Dapp](https://morpheus-bice.vercel.app/)
 

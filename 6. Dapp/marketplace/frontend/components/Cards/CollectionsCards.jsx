@@ -72,7 +72,7 @@ export const CollectionsCards = () => {
           const contractCollection = new ethers.Contract(createdCollectionsEvents[j]['args'][1], ContractCollection.abi, provider);
           const totalSupply = await contractCollection.totalSupply();
 
-          // Deault image
+          // Default image
           let image = 'https://bafybeicflyu7beqkaelzvce4jp44ubm77dmpzf7rvxgw2eqsgmlp4eqesq.ipfs.nftstorage.link/'
 
           // If existing token card generation using token 0 instead of default image

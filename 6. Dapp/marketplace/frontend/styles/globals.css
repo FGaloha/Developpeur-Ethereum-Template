@@ -2,6 +2,10 @@
   font-family: 'Monoton', cursive;
 }
 
+#header {
+  z-index: 7000;
+}
+
 .title {
   font-size: 22px;
 }

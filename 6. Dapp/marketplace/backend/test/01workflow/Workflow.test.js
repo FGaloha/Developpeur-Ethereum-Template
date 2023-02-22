@@ -31,8 +31,6 @@ const { developmentChains } = require("../../helper-hardhat-config")
       before(async () => {
         await deployments.fixture(["factory"]);
         factory = await ethers.getContract("Factory");
-        // await collection.init(50, ethers.utils.parseEther('0.05'),
-        //   'ipfs://bafybeifgrexwzvjkgql75wruqorhhm5l2estqug3ayfpi3kqwtgbxtisdi/');
         await deployments.fixture("market", [2000000000000000, 1000000000000000, 250]);
         market = await ethers.getContract("Market");
 

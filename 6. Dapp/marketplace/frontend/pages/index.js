@@ -24,8 +24,8 @@ export default function Home() {
             </Flex>
             <Flex direction="column" alignItems="center" justifyContent="center" width="40%">
               <Flex ></Flex>
-              <Flex direction="column" alignItems="center" justifyContent="center" bg="purple.600" p="30" color="black" rounded="lg">
-                <Text fontSize='6xl' >Live The Magic</Text>
+              <Flex direction="column" alignItems="center" justifyContent="center" bg="purple.600" w="80%" color="black" rounded="lg">
+                <Text fontSize='6xl' p="30">Live The Magic</Text>
               </Flex>
               <Flex></Flex>
             </Flex>

@@ -69,7 +69,7 @@ export const Header = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Flex p='4' justifyContent="space-between" alignItems="center" border="2px" position="fixed" width="100%" bg="black">
+      <Flex p='4' id="header" justifyContent="space-between" alignItems="center" border="2px" position="fixed" width="100%" bg="black">
 
         <Box>
 
